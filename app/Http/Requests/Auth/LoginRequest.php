@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use Illuminate\Support\Facades\Http;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -29,6 +30,16 @@ class LoginRequest extends FormRequest
         return [
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+            'g-recaptcha-response' => ['required', function ($attribute, $value, $fail) {
+                $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+                    'secret' => config('services.recaptcha.secret_key'),
+                    'response' => $value,
+                ]);
+
+                if (!$response->json('success')) {
+                    $fail('La verificación de reCAPTCHA falló. Inténtalo de nuevo.');
+                }
+            }],
         ];
     }
 
@@ -82,4 +93,13 @@ class LoginRequest extends FormRequest
     {
         return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
     }
+
+    
+    public function messages(): array
+    {
+        return [
+            'g-recaptcha-response.required' => 'Captcha es obligatorio.',
+        ];
+    }
+
 }
