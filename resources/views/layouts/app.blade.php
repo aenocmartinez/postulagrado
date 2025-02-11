@@ -57,13 +57,7 @@
             display: flex;
             align-items: center;
         }
-        /* Bullet for submenu items */
-        .submenu li a::before {
-            content: '\2022';
-            color: white;
-            font-size: 1.2rem;
-            margin-right: 0.5rem;
-        }
+        
         /* Hover effect on submenu items */
         .submenu li a:hover {
             color: white;
