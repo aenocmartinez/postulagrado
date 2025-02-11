@@ -30,18 +30,23 @@
                 @enderror
             </div>
             
-            <div class="flex justify-between items-center mt-4 mb-4">
-                <label class="flex items-center">
-                    <input type="checkbox" name="remember" class="text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                    <span class="ml-2 text-sm text-gray-700">Recuérdame</span>
-                </label>
-                <a href="{{ route('password.request') }}" class="text-sm text-blue-600 hover:underline">¿Olvidaste tu contraseña?</a>
+            
+
+            <div class="mb-4">
+                <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
+                @error('g-recaptcha-response')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
             
             <button type="submit" class="w-full px-4 py-2 text-white bg-blue-800 rounded-lg hover:bg-blue-900 transition">Iniciar Sesión</button>
             
-            <p class="mt-4 text-sm text-center text-gray-600">¿No tienes cuenta? <a href="{{ route('register') }}" class="text-blue-600 hover:underline">Regístrate aquí</a></p>
+            <p class="mt-4 text-sm text-center text-gray-600">
+                <a href="{{ route('password.request') }}" class="text-sm text-blue-600 hover:underline">¿Olvidaste tu contraseña?</a>
+            </p>
         </form>
     </div>
+
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </body>
 </html>
