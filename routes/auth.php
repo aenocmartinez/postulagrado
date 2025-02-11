@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\ProcesoController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -56,4 +57,14 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+
+
+    // Procesos
+    Route::get('procesos', [ProcesoController::class, 'index'])->name('procesos.index');
+    Route::get('procesos/create', [ProcesoController::class, 'create'])->name('procesos.create');
+    Route::post('procesos', [ProcesoController::class, 'store'])->name('procesos.store');
+    Route::get('procesos/{id}/edit', [ProcesoController::class, 'edit'])->name('procesos.edit');
+    Route::put('procesos/{id}', [ProcesoController::class, 'update'])->name('procesos.update');
+    Route::delete('procesos/{id}', [ProcesoController::class, 'destroy'])->name('procesos.destroy');
+        
 });
