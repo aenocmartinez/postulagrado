@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
+
 
 class NewPasswordController extends Controller
 {
@@ -32,7 +34,7 @@ class NewPasswordController extends Controller
     public function store(ResetPasswordRequest $request): RedirectResponse
     {
         $status = Password::reset(
-            $request->validated(), // Ya está validado en ResetPasswordRequest.php
+            $request->only('email', 'password', 'password_confirmation', 'token'), 
             function (User $user, string $password) {
                 $user->forceFill([
                     'password' => Hash::make($password),
@@ -40,6 +42,8 @@ class NewPasswordController extends Controller
                 ])->save();
 
                 event(new PasswordReset($user));
+
+                DB::table('password_resets')->where('email', $user->email)->delete();
             }
         );
 
@@ -48,4 +52,5 @@ class NewPasswordController extends Controller
                     : back()->withInput($request->only('email'))
                         ->withErrors(['email' => __($status)]);
     }
+
 }
