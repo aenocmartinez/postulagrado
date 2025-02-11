@@ -1,25 +1,41 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Contraseña - PostulaGrado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-900 to-blue-700">
+    <div class="w-full max-w-md p-6 bg-white rounded-lg shadow-xl">
+        <div class="flex justify-center mb-6">
+            <img src="{{ asset('images/logo_universidad.png') }}" alt="Logo Universidad" class="w-auto h-40 mx-auto">
+        </div>
+        <h2 class="text-2xl font-semibold text-center text-gray-800 mb-6">Recuperar Contraseña</h2>
+        <p class="text-sm text-center text-gray-600 mb-4">Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.</p>
+        
+        @if (session('status'))
+            <div class="mb-4 text-green-600 text-sm text-center">
+                {{ session('status') }}
+            </div>
+        @endif
+        
+        <form method="POST" action="{{ route('password.email') }}">
+            @csrf
+            
+            <div class="mb-4">
+                <input placeholder="Correo Electrónico" type="email" name="email" id="email" required class="w-full px-4 py-2 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none @error('email') border-red-500 @enderror">
+                @error('email')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+            
+            <button type="submit" class="w-full px-4 py-2 text-white bg-blue-800 rounded-lg hover:bg-blue-900 transition">Enviar enlace</button>
+            
+            <p class="mt-4 text-sm text-center text-gray-600">
+                <a href="{{ route('login') }}" class="text-blue-600 hover:underline">Volver al inicio de sesión</a>
+            </p>
+        </form>
     </div>
-
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
-
-    <form method="POST" action="{{ route('password.email') }}">
-        @csrf
-
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Email Password Reset Link') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+</body>
+</html>
