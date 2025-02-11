@@ -30,12 +30,14 @@
                 @enderror
             </div>
 
-            <div class="mb-4">
+            <div class="mb-4 flex justify-center">
                 <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
-                @error('g-recaptcha-response')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
             </div>
+
+            @error('g-recaptcha-response')
+                <p class="text-red-500 text-sm mt-1 mb-3 text-center">{{ $message }}</p>
+            @enderror
+
             
             <button type="submit" class="w-full px-4 py-2 text-white bg-blue-800 rounded-lg hover:bg-blue-900 transition">Enviar enlace</button>
             
