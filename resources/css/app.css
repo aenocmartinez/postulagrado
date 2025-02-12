@@ -115,3 +115,9 @@
   Otras clases si las necesitabas (por ejemplo, .bg-blue-900, .text-white, etc.)
   ya están manejadas por Tailwind, así que no hay que reescribirlas.
 */
+
+.sidebar ul li a.active {
+    background-color: rgba(255, 255, 255, 0.3);
+    font-weight: bold;
+    border-left: 4px solid white;
+}

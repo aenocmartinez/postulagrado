@@ -29,7 +29,13 @@
                                 <li><a href="{{ route('procesos.create') }}" onclick="closeSidebarAfterClick()">Nuevo Proceso</a></li>
                             </ul>
                         </li> -->
-                        <li><a href="{{ route('procesos.index') }}" onclick="closeSidebarAfterClick()">Procesos</a></li>
+                        <li>
+                        <a href="{{ route('procesos.index') }}" 
+                            class="{{ request()->routeIs('procesos.index') ? 'active' : '' }}"
+                            onclick="closeSidebarAfterClick()">
+                            Procesos
+                        </a>
+                        </li>
                         <li><a href="#" onclick="closeSidebarAfterClick()">Calendario de Actividades</a></li>
                         <li><a href="#" onclick="closeSidebarAfterClick()">Tablero de Control</a></li>
                         <li><a href="#" onclick="closeSidebarAfterClick()">Programador de Notificaciones</a></li>
