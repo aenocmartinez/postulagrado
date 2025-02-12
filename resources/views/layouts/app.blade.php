@@ -16,7 +16,7 @@
                 <nav>
                     <ul class="space-y-2">
                         <li><a href="#" onclick="closeSidebarAfterClick()">Inicio</a></li>
-                        <li>
+                        <!-- <li>
                             <a href="#" onclick="toggleSubmenu(event, 'procesosSubmenu')" class="font-semibold">
                                 Procesos de Grado
                                 <svg class="menu-arrow w-4 h-4 ml-2" fill="none" stroke="currentColor" stroke-width="2"
@@ -28,7 +28,8 @@
                                 <li><a href="{{ route('procesos.index') }}" onclick="closeSidebarAfterClick()">Ver Procesos</a></li>
                                 <li><a href="{{ route('procesos.create') }}" onclick="closeSidebarAfterClick()">Nuevo Proceso</a></li>
                             </ul>
-                        </li>
+                        </li> -->
+                        <li><a href="{{ route('procesos.index') }}" onclick="closeSidebarAfterClick()">Procesos</a></li>
                         <li><a href="#" onclick="closeSidebarAfterClick()">Calendario de Actividades</a></li>
                         <li><a href="#" onclick="closeSidebarAfterClick()">Tablero de Control</a></li>
                         <li><a href="#" onclick="closeSidebarAfterClick()">Programador de Notificaciones</a></li>
