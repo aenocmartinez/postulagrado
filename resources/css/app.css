@@ -74,15 +74,6 @@
     align-items: center;
 }
 
-/* Quita la viñeta en submenús: elimina content: '\\2022' si no quieres bullets */
-.submenu li a::before {
-    /* content: '\\2022'; 
-       color: white;
-       font-size: 1.2rem;
-       margin-right: 0.5rem;
-    */
-}
-
 /* Hover en submenús */
 .submenu li a:hover {
     color: white;
