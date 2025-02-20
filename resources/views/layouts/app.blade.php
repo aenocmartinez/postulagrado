@@ -35,7 +35,7 @@
                         </li> -->
                         <li>
                         <a href="{{ route('procesos.index') }}" 
-                            class="{{ request()->routeIs('procesos.index') ? 'active' : '' }}"
+                            class="{{ request()->routeIs('procesos.*') ? 'active' : '' }}"
                             onclick="closeSidebarAfterClick()">
                             Procesos
                         </a>

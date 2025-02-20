@@ -63,7 +63,7 @@
                                     </a>
 
                                     <!-- Botón Calendario de Actividades -->
-                                    <a href="{{ route('procesos.edit', $proceso->getId()) }}" 
+                                    <a href="{{ route('procesos.actividades', $proceso->getId()) }}" 
                                        class="hover:text-orange-400 transition">
                                         Calendario
                                     </a>

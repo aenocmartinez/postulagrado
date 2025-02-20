@@ -27,4 +27,8 @@ class Calendario {
     public function getProceso(): Proceso {
         return $this->proceso;
     }
+
+    public function listarActividades(): array {
+        return [];
+    }
 }
