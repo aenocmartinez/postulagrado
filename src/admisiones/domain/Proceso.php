@@ -1,9 +1,9 @@
 <?php
 
-namespace Src\admisiones\procesos\domain;
+namespace Src\admisiones\domain;
 
-use Src\admisiones\procesos\dao\mysql\ProcesoDao;
-use Src\admisiones\procesos\domain\ProcesoRepository;
+use Src\admisiones\dao\mysql\ProcesoDao;
+use Src\admisiones\domain\ProcesoRepository;
 
 class Proceso 
 {

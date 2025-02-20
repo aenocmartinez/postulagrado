@@ -1,6 +1,6 @@
 <?php
 
-namespace Src\admisiones\procesos\domain;
+namespace Src\admisiones\domain;
 
 interface ProcesoRepository {
     public static function listarProcesos(): array;

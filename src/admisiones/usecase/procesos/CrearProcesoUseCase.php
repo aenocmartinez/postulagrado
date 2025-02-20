@@ -1,8 +1,8 @@
 <?php
 
-namespace Src\admisiones\procesos\usecase;
+namespace Src\admisiones\usecase\procesos;
 
-use Src\admisiones\procesos\dao\mysql\ProcesoDao;
+use Src\admisiones\dao\mysql\ProcesoDao;
 use Src\shared\response\ResponsePostulaGrado;
 
 class CrearProcesoUseCase

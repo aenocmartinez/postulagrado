@@ -6,12 +6,12 @@ use App\Http\Requests\ActualizarProceso;
 use App\Http\Requests\CrearProceso;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
-use Src\admisiones\procesos\domain\Proceso;
-use Src\admisiones\procesos\usecase\ActualizarProcesoUseCase;
-use Src\admisiones\procesos\usecase\CrearProcesoUseCase;
-use Src\admisiones\procesos\usecase\EditarProcesoUseCase;
-use Src\admisiones\procesos\usecase\EliminarProcesoUseCase;
-use Src\admisiones\procesos\usecase\ListarProcesosUseCase;
+use Src\admisiones\domain\Proceso;
+use Src\admisiones\usecase\procesos\ActualizarProcesoUseCase;
+use Src\admisiones\usecase\procesos\CrearProcesoUseCase;
+use Src\admisiones\usecase\procesos\EditarProcesoUseCase;
+use Src\admisiones\usecase\procesos\EliminarProcesoUseCase;
+use Src\admisiones\usecase\procesos\ListarProcesosUseCase;
 
 class ProcesoController extends Controller
 {

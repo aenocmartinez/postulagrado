@@ -1,12 +1,13 @@
 <?php
 
-namespace Src\admisiones\procesos\dao\mysql;
+namespace Src\admisiones\dao\mysql;
 
 use Illuminate\Database\Eloquent\Model;
-use Src\admisiones\procesos\domain\Proceso;
-use Src\admisiones\procesos\domain\ProcesoRepository;
+
 
 use Illuminate\Support\Facades\Log;
+use Src\admisiones\domain\Proceso;
+use Src\admisiones\domain\ProcesoRepository;
 
 class ProcesoDao extends Model implements ProcesoRepository 
 {
