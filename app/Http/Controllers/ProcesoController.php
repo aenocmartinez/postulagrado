@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CrearProceso;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Src\admisiones\procesos\domain\Proceso;
+use Src\admisiones\procesos\usecase\CrearProcesoUseCase;
 use Src\admisiones\procesos\usecase\ListarProcesosUseCase;
 
 class ProcesoController extends Controller
@@ -41,9 +43,11 @@ class ProcesoController extends Controller
         return view('procesos.create');
     }
 
-    public function store(Request $request)
+    public function store(CrearProceso $request)
     {
-        return redirect()->route('procesos.index')->with('success', 'Proceso creado con éxito.');
+        $response = CrearProcesoUseCase::ejecutar($request->validated());
+        
+        return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
     }
 
     public function edit($id)

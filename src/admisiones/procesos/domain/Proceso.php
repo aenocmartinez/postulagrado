@@ -17,6 +17,7 @@ class Proceso
 
     public function __construct() {
         $this->repository = new ProcesoDao();
+        $this->rutaArchivoActoAdmnistrativo = '';
         $this->id = 0;
     }
 
@@ -66,5 +67,13 @@ class Proceso
 
     public function getCalendario(): Calendario {
         return $this->calendario;
+    }
+
+    public function crear(): bool {
+        return $this->repository->crearProceso($this);
+    }
+
+    public function existe(): bool {
+        return $this->id > 0;
     }
 }
