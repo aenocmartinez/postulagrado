@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ActualizarProceso;
 use App\Http\Requests\CrearProceso;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Src\admisiones\procesos\domain\Proceso;
+use Src\admisiones\procesos\usecase\ActualizarProcesoUseCase;
 use Src\admisiones\procesos\usecase\CrearProcesoUseCase;
 use Src\admisiones\procesos\usecase\EditarProcesoUseCase;
 use Src\admisiones\procesos\usecase\EliminarProcesoUseCase;
@@ -42,9 +44,7 @@ class ProcesoController extends Controller
 
     public function create()
     {
-        return view('procesos.create', [
-            'proceso' => new Proceso()
-        ]);
+        return view('procesos.create');
     }
 
     public function store(CrearProceso $request)
@@ -66,9 +66,11 @@ class ProcesoController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
+    public function update(ActualizarProceso $request, $id)
     {
-        return redirect()->route('procesos.index')->with('success', 'Proceso actualizado con éxito.');
+        $response = ActualizarProcesoUseCase::ejecutar($request->validated());
+        
+        return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
     }
 
     public function destroy($id)

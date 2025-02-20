@@ -81,6 +81,10 @@ class Proceso
         return $this->repository->eliminarProceso($this->id);
     }
 
+    public function actualizar(): bool {
+        return $this->repository->actualizarProceso($this);
+    }    
+
     public function existe(): bool {
         return $this->id > 0;
     }

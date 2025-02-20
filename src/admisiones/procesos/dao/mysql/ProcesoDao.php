@@ -133,5 +133,28 @@ class ProcesoDao extends Model implements ProcesoRepository
             return false;
         }
     }
+
+    public function actualizarProceso(Proceso $proceso): bool
+    {
+        try {
+            $filasAfectadas = self::where('id', $proceso->getId())
+                ->update([
+                    'nombre' => $proceso->getNombre(),
+                    'nivel_educativo' => $proceso->getNivelEducativo(),
+                    'ruta_archivo_acto_administrativo' => $proceso->getRutaArchivoActoAdministrativo(),
+                    'estado' => $proceso->getEstado(),
+                ]);
+    
+            if ($filasAfectadas === 0) {
+                Log::warning("Intento de actualizar un proceso que no existe: ID {$proceso->getId()}");
+                return false;
+            }
+    
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Error al actualizar el proceso ID {$proceso->getId()}: " . $e->getMessage());
+            return false;
+        }
+    }
         
 }
