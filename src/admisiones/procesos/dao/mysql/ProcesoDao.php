@@ -110,12 +110,18 @@ class ProcesoDao extends Model implements ProcesoRepository
                 'estado' => $proceso->getEstado(),
             ]);
     
+            if ($registro instanceof self) {
+                $proceso->setId($registro->id);
+                return true;
+            }
+    
         } catch (\Exception $e) {
             return false;
         }
-
-        return $registro instanceof self;
+    
+        return false;
     }
+    
 
     public function eliminarProceso(int $procesoID): bool
     {

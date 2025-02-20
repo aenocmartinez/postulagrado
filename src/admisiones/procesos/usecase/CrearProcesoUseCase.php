@@ -30,6 +30,8 @@ class CrearProcesoUseCase
             return $response;            
         }
 
+        dd($proceso);
+
         $response->setCode(201);
         $response->setMessage('El proceso se ha creado exitosamente.');
         return $response;
