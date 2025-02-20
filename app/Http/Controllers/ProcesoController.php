@@ -7,6 +7,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Src\admisiones\procesos\domain\Proceso;
 use Src\admisiones\procesos\usecase\CrearProcesoUseCase;
+use Src\admisiones\procesos\usecase\EliminarProcesoUseCase;
 use Src\admisiones\procesos\usecase\ListarProcesosUseCase;
 
 class ProcesoController extends Controller
@@ -62,6 +63,7 @@ class ProcesoController extends Controller
 
     public function destroy($id)
     {
-        return redirect()->route('procesos.index')->with('success', 'Proceso eliminado.');
+        $response = EliminarProcesoUseCase::ejecutar($id);
+        return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
     }
 }

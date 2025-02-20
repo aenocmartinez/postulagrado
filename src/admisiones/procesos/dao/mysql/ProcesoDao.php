@@ -116,5 +116,22 @@ class ProcesoDao extends Model implements ProcesoRepository
 
         return $registro instanceof self;
     }
+
+    public function eliminarProceso(int $procesoID): bool
+    {
+        try {
+            $eliminados = self::where('id', $procesoID)->delete();
     
+            if ($eliminados === 0) {
+                Log::warning("Intento de eliminar un proceso que no existe: ID {$procesoID}");
+                return false;
+            }
+    
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Error al eliminar el proceso ID {$procesoID}: " . $e->getMessage());
+            return false;
+        }
+    }
+        
 }

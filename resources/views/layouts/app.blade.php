@@ -131,5 +131,8 @@
         }
     </script>
 
+    <!-- Sección para scripts adicionales -->
+    @yield('scripts')
+
 </body>
 </html>

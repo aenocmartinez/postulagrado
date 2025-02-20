@@ -72,9 +72,12 @@
                                     <form action="{{ route('procesos.destroy', $proceso->getId()) }}" method="POST" class="inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="hover:text-red-600 transition">
+                                        <!-- Botón Eliminar con confirmación -->
+                                        <button type="button" onclick="confirmarEliminacion('{{ route('procesos.destroy', $proceso->getId()) }}')" 
+                                                class="hover:text-red-600 transition">
                                             Eliminar
                                         </button>
+
                                     </form>
                                 </div>
                             </td>
@@ -95,4 +98,34 @@
             {{ $procesos->appends(['search' => request('search')])->links() }}
         </div>
     </div>
+@endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmarEliminacion(url) {
+        Swal.fire({
+            title: "¿Estás seguro?",
+            text: "Esta acción no se puede deshacer.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6b7280",
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let form = document.createElement("form");
+                form.action = url;
+                form.method = "POST";
+                form.innerHTML = `
+                    @csrf
+                    @method('DELETE')
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+</script>
 @endsection
