@@ -73,8 +73,8 @@
                                         @csrf
                                         @method('DELETE')
                                         <!-- Botón Eliminar con confirmación -->
-                                        <button type="button" onclick="confirmarEliminacion('{{ route('procesos.destroy', $proceso->getId()) }}')" 
-                                                class="hover:text-red-600 transition">
+                                        <button type="button" class="eliminar-btn hover:text-red-600 transition" 
+                                                data-url="{{ route('procesos.destroy', $proceso->getId()) }}">
                                             Eliminar
                                         </button>
 
@@ -103,6 +103,15 @@
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".eliminar-btn").forEach((button) => {
+            button.addEventListener("click", function () {
+                let url = this.dataset.url; // Obtiene la URL desde el atributo data-url
+                confirmarEliminacion(url);
+            });
+        });
+    });
+
     function confirmarEliminacion(url) {
         Swal.fire({
             title: "¿Estás seguro?",
