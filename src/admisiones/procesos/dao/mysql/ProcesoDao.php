@@ -4,7 +4,7 @@ namespace Src\admisiones\procesos\dao\mysql;
 
 use Illuminate\Database\Eloquent\Model;
 use Src\admisiones\procesos\domain\Proceso;
-use Src\admisiones\procesos\repositories\ProcesoRepository;
+use Src\admisiones\procesos\domain\ProcesoRepository;
 
 use Illuminate\Support\Facades\Log;
 

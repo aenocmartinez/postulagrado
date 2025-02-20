@@ -3,7 +3,7 @@
 namespace Src\admisiones\procesos\domain;
 
 use Src\admisiones\procesos\dao\mysql\ProcesoDao;
-use Src\admisiones\procesos\repositories\ProcesoRepository;
+use Src\admisiones\procesos\domain\ProcesoRepository;
 
 class Proceso 
 {
