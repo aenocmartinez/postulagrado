@@ -16,9 +16,13 @@ class Proceso
     private ProcesoRepository $repository;
 
     public function __construct() {
-        $this->repository = new ProcesoDao();
         $this->rutaArchivoActoAdmnistrativo = '';
+        $this->nivelEducativo = "";
+        $this->estado = "Abierto";
+        $this->nombre = "";
         $this->id = 0;
+
+        $this->repository = new ProcesoDao();
     }
 
     public function setId(int $id): void {

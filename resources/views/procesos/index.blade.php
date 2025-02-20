@@ -106,7 +106,7 @@
     document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll(".eliminar-btn").forEach((button) => {
             button.addEventListener("click", function () {
-                let url = this.dataset.url; // Obtiene la URL desde el atributo data-url
+                let url = this.dataset.url;
                 confirmarEliminacion(url);
             });
         });

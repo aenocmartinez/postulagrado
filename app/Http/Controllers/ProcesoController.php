@@ -7,6 +7,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Src\admisiones\procesos\domain\Proceso;
 use Src\admisiones\procesos\usecase\CrearProcesoUseCase;
+use Src\admisiones\procesos\usecase\EditarProcesoUseCase;
 use Src\admisiones\procesos\usecase\EliminarProcesoUseCase;
 use Src\admisiones\procesos\usecase\ListarProcesosUseCase;
 
@@ -41,7 +42,9 @@ class ProcesoController extends Controller
 
     public function create()
     {
-        return view('procesos.create');
+        return view('procesos.create', [
+            'proceso' => new Proceso()
+        ]);
     }
 
     public function store(CrearProceso $request)
@@ -53,7 +56,14 @@ class ProcesoController extends Controller
 
     public function edit($id)
     {
-        return view('procesos.edit', compact('proceso'));
+        $response = EditarProcesoUseCase::ejecutar($id);
+        if ($response->getCode() != 200) {
+            return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
+        }
+
+        return view('procesos.edit', [
+            'proceso' => $response->getData()
+        ]);
     }
 
     public function update(Request $request, $id)
