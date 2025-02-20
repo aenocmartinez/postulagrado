@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Support\Facades\Log;
 use Src\admisiones\domain\Proceso;
-use Src\admisiones\domain\ProcesoRepository;
+use Src\admisiones\repositories\ProcesoRepository;
 
-class ProcesoDao extends Model implements ProcesoRepository 
+class ProcesoDao extends Model implements ProcesoRepository
 {
     protected $table = 'procesos';
     protected $fillable = ['nombre', 'nivel_educativo', 'ruta_archivo_acto_administrativo', 'estado'];
@@ -163,5 +163,19 @@ class ProcesoDao extends Model implements ProcesoRepository
             return false;
         }
     }
+
+    public static function tieneCalendarioConActividades(int $procesoID): bool
+    {
+        try {
+            return self::join('calendarios', 'procesos.id', '=', 'calendarios.proceso_id')
+                ->join('actividades', 'calendarios.id', '=', 'actividades.calendario_id')
+                ->where('procesos.id', $procesoID)
+                ->exists();
+
+        } catch (\Exception $e) {
+            Log::error("Error al verificar si el proceso ID {$procesoID} tiene calendario con actividades: " . $e->getMessage());
+            return false;
+        }
+    }    
         
 }

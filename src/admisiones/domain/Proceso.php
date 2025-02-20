@@ -2,8 +2,9 @@
 
 namespace Src\admisiones\domain;
 
+use Src\admisiones\dao\mysql\CalendarioDao;
 use Src\admisiones\dao\mysql\ProcesoDao;
-use Src\admisiones\domain\ProcesoRepository;
+use Src\admisiones\repositories\ProcesoRepository;
 
 class Proceso 
 {
@@ -74,7 +75,15 @@ class Proceso
     }
 
     public function crear(): bool {
-        return $this->repository->crearProceso($this);
+        $exito = $this->repository->crearProceso($this);
+        if (!$exito) {
+            return false;
+        }
+
+        $calendario = new Calendario();
+        $calendario->setProceso($this);
+
+        return CalendarioDao::crearCalendario($calendario);
     }
 
     public function eliminar(): bool {
@@ -87,5 +96,9 @@ class Proceso
 
     public function existe(): bool {
         return $this->id > 0;
+    }
+
+    public function crearCalendario() {
+
     }
 }

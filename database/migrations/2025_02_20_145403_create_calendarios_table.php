@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('calendarios', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('proceso_id')->constrained('procesos')->onDelete('restrict');
+            $table->foreignId('proceso_id')->constrained('procesos')->onDelete('cascade');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 

@@ -18,6 +18,13 @@ class EliminarProcesoUseCase
             return $response;            
         }
 
+        $tieneCalendarioConActividades = ProcesoDao::tieneCalendarioConActividades($proceso->getId());
+        if ($tieneCalendarioConActividades) {
+            $response->setCode(409);
+            $response->setMessage('No es posible eliminar el proceso, ya que está vinculado a un calendario.');
+            return $response;                        
+        }
+
         $exito = $proceso->eliminar();
         if (!$exito) {
             $response->setCode(500);
