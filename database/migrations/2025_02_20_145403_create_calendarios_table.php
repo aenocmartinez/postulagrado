@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('calendarios', function (Blueprint $table) {
             $table->id();
             $table->foreignId('proceso_id')->constrained('procesos')->onDelete('restrict');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
             $table->unique('proceso_id');
         });

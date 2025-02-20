@@ -81,7 +81,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="3" class="text-center py-4 text-gray-500">
+                            <td colspan="4" class="text-center py-4 text-gray-500">
                                 No se encontraron procesos.
                             </td>
                         </tr>

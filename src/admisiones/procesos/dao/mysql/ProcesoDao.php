@@ -44,29 +44,33 @@ class ProcesoDao extends Model implements ProcesoRepository
     
         return $procesos;
     }
-    
 
-    public static function buscarProcesoPorNombre(string $nombre): Proceso
+    public static function buscarProcesoPorNombreYNivelEducativo(string $nombre, string $nivelEducativo): Proceso
     {
         $proceso = new Proceso();
     
         try {
-            $registro = self::where('nombre', $nombre)->first();
+            
+            $registro = self::where('nombre', $nombre)
+                            ->where('nivel_educativo', $nivelEducativo)
+                            ->first();
     
             if ($registro) {
                 $proceso->setId($registro->id);
                 $proceso->setNombre($registro->nombre);
                 $proceso->setNivelEducativo($registro->nivel_educativo);
-                $proceso->setRutaArchivoActoAdministrativo($registro->ruta_archivo_acto_administrativo);
                 $proceso->setEstado($registro->estado);
-            }
 
+                $proceso->setRutaArchivoActoAdministrativo($registro->ruta_archivo_acto_administrativo ?? "");
+            }
+    
         } catch (\Exception $e) {
-            Log::error('Error en buscarProcesoPorNombre: ' . $e->getMessage());
+            Log::error("Error en buscarProcesoPorNombreYNivelEducativo({$nombre}, {$nivelEducativo}): " . $e->getMessage());
         }
     
         return $proceso;
-    }    
+    }
+    
 
     public static function buscarProcesoPorId(int $id): Proceso
     {
@@ -78,9 +82,15 @@ class ProcesoDao extends Model implements ProcesoRepository
             if ($registro) {
                 $proceso->setId($registro->id);
                 $proceso->setNombre($registro->nombre);
-                $proceso->setNivelEducativo($registro->nivel_educativo);
-                $proceso->setRutaArchivoActoAdministrativo($registro->ruta_archivo_acto_administrativo);
+                $proceso->setNivelEducativo($registro->nivel_educativo);                
                 $proceso->setEstado($registro->estado);
+
+                $rutaArchivo = "";
+                if (!is_null($registro->ruta_archivo_acto_administrativo))
+                {
+                    $rutaArchivo = $registro->ruta_archivo_acto_administrativo;
+                }
+                $proceso->setRutaArchivoActoAdministrativo($rutaArchivo);                
             }
         } catch (\Exception $e) {
             Log::error("Error en buscarProcesoPorId({$id}): " . $e->getMessage());

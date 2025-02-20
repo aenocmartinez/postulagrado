@@ -31,7 +31,12 @@ class CrearProceso extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre' => 'required|string|max:255|unique:procesos,nombre',
+            'nombre' => [
+                'required', 
+                'string', 
+                'max:255', 
+                'unique:procesos,nombre,NULL,id,nivel_educativo,' . $this->nivelEducativo
+            ],
             'nivelEducativo' => 'required|in:Pregrado,Postgrado',
         ];
     }
@@ -45,7 +50,7 @@ class CrearProceso extends FormRequest
             'nombre.required' => 'El nombre del proceso es obligatorio.',
             'nombre.string' => 'El nombre del proceso debe ser un texto válido.',
             'nombre.max' => 'El nombre no debe exceder los 255 caracteres.',
-            'nombre.unique' => 'Ya existe un proceso con este nombre.',
+            'nombre.unique' => 'Ya existe un proceso con este nombre y nivel educativo.',
             'nivelEducativo.required' => 'El nivel educativo es obligatorio.',
             'nivelEducativo.in' => 'El nivel educativo debe ser Pregrado o Postgrado.',
         ];

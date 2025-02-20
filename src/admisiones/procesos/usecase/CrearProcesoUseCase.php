@@ -2,7 +2,6 @@
 
 namespace Src\admisiones\procesos\usecase;
 
-use App\Http\Requests\CrearProceso;
 use Src\admisiones\procesos\dao\mysql\ProcesoDao;
 use Src\shared\response\ResponsePostulaGrado;
 
@@ -12,7 +11,7 @@ class CrearProcesoUseCase
     {
         $response = new ResponsePostulaGrado();
 
-        $proceso = ProcesoDao::buscarProcesoPorNombre($datos['nombre']);
+        $proceso = ProcesoDao::buscarProcesoPorNombreYNivelEducativo($datos['nombre'], $datos['nivelEducativo']);
         if ($proceso->existe()) {
             $response->setCode(409);
             $response->setMessage('El nombre del proceso ya está en uso. Por favor, elige un nombre diferente.');

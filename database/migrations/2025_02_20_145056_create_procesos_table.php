@@ -17,7 +17,11 @@ return new class extends Migration
             $table->enum('nivel_educativo', ['Pregrado', 'Postgrado'])->default('Pregrado');
             $table->string('ruta_archivo_acto_administrativo')->nullable();
             $table->enum('estado', ['Abierto', 'Cerrado'])->default('Abierto');
-            $table->timestamps();
+
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            
+            $table->unique(['nombre', 'nivel_educativo']);
         });
     }
 
