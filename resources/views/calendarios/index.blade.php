@@ -9,12 +9,12 @@
 <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200 max-w-4xl mx-auto">
     
     <!-- Encabezado con botón "Volver a la lista de procesos" -->
-    <div class="flex justify-between items-center mb-6">
+    <!-- <div class="flex justify-between items-center mb-6">
         <h2 class="text-lg font-semibold text-gray-800">Gestión de Actividades</h2>
         <a href="{{ route('procesos.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
             ← Volver a la lista de procesos
         </a>
-    </div>
+    </div> -->
 
     <!-- Información del proceso -->
     <div class="mb-6">
@@ -86,7 +86,7 @@
                         $fechaHoy = now()->format('Y-m-d');
                     @endphp
 
-                    @foreach($proceso->getActividades() as $actividad)
+                    @forelse($proceso->getActividades() as $actividad)
                         @php
                             if ($fechaHoy < $actividad->getFechaInicio()) {
                                 $estado = 'Programada';
@@ -112,7 +112,13 @@
                                 </div>
                             </td>
                         </tr>
-                    @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-gray-500">
+                                No se encontraron actividades.
+                            </td>
+                        </tr>                        
+                    @endforelse
                 </tbody>
             </table>
         </div>
