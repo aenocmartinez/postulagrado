@@ -47,4 +47,8 @@ class Actividad {
     public function getFechaFin() {
         return $this->fechaFin;
     }
+
+    public function existe(): bool {
+        return $this->id > 0;
+    }
 }

@@ -6,6 +6,7 @@ use App\Http\Requests\CrearActividad;
 use Illuminate\Http\Request;
 use Src\admisiones\usecase\calendarios\AgregarActividadUseCase;
 use Src\admisiones\usecase\calendarios\ListarActividadesUseCase;
+use Src\admisiones\usecase\calendarios\QuitarActividadUseCase;
 
 class CalendarioController extends Controller
 {
@@ -32,6 +33,15 @@ class CalendarioController extends Controller
 
         return redirect()->route('procesos.actividades', $procesoID)
                 ->with('status', ['code' => $response->getCode(), 'message' => $response->getMessage()]);
-
     }
+
+    public function destroy(int $procesoID, int $actividadID)
+    {
+
+        $response = QuitarActividadUseCase::ejecutar($procesoID, $actividadID);
+        
+        return redirect()->route('procesos.actividades', $procesoID)
+                ->with('status', ['code' => $response->getCode(), 'message' => $response->getMessage()]);
+    }
+    
 }

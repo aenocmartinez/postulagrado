@@ -110,4 +110,8 @@ class Proceso
 
         return CalendarioDao::agregarActividad($this->id, $actividad);
     }
+
+    public function quitarActividad(Actividad $actividad): bool {
+        return CalendarioDao::eliminarActividad($actividad->getId());
+    }
 }

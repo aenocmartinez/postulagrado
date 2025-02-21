@@ -71,7 +71,7 @@ Route::middleware('auth')->group(function () {
     //Calendarios
     Route::get('procesos/{id}/calendario/actividades', [CalendarioController::class, 'index'])->name('procesos.actividades');
     Route::post('procesos/{id}/calendario/actividades', [CalendarioController::class, 'store'])->name('actividades.store');
-    
-    
-        
+    Route::delete('procesos/{id}/actividades/{actividad}', [CalendarioController::class, 'destroy'])->name('actividades.destroy');
+
+
 });

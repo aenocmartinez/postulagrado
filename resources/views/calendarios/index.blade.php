@@ -9,12 +9,12 @@
 <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200 max-w-4xl mx-auto">
     
     <!-- Encabezado con botón "Volver a la lista de procesos" -->
-    <div class="flex justify-between items-center mb-6">
+    <!-- <div class="flex justify-between items-center mb-6">
         <h2 class="text-lg font-semibold text-gray-800">Gestión de Actividades</h2>
         <a href="{{ route('procesos.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
             ← Volver a la lista de procesos
         </a>
-    </div>
+    </div> -->
 
     <!-- Información del proceso -->
     <div class="mb-6">
@@ -58,7 +58,7 @@
                     <input type="date" name="fecha_inicio" id="fecha_inicio"
                         class="border px-3 py-2 rounded-md text-sm w-full focus:ring focus:ring-gray-400 outline-none
                         @error('fecha_inicio') border-red-500 @enderror"
-                        value="{{ old('fecha_inicio', isset($actividad) ? \Carbon\Carbon::parse($actividad->getFechaInicio())->format('Y-m-d') : '') }}">
+                        value="{{ old('fecha_inicio') }}">
                     
                     @error('fecha_inicio')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -71,7 +71,7 @@
                     <input type="date" name="fecha_fin" id="fecha_fin"
                         class="border px-3 py-2 rounded-md text-sm w-full focus:ring focus:ring-gray-400 outline-none
                         @error('fecha_fin') border-red-500 @enderror"
-                        value="{{ old('fecha_fin', isset($actividad) ? \Carbon\Carbon::parse($actividad->getFechaFin())->format('Y-m-d') : '') }}">
+                        value="{{ old('fecha_fin') }}">
                     
                     @error('fecha_fin')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -86,7 +86,7 @@
         </form>
     </div>
 
-    <!-- Listado de actividades con información de prueba -->
+    <!-- Listado de actividades -->
     <div>
         <h3 class="text-md font-semibold text-gray-700 mb-3">Actividades del Calendario</h3>
 
@@ -94,7 +94,7 @@
             <table class="w-full border-collapse rounded-lg overflow-hidden text-sm">
                 <thead>
                     <tr class="bg-gray-200 text-gray-700 text-left">
-                        <th class="px-4 py-2 font-medium w-80">Descripción</th> <!-- Definiendo ancho fijo -->
+                        <th class="px-4 py-2 font-medium w-80">Descripción</th>
                         <th class="px-4 py-2 font-medium">Fecha de Inicio</th>
                         <th class="px-4 py-2 font-medium">Fecha de Fin</th>
                         <th class="px-4 py-2 font-medium">Estado</th>
@@ -121,7 +121,6 @@
                         @endphp
 
                         <tr class="border-b border-gray-300 bg-white hover:bg-gray-100 transition">
-                            <!-- Descripción con ancho fijo -->
                             <td class="px-4 py-2 text-gray-900 w-80 break-words">
                                 {{ $actividad->getDescripcion() }}
                             </td>
@@ -131,7 +130,10 @@
                             <td class="px-4 py-2 text-center">
                                 <div class="flex justify-center gap-4 text-gray-600">
                                     <a href="#" class="hover:text-blue-600 transition">Editar</a>
-                                    <button type="button" class="hover:text-red-600 transition">Eliminar</button>
+                                    <button type="button" class="eliminar-btn hover:text-red-600 transition"
+                                            data-url="{{ route('actividades.destroy', ['id' => $proceso->getId(), 'actividad' => $actividad->getId()]) }}">
+                                        Eliminar
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -145,15 +147,48 @@
                 </tbody>
             </table>
         </div>
-
     </div>
 </div>
 
+@endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".eliminar-btn").forEach((button) => {
+            button.addEventListener("click", function () {
+                let url = this.dataset.url;
+                confirmarEliminacion(url);
+            });
+        });
+    });
+
     function toggleFormulario() {
         let form = document.getElementById('formulario-actividad');
         form.classList.toggle('hidden');
     }
-</script>
 
+    function confirmarEliminacion(url) {
+        Swal.fire({
+            title: "¿Estás seguro?",
+            text: "Esta acción no se puede deshacer.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6b7280",
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let form = document.createElement("form");
+                form.action = url;
+                form.method = "POST";
+                form.innerHTML = `@csrf @method('DELETE')`;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+</script>
 @endsection

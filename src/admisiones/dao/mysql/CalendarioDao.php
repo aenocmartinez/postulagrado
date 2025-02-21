@@ -86,5 +86,39 @@ class CalendarioDao extends Model implements CalendarioRepository
             return false;
         }
     }
+
+    public static function eliminarActividad(int $actividadID): bool
+    {
+        try {
+            $deleted = DB::table('actividades')->where('id', $actividadID)->delete();
+            return $deleted > 0; 
+        } catch (\Exception $e) {
+            Log::error("Error al eliminar actividad con ID {$actividadID}: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    public static function buscarActividadPorId(int $actividadID): Actividad
+    {
+        $actividad = new Actividad();
+    
+        try {
+            $registro = DB::table('actividades')
+                        ->select('id', 'descripcion', 'fecha_inicio', 'fecha_fin')
+                        ->where('id', $actividadID)
+                        ->first();
+    
+            if ($registro) {
+                $actividad->setId($registro->id);
+                $actividad->setDescripcion($registro->descripcion);
+                $actividad->setFechaInicio($registro->fecha_inicio);
+                $actividad->setFechaFin($registro->fecha_fin);
+            }
+        } catch (\Exception $e) {
+            Log::error("Error al buscar actividad con ID {$actividadID}: " . $e->getMessage());
+        }
+    
+        return $actividad;
+    }
     
 }
