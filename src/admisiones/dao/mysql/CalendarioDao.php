@@ -4,6 +4,7 @@ namespace Src\admisiones\dao\mysql;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
+use Src\admisiones\domain\Actividad;
 use Src\admisiones\domain\Calendario;
 use Src\admisiones\domain\Proceso;
 use Src\admisiones\repositories\CalendarioRepository;
@@ -33,5 +34,30 @@ class CalendarioDao extends Model implements CalendarioRepository
         return false;
     }
     
+    public static function listarActividades(int $procesoID): array
+    {
+        $actividades = [];
+    
+        try {
+            $registros = self::join('actividades', 'calendarios.id', '=', 'actividades.calendario_id')
+                            ->where('calendarios.proceso_id', $procesoID)
+                            ->select('actividades.id', 'actividades.descripcion', 'actividades.fecha_inicio', 'actividades.fecha_fin')
+                            ->get();
+    
+            foreach ($registros as $registro) {
+                $actividad = new Actividad();
+                $actividad->setId($registro->id);
+                $actividad->setDescripcion($registro->descripcion);
+                $actividad->setFechaInicio($registro->fecha_inicio);
+                $actividad->setFechaFin($registro->fecha_fin);
+    
+                $actividades[] = $actividad;
+            }
+        } catch (\Exception $e) {
+            Log::error("Error al listar actividades del proceso {$procesoID}: " . $e->getMessage());
+        }
+    
+        return $actividades;
+    }    
        
 }

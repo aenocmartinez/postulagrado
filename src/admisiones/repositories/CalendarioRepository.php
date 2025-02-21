@@ -7,4 +7,5 @@ use Src\admisiones\domain\Proceso;
 
 interface CalendarioRepository {
     public static function crearCalendario(Calendario $calendario);
+    public static function listarActividades(int $procesoID): array;
 }

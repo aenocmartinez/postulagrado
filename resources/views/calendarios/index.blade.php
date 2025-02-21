@@ -18,10 +18,10 @@
 
     <!-- Información del proceso -->
     <div class="mb-6">
-        <h2 class="text-lg font-semibold text-gray-800">Proceso: Proceso de Grado 2025-1</h2>
-        <p class="text-sm text-gray-600">Nivel Educativo: <strong>Postgrado</strong></p>
+        <h2 class="text-lg font-semibold text-gray-800">Proceso: {{ $proceso->getNombre() }}</h2>
+        <p class="text-sm text-gray-600">Nivel Educativo: <strong>{{ $proceso->getNivelEducativo() }}</strong></p>
         <p class="text-sm text-gray-600">Estado: 
-            <span class="text-green-600">Abierto</span>
+            <span class="text-green-600">{{$proceso->getEstado() }}</span>
         </p>
     </div>
 
@@ -38,10 +38,9 @@
 
         <form action="#" method="POST" class="space-y-4">
             <div>
-                <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre de la Actividad</label>
-                <input type="text" name="nombre" id="nombre"
-                    class="border border-gray-300 px-3 py-2 rounded-md text-sm w-full focus:ring focus:ring-gray-400 outline-none"
-                    required>
+                <textarea name="nombre" id="nombre" rows="3"
+                    class="border border-gray-300 px-3 py-2 rounded-md text-sm w-full focus:ring focus:ring-gray-400 outline-none resize-none"
+                    placeholder="Ingrese la actividad..." required></textarea>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
@@ -85,26 +84,14 @@
                 <tbody>
                     @php
                         $fechaHoy = now()->format('Y-m-d');
-                        $actividades = [
-                            ['nombre' => 'Registro de Aspirantes', 'inicio' => '2025-05-01', 'fin' => '2025-05-10'],
-                            ['nombre' => 'Recepción de Documentos', 'inicio' => '2025-06-05', 'fin' => '2025-06-15'],
-                            ['nombre' => 'Evaluaciones', 'inicio' => '2025-04-01', 'fin' => '2025-04-05'],
-                            ['nombre' => 'Revisión de Actas', 'inicio' => '2025-03-10', 'fin' => '2025-03-15'],
-                            ['nombre' => 'Entrega de Resultados', 'inicio' => '2025-03-20', 'fin' => '2025-03-25'],
-                            ['nombre' => 'Inscripción a Grados', 'inicio' => '2025-04-10', 'fin' => '2025-04-15'],
-                            ['nombre' => 'Publicación de Admitidos', 'inicio' => '2025-02-01', 'fin' => '2025-02-05'],
-                            ['nombre' => 'Revisión de Pagos', 'inicio' => '2025-02-15', 'fin' => '2025-02-20'],
-                            ['nombre' => 'Ceremonia de Grado', 'inicio' => '2025-01-10', 'fin' => '2025-01-10'],
-                            ['nombre' => 'Entrega de Diplomas', 'inicio' => '2025-01-15', 'fin' => '2025-01-20']
-                        ];
                     @endphp
 
-                    @foreach($actividades as $actividad)
+                    @foreach($proceso->getActividades() as $actividad)
                         @php
-                            if ($fechaHoy < $actividad['inicio']) {
+                            if ($fechaHoy < $actividad->getFechaInicio()) {
                                 $estado = 'Programada';
                                 $colorEstado = 'text-yellow-600';
-                            } elseif ($fechaHoy >= $actividad['inicio'] && $fechaHoy <= $actividad['fin']) {
+                            } elseif ($fechaHoy >= $actividad->getFechaInicio() && $fechaHoy <= $actividad->getFechaFin()) {
                                 $estado = 'En curso';
                                 $colorEstado = 'text-green-600';
                             } else {
@@ -114,9 +101,9 @@
                         @endphp
 
                         <tr class="border-b border-gray-300 bg-white hover:bg-gray-100 transition">
-                            <td class="px-4 py-2 text-gray-900">{{ $actividad['nombre'] }}</td>
-                            <td class="px-4 py-2 text-gray-900">{{ $actividad['inicio'] }}</td>
-                            <td class="px-4 py-2 text-gray-900">{{ $actividad['fin'] }}</td>
+                            <td class="px-4 py-2 text-gray-900">{{ $actividad->getDescripcion() }}</td>
+                            <td class="px-4 py-2 text-gray-900">{{ $actividad->getFechaInicio() }}</td>
+                            <td class="px-4 py-2 text-gray-900">{{ $actividad->getFechaFin() }}</td>
                             <td class="px-4 py-2 font-semibold {{ $colorEstado }}">{{ $estado }}</td>
                             <td class="px-4 py-2 text-center">
                                 <div class="flex justify-center gap-4 text-gray-600">

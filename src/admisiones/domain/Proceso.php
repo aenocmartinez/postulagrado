@@ -98,7 +98,7 @@ class Proceso
         return $this->id > 0;
     }
 
-    public function crearCalendario() {
-
+    public function getActividades(): array {
+        return CalendarioDao::listarActividades($this->id);
     }
 }
