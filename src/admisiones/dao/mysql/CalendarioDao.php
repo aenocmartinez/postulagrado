@@ -4,9 +4,9 @@ namespace Src\admisiones\dao\mysql;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Src\admisiones\domain\Actividad;
 use Src\admisiones\domain\Calendario;
-use Src\admisiones\domain\Proceso;
 use Src\admisiones\repositories\CalendarioRepository;
 
 class CalendarioDao extends Model implements CalendarioRepository
@@ -42,6 +42,7 @@ class CalendarioDao extends Model implements CalendarioRepository
             $registros = self::join('actividades', 'calendarios.id', '=', 'actividades.calendario_id')
                             ->where('calendarios.proceso_id', $procesoID)
                             ->select('actividades.id', 'actividades.descripcion', 'actividades.fecha_inicio', 'actividades.fecha_fin')
+                            ->orderBy('actividades.fecha_inicio', 'asc')
                             ->get();
     
             foreach ($registros as $registro) {
@@ -58,6 +59,32 @@ class CalendarioDao extends Model implements CalendarioRepository
         }
     
         return $actividades;
-    }    
-       
+    }        
+    
+    public static function agregarActividad(int $procesoID, Actividad $actividad): bool
+    {
+        try {
+            $calendario = self::where('proceso_id', $procesoID)->first();
+    
+            if (!$calendario) {
+                Log::warning("No se pudo agregar la actividad: El proceso {$procesoID} no tiene un calendario.");
+                return false;
+            }
+    
+            $resultado = DB::table('actividades')->insert([
+                'calendario_id' => $calendario->id,
+                'descripcion' => $actividad->getDescripcion(),
+                'fecha_inicio' => $actividad->getFechaInicio(),
+                'fecha_fin' => $actividad->getFechaFin(),
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+    
+            return $resultado;
+        } catch (\Exception $e) {
+            Log::error("Error al agregar actividad al proceso {$procesoID}: " . $e->getMessage());
+            return false;
+        }
+    }
+    
 }

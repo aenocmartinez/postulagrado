@@ -101,4 +101,13 @@ class Proceso
     public function getActividades(): array {
         return CalendarioDao::listarActividades($this->id);
     }
+
+    public function agregarActividad(string $descripcion, $fechaInicio, $fechaFin): bool {
+        $actividad = new Actividad();
+        $actividad->setDescripcion($descripcion);
+        $actividad->setFechaInicio($fechaInicio);
+        $actividad->setFechaFin($fechaFin);
+
+        return CalendarioDao::agregarActividad($this->id, $actividad);
+    }
 }
