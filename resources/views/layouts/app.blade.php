@@ -19,7 +19,7 @@
                 <h1 class="text-2xl font-bold text-center mb-6">PostulaGrado</h1>
                 <nav>
                     <ul class="space-y-2">
-                        <li><a href="#" onclick="closeSidebarAfterClick()">Inicio</a></li>
+                        <!-- <li><a href="#" onclick="closeSidebarAfterClick()">Inicio</a></li> -->
                         <!-- <li>
                             <a href="#" onclick="toggleSubmenu(event, 'procesosSubmenu')" class="font-semibold">
                                 Procesos de Grado
@@ -34,13 +34,20 @@
                             </ul>
                         </li> -->
                         <li>
-                        <a href="{{ route('procesos.index') }}" 
-                            class="{{ request()->routeIs('procesos.*') ? 'active' : '' }}"
-                            onclick="closeSidebarAfterClick()">
-                            Procesos
-                        </a>
+                            <a href="{{ route('procesos.index') }}" 
+                                class="{{ request()->routeIs('procesos.*') ? 'active' : '' }}"
+                                onclick="closeSidebarAfterClick()">
+                                Procesos
+                            </a>
                         </li>
-                        <li><a href="#" onclick="closeSidebarAfterClick()">Seguimiento</a></li>
+                        <li>
+                            <a href="{{ route('seguimientos.index') }}" 
+                                class="{{ request()->routeIs('seguimientos.*') ? 'active' : '' }}"
+                                onclick="closeSidebarAfterClick()">
+                                Seguimientos
+                            </a>                            
+                        </li>
+                        <li><a href="#" onclick="closeSidebarAfterClick()">Notificaciones</a></li>
                         <!-- <li><a href="#" onclick="closeSidebarAfterClick()">Calendario de Actividades</a></li>
                         <li><a href="#" onclick="closeSidebarAfterClick()">Tablero de Control</a></li>
                         <li><a href="#" onclick="closeSidebarAfterClick()">Programador de Notificaciones</a></li>

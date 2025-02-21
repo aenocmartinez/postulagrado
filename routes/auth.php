@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\CalendarioController;
 use App\Http\Controllers\ProcesoController;
+use App\Http\Controllers\SeguimientoController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -68,10 +69,14 @@ Route::middleware('auth')->group(function () {
     Route::put('procesos/{id}', [ProcesoController::class, 'update'])->name('procesos.update');
     Route::delete('procesos/{id}', [ProcesoController::class, 'destroy'])->name('procesos.destroy');
     
-    //Calendarios
+    // Calendarios
     Route::get('procesos/{id}/calendario/actividades', [CalendarioController::class, 'index'])->name('procesos.actividades');
     Route::post('procesos/{id}/calendario/actividades', [CalendarioController::class, 'store'])->name('actividades.store');
     Route::delete('procesos/{id}/actividades/{actividad}', [CalendarioController::class, 'destroy'])->name('actividades.destroy');
+
+    // Seguimientos
+    Route::get('seguimientos', [SeguimientoController::class, 'index'])->name('seguimientos.index');
+    Route::get('procesos/{id}/seguimiento', [SeguimientoController::class, 'show'])->name('seguimientos.show');
 
 
 });
