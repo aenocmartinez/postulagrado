@@ -40,13 +40,14 @@
                             Procesos
                         </a>
                         </li>
-                        <li><a href="#" onclick="closeSidebarAfterClick()">Calendario de Actividades</a></li>
+                        <li><a href="#" onclick="closeSidebarAfterClick()">Seguimiento</a></li>
+                        <!-- <li><a href="#" onclick="closeSidebarAfterClick()">Calendario de Actividades</a></li>
                         <li><a href="#" onclick="closeSidebarAfterClick()">Tablero de Control</a></li>
                         <li><a href="#" onclick="closeSidebarAfterClick()">Programador de Notificaciones</a></li>
                         <li><a href="#" onclick="closeSidebarAfterClick()">Gestión de Usuarios</a></li>
                         <li><a href="#" onclick="closeSidebarAfterClick()">Mensajes</a></li>
                         <li><a href="#" onclick="closeSidebarAfterClick()">Notificaciones</a></li>
-                        <li><a href="#" onclick="closeSidebarAfterClick()">Perfil</a></li>
+                        <li><a href="#" onclick="closeSidebarAfterClick()">Perfil</a></li> -->
                     </ul>
                 </nav>
             </div>
