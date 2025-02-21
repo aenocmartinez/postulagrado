@@ -11,4 +11,5 @@ interface CalendarioRepository {
     public static function agregarActividad(int $procesoID, Actividad $actividad): bool;
     public static function eliminarActividad(int $actividadID): bool;
     public static function buscarActividadPorId(int $actividadID): Actividad;
+    public static function actualizarActividad(Actividad $actividad): bool;
 }

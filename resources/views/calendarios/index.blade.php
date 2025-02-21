@@ -8,14 +8,6 @@
 
 <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200 max-w-4xl mx-auto">
     
-    <!-- Encabezado con botón "Volver a la lista de procesos" -->
-    <!-- <div class="flex justify-between items-center mb-6">
-        <h2 class="text-lg font-semibold text-gray-800">Gestión de Actividades</h2>
-        <a href="{{ route('procesos.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
-            ← Volver a la lista de procesos
-        </a>
-    </div> -->
-
     <!-- Información del proceso -->
     <div class="mb-6">
         <h2 class="text-lg font-semibold text-gray-800">Proceso: {{ $proceso->getNombre() }}</h2>
@@ -27,17 +19,21 @@
 
     <!-- Botón para mostrar el formulario alineado a la derecha -->
     <div class="mb-4 flex justify-end">
-        <button onclick="toggleFormulario()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+        <button onclick="toggleFormulario()" id="btn-nueva-actividad" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
             + Nueva Actividad
         </button>
     </div>
 
-    <!-- Sección para agregar una nueva actividad (Oculta por defecto) -->
-    <div id="formulario-actividad" class="mb-6 p-4 bg-gray-100 rounded-lg @if ($errors->any()) block @else hidden @endif">
-        <h3 class="text-md font-semibold text-gray-700 mb-3">Agregar Nueva Actividad</h3>
+    <!-- Sección para agregar o editar una actividad -->
+    <div id="formulario-actividad" class="mb-6 p-4 bg-gray-100 rounded-lg hidden">
+        <h3 id="form-title" class="text-md font-semibold text-gray-700 mb-3">Agregar Nueva Actividad</h3>
 
-        <form action="{{ route('actividades.store', ['id' => $proceso->getId()]) }}" method="POST" class="space-y-4">
+        <form id="actividad-form" action="{{ route('actividades.store', ['id' => $proceso->getId()]) }}" method="POST" class="space-y-4">
             @csrf
+            @method('POST')
+
+            <!-- ID de la actividad (Hidden) -->
+            <input type="hidden" name="actividad_id" id="actividad_id">
 
             <!-- Descripción -->
             <div>
@@ -79,7 +75,7 @@
                 </div>
             </div>
 
-            <button type="submit"
+            <button type="submit" id="submit-btn"
                 class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
                 Agregar Actividad
             </button>
@@ -129,7 +125,14 @@
                             <td class="px-4 py-2 font-semibold {{ $colorEstado }}">{{ $estado }}</td>
                             <td class="px-4 py-2 text-center">
                                 <div class="flex justify-center gap-4 text-gray-600">
-                                    <a href="#" class="hover:text-blue-600 transition">Editar</a>
+                                    <button type="button" class="editar-btn hover:text-blue-600 transition"
+                                            data-id="{{ $actividad->getId() }}"
+                                            data-descripcion="{{ $actividad->getDescripcion() }}"
+                                            data-inicio="{{ $actividad->getFechaInicio() }}"
+                                            data-fin="{{ $actividad->getFechaFin() }}">
+                                        Editar
+                                    </button>
+
                                     <button type="button" class="eliminar-btn hover:text-red-600 transition"
                                             data-url="{{ route('actividades.destroy', ['id' => $proceso->getId(), 'actividad' => $actividad->getId()]) }}">
                                         Eliminar
@@ -156,17 +159,37 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+
+        @if ($errors->any())
+            document.getElementById('formulario-actividad').classList.remove('hidden');
+        @endif
+
         document.querySelectorAll(".eliminar-btn").forEach((button) => {
             button.addEventListener("click", function () {
                 let url = this.dataset.url;
                 confirmarEliminacion(url);
             });
         });
+
+        document.querySelectorAll(".editar-btn").forEach((button) => {
+            button.addEventListener("click", function () {
+                document.getElementById('actividad_id').value = this.dataset.id;
+                document.getElementById('descripcion').value = this.dataset.descripcion;
+                document.getElementById('fecha_inicio').value = this.dataset.inicio;
+                document.getElementById('fecha_fin').value = this.dataset.fin;
+                document.getElementById('formulario-actividad').classList.remove('hidden');
+                document.getElementById('submit-btn').innerText = "Actualizar Actividad";
+            });
+        });
     });
 
     function toggleFormulario() {
-        let form = document.getElementById('formulario-actividad');
-        form.classList.toggle('hidden');
+        document.getElementById('formulario-actividad').classList.toggle('hidden');
+        document.getElementById('actividad_id').value = "";
+        document.getElementById('descripcion').value = "";
+        document.getElementById('fecha_inicio').value = "";
+        document.getElementById('fecha_fin').value = "";
+        document.getElementById('submit-btn').innerText = "Agregar Actividad";
     }
 
     function confirmarEliminacion(url) {
@@ -189,6 +212,7 @@
                 form.submit();
             }
         });
-    }
+    }    
+
 </script>
 @endsection

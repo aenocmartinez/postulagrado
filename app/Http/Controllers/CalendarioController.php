@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CrearActividad;
 use Illuminate\Http\Request;
+use Src\admisiones\usecase\calendarios\ActualizarActividadUseCase;
 use Src\admisiones\usecase\calendarios\AgregarActividadUseCase;
 use Src\admisiones\usecase\calendarios\ListarActividadesUseCase;
 use Src\admisiones\usecase\calendarios\QuitarActividadUseCase;
+use Src\shared\response\ResponsePostulaGrado;
 
 class CalendarioController extends Controller
 {
@@ -26,9 +28,23 @@ class CalendarioController extends Controller
 
     public function store(CrearActividad $request, int $procesoID)
     {
-        $response = AgregarActividadUseCase::ejecutar($procesoID, $request);
-        if ($response->getCode() != 201) {
-            return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
+        $datos = $request->validated();
+
+        if (isset(request()->actividad_id) && request()->actividad_id > 0)
+        {
+            $datos['actividad_id'] = request()->actividad_id;
+            
+            $response = ActualizarActividadUseCase::ejecutar($procesoID, $datos);
+            if ($response->getCode() != 200) {
+                return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
+            }
+
+        } else {
+
+            $response = AgregarActividadUseCase::ejecutar($procesoID, $datos);
+            if ($response->getCode() != 201) {
+                return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
+            }
         }
 
         return redirect()->route('procesos.actividades', $procesoID)

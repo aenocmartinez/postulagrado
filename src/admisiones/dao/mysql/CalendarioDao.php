@@ -121,4 +121,23 @@ class CalendarioDao extends Model implements CalendarioRepository
         return $actividad;
     }
     
+    public static function actualizarActividad(Actividad $actividad): bool
+    {
+        try {            
+            DB::table('actividades')
+                ->where('id', $actividad->getId())
+                ->update([
+                    'descripcion'  => $actividad->getDescripcion(),
+                    'fecha_inicio' => $actividad->getFechaInicio(),
+                    'fecha_fin'    => $actividad->getFechaFin(),
+                    'updated_at'   => now(),
+                ]);
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Error al actualizar la actividad ID {$actividad->getId()}: " . $e->getMessage());
+            return false;
+        }
+    }
+
 }
