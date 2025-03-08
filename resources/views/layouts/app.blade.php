@@ -47,10 +47,10 @@
                                 Seguimientos
                             </a>                            
                         </li>
+                        <li><a href="#" onclick="closeSidebarAfterClick()">Directorio de contactos</a></li>
                         <li><a href="#" onclick="closeSidebarAfterClick()">Notificaciones</a></li>
                         <li><a href="#" onclick="closeSidebarAfterClick()">Reportes</a></li>
-                        <!-- <li><a href="#" onclick="closeSidebarAfterClick()">Calendario de Actividades</a></li>
-                        <li><a href="#" onclick="closeSidebarAfterClick()">Tablero de Control</a></li>
+                        <!-- <li><a href="#" onclick="closeSidebarAfterClick()">Tablero de Control</a></li>
                         <li><a href="#" onclick="closeSidebarAfterClick()">Programador de Notificaciones</a></li>
                         <li><a href="#" onclick="closeSidebarAfterClick()">Gestión de Usuarios</a></li>
                         <li><a href="#" onclick="closeSidebarAfterClick()">Mensajes</a></li>
