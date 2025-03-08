@@ -79,6 +79,7 @@ class ProcesoController extends Controller
         ]);
     }
 
+
     public function update(ActualizarProceso $request, $id)
     {
         $actualizarProceso = new ActualizarProcesoUseCase(
@@ -90,9 +91,15 @@ class ProcesoController extends Controller
         return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
     }
 
+
     public function destroy($id)
     {
-        $response = EliminarProcesoUseCase::ejecutar($id);
+        $eliminarProceso = new EliminarProcesoUseCase(
+            FabricaDeRepositorios::getInstance()->getProcesoRepository()
+        );
+        
+        $response = $eliminarProceso->ejecutar($id);
+
         return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
     }
 }

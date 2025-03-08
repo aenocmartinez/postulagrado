@@ -2,13 +2,11 @@
 
 namespace Src\admisiones\usecase\procesos;
 
-use Src\admisiones\dao\mysql\ProcesoDao;
 use Src\admisiones\repositories\ProcesoRepository;
 use Src\shared\response\ResponsePostulaGrado;
 
 class ActualizarProcesoUseCase
 {
-
     private ProcesoRepository $procesoRepo;
 
     public function __construct(ProcesoRepository $procesoRepo)

@@ -2,25 +2,27 @@
 
 namespace Src\admisiones\usecase\calendarios;
 
-use Src\admisiones\dao\mysql\ProcesoDao;
+use Src\admisiones\repositories\ProcesoRepository;
 use Src\shared\response\ResponsePostulaGrado;
 
 class ListarActividadesUseCase
 {
-    public static function ejecutar(int $procesoID): ResponsePostulaGrado
-    {
-        $response = new ResponsePostulaGrado();
 
-        $proceso = ProcesoDao::buscarProcesoPorId($procesoID);
+    private ProcesoRepository $procesoRepo;
+
+    public function __construct(ProcesoRepository $procesoRepo)
+    {
+        $this->procesoRepo = $procesoRepo;
+    }
+
+    public function ejecutar(int $procesoID): ResponsePostulaGrado
+    {
+        $proceso = $this->procesoRepo->buscarProcesoPorId($procesoID);
         if (!$proceso->existe())
         {
-            $response->setCode(404);
-            $response->setMessage('Proceso no encontrado');
-            return $response;                        
+            return new ResponsePostulaGrado(404, "Proceso no encontrado");
         }
 
-        $response->setCode(200);
-        $response->setData($proceso);
-        return $response;    
+        return new ResponsePostulaGrado(200, "Proceso encontrado", $proceso);
     }
 }

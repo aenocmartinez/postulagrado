@@ -2,29 +2,34 @@
 
 namespace Src\admisiones\usecase\calendarios;
 
-use Src\admisiones\dao\mysql\CalendarioDao;
-use Src\admisiones\dao\mysql\ProcesoDao;
+use Src\admisiones\repositories\CalendarioRepository;
+use Src\admisiones\repositories\ProcesoRepository;
 use Src\shared\response\ResponsePostulaGrado;
 
 class ActualizarActividadUseCase
 {
 
-    public static function ejecutar(int $procesoID, $datos): ResponsePostulaGrado
-    {
-        $response = new ResponsePostulaGrado();
+    private ProcesoRepository $procesoRepo;
+    private CalendarioRepository $calendarioRepo;
 
-        $proceso = ProcesoDao::buscarProcesoPorId($procesoID);
-        if (!$proceso->existe()) {
-            $response->setCode(404);
-            $response->setMessage('Proceso no encontrado');
-            return $response;                                    
+    public function __construct(ProcesoRepository $procesoRepo, CalendarioRepository $calendarioRepo)
+    {
+        $this->procesoRepo = $procesoRepo;
+        $this->calendarioRepo = $calendarioRepo;
+    }
+
+    public function ejecutar(int $procesoID, $datos): ResponsePostulaGrado
+    {
+        $proceso = $this->procesoRepo->buscarProcesoPorId($procesoID);
+        if (!$proceso->existe()) 
+        {
+            return new ResponsePostulaGrado(404, "Proceso no encontrado");
         }
 
-        $actividad = CalendarioDao::buscarActividadPorId($datos['actividad_id']);
-        if (!$actividad->existe()) {
-            $response->setCode(404);
-            $response->setMessage('Actividad no encontrada');
-            return $response;                                    
+        $actividad = $this->calendarioRepo->buscarActividadPorId($datos['actividad_id']);
+        if (!$actividad->existe()) 
+        {
+            return new ResponsePostulaGrado(404, "Actividad no encontrada");
         }
 
         $actividad->setDescripcion($datos['descripcion']);
@@ -32,14 +37,11 @@ class ActualizarActividadUseCase
         $actividad->setFechaFin($datos['fecha_fin']);
 
         $exito = $proceso->actualizarActividad($actividad);
-        if (!$exito) {
-            $response->setCode(500);
-            $response->setMessage('Se ha producido un error en el sistema. Por favor, inténtelo de nuevo más tarde.');
-            return $response;            
+        if (!$exito) 
+        {
+            return new ResponsePostulaGrado(500, "Se ha producido un error en el sistema. Por favor, inténtelo de nuevo más tarde.");
         }
 
-        $response->setCode(200);
-        $response->setMessage('La actividad se ha actualizado exitosamente.');
-        return $response;
+        return new ResponsePostulaGrado(200, "La actividad se ha actualizado exitosamente.");
     }
 }

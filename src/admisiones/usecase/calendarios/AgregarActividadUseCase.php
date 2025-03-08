@@ -2,31 +2,32 @@
 
 namespace Src\admisiones\usecase\calendarios;
 
-use Src\admisiones\dao\mysql\ProcesoDao;
+use Src\admisiones\repositories\ProcesoRepository;
 use Src\shared\response\ResponsePostulaGrado;
 
-class AgregarActividadUseCase {
+class AgregarActividadUseCase 
+{
+    private ProcesoRepository $procesoRepo;
 
-    public static function ejecutar(int $procesoID, $datos): ResponsePostulaGrado
+    public function __construct(ProcesoRepository $procesoRepo)
     {
-        $response = new ResponsePostulaGrado();
+        $this->procesoRepo = $procesoRepo;
+    }
 
-        $proceso = ProcesoDao::buscarProcesoPorId($procesoID);
-        if (!$proceso->existe()) {
-            $response->setCode(404);
-            $response->setMessage('Proceso no encontrado');
-            return $response;                                    
+    public function ejecutar(int $procesoID, $datos): ResponsePostulaGrado
+    {
+        $proceso = $this->procesoRepo->buscarProcesoPorId($procesoID);
+        if (!$proceso->existe()) 
+        {
+            return new ResponsePostulaGrado(404, "Proceso no encontrado");
         }
 
         $exito = $proceso->agregarActividad($datos['descripcion'], $datos['fecha_inicio'], $datos['fecha_fin']);
-        if (!$exito) {
-            $response->setCode(500);
-            $response->setMessage('Se ha producido un error en el sistema. Por favor, inténtelo de nuevo más tarde.');
-            return $response;            
+        if (!$exito) 
+        {
+            return new ResponsePostulaGrado(500, "Se ha producido un error en el sistema. Por favor, inténtelo de nuevo más tarde.");
         }
 
-        $response->setCode(201);
-        $response->setMessage('La actividad se ha creado exitosamente.');
-        return $response;
+        return new ResponsePostulaGrado(201, "La actividad se ha creado exitosamente.");
     }
 }

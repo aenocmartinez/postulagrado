@@ -2,41 +2,41 @@
 
 namespace Src\admisiones\usecase\calendarios;
 
-use Src\admisiones\dao\mysql\CalendarioDao;
-use Src\admisiones\dao\mysql\ProcesoDao;
+use Src\admisiones\repositories\CalendarioRepository;
+use Src\admisiones\repositories\ProcesoRepository;
 use Src\shared\response\ResponsePostulaGrado;
 
 class QuitarActividadUseCase
 {
-    public static function ejecutar(int $procesoID, int $actividadID): ResponsePostulaGrado 
+    private ProcesoRepository $procesoRepo;
+    private CalendarioRepository $calendarioRepo;
+
+    public function __construct(ProcesoRepository $procesoRepo, CalendarioRepository $calendarioRepo)
     {
-        $response = new ResponsePostulaGrado();
-    
-        $proceso = ProcesoDao::buscarProcesoPorId($procesoID);
-        if (!$proceso->existe()) {
-            $response->setCode(404);
-            $response->setMessage('Proceso no encontrado');
-            return $response;                            
+        $this->procesoRepo = $procesoRepo;
+        $this->calendarioRepo = $calendarioRepo;
+    }
+
+    public function ejecutar(int $procesoID, int $actividadID): ResponsePostulaGrado 
+    {
+        $proceso = $this->procesoRepo->buscarProcesoPorId($procesoID);
+        if (!$proceso->existe()) 
+        {
+            return new ResponsePostulaGrado(404, "Proceso no encontrado");           
         }
 
-        $actividad = CalendarioDao::buscarActividadPorId($actividadID);
-        if (!$actividad->existe()) {
-            $response->setCode(404);
-            $response->setMessage('Actividad no encontrada');
-            return $response;                            
+        $actividad = $this->calendarioRepo->buscarActividadPorId($actividadID);
+        if (!$actividad->existe()) 
+        {
+            return new ResponsePostulaGrado(404, "Actividad no encontrada");  
         }
 
         $exito = $proceso->quitarActividad($actividad);
-        if (!$exito) {
-            $response->setCode(500);
-            $response->setMessage('Se ha producido un error en el sistema. Por favor, inténtelo de nuevo más tarde.');
-            return $response;            
+        if (!$exito) 
+        {
+            return new ResponsePostulaGrado(500, "Se ha producido un error en el sistema. Por favor, inténtelo de nuevo más tarde.");
         }
 
-        $response->setCode(201);
-        $response->setMessage('La actividad se ha eliminado exitosamente.');
-        return $response;
-
-        return $response;
+        return new ResponsePostulaGrado(201, "La actividad se ha eliminado exitosamente.");
     }
 }

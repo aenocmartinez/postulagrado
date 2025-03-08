@@ -2,38 +2,38 @@
 
 namespace Src\admisiones\usecase\procesos;
 
-use Src\admisiones\dao\mysql\ProcesoDao;
+use Src\admisiones\repositories\ProcesoRepository;
 use Src\shared\response\ResponsePostulaGrado;
 
 class EliminarProcesoUseCase
 {
-    public static function ejecutar(int $procesoID): ResponsePostulaGrado
-    {
-        $response = new ResponsePostulaGrado();
+    private ProcesoRepository $procesoRepo;
 
-        $proceso = ProcesoDao::buscarProcesoPorId($procesoID);
-        if (!$proceso->existe()) {
-            $response->setCode(404);
-            $response->setMessage('Proceso no encontrado');
-            return $response;            
+    public function __construct(ProcesoRepository $procesoRepo)
+    {
+        $this->procesoRepo = $procesoRepo;
+    }
+
+    public function ejecutar(int $procesoID): ResponsePostulaGrado
+    {
+        $proceso = $this->procesoRepo->buscarProcesoPorId($procesoID);
+        if (!$proceso->existe()) 
+        {
+            return new ResponsePostulaGrado(404, "Proceso no encontrado");
         }
 
-        $tieneCalendarioConActividades = ProcesoDao::tieneCalendarioConActividades($proceso->getId());
-        if ($tieneCalendarioConActividades) {
-            $response->setCode(409);
-            $response->setMessage('No es posible eliminar el proceso, ya que está vinculado a un calendario.');
-            return $response;                        
+        $tieneCalendarioConActividades = $this->procesoRepo->tieneCalendarioConActividades($proceso->getId());
+        if ($tieneCalendarioConActividades) 
+        {
+            return new ResponsePostulaGrado(409, "No es posible eliminar el proceso, ya que está vinculado a un calendario.");
         }
 
         $exito = $proceso->eliminar();
-        if (!$exito) {
-            $response->setCode(500);
-            $response->setMessage('Se ha producido un error en el sistema. Por favor, inténtelo de nuevo más tarde.');
-            return $response;            
+        if (!$exito) 
+        {
+            return new ResponsePostulaGrado(500, "Se ha producido un error en el sistema. Por favor, inténtelo de nuevo más tarde.");
         }        
 
-        $response->setCode(200);
-        $response->setMessage('El proceso se ha eliminado exitosamente.');
-        return $response;
+        return new ResponsePostulaGrado(200, "El proceso se ha eliminado exitosamente.");
     }
 }
