@@ -9,10 +9,10 @@ class ResponsePostulaGrado
     private $data;
 
     public function __construct($code = 200, $message = "", $data = [])
-    {
+    {        
         $this->code = $code;
         $this->message = $message;
-        $this->data = [];
+        $this->data = $data;
     }
 
     public function setCode(int $code): void {

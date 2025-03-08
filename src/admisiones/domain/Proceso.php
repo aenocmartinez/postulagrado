@@ -17,11 +17,12 @@ class Proceso
     private $documentos = [];
     
     public function __construct(
+        ProcesoRepository   $repository,
         private int $id = 0, 
         private string $estado = "Abierto"
     ) {
 
-        $this->repository = new ProcesoDao();
+        $this->repository = $repository;
     }
 
     public function setId(int $id): void {

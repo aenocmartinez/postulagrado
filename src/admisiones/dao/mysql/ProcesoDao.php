@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Src\admisiones\domain\Proceso;
 use Src\admisiones\repositories\ProcesoRepository;
+use Src\shared\di\FabricaDeRepositorios;
 
 class ProcesoDao extends Model implements ProcesoRepository
 {
@@ -23,7 +24,7 @@ class ProcesoDao extends Model implements ProcesoRepository
             $registros = self::all();
 
             foreach ($registros as $registro) {
-                $proceso = new Proceso();
+                $proceso = new Proceso(FabricaDeRepositorios::getInstance()->getProcesoRepository());
                 $proceso->setId($registro->id);
                 $proceso->setNombre($registro->nombre);
                 $proceso->setNivelEducativo($registro->nivel_educativo);
@@ -41,7 +42,7 @@ class ProcesoDao extends Model implements ProcesoRepository
 
     public static function buscarProcesoPorNombreYNivelEducativo(string $nombre, string $nivelEducativo): Proceso
     {
-        $proceso = new Proceso();
+        $proceso = new Proceso(FabricaDeRepositorios::getInstance()->getProcesoRepository());
     
         try {
             
@@ -66,7 +67,7 @@ class ProcesoDao extends Model implements ProcesoRepository
 
     public static function buscarProcesoPorId(int $id): Proceso
     {
-        $proceso = new Proceso();
+        $proceso = new Proceso(FabricaDeRepositorios::getInstance()->getProcesoRepository());
     
         try {
             $registro = self::find($id);

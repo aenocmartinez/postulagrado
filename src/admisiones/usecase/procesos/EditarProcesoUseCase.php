@@ -3,23 +3,26 @@
 namespace Src\admisiones\usecase\procesos;
 
 use Src\admisiones\dao\mysql\ProcesoDao;
+use Src\admisiones\repositories\ProcesoRepository;
 use Src\shared\response\ResponsePostulaGrado;
 
 class EditarProcesoUseCase
 {
-    public static function ejecutar(int $procesoID): ResponsePostulaGrado
-    {
-        $response = new ResponsePostulaGrado();
+    private ProcesoRepository $procesoRepo;
 
-        $proceso = ProcesoDao::buscarProcesoPorId($procesoID);
-        if (!$proceso->existe()) {            
-            $response->setCode(404);
-            $response->setMessage('Proceso no encontrado');
-            return $response;            
+    public function __construct(ProcesoRepository $procesoRepo)
+    {
+        $this->procesoRepo = $procesoRepo;    
+    }
+
+    public function ejecutar(int $procesoID): ResponsePostulaGrado
+    {        
+        $proceso = $this->procesoRepo->buscarProcesoPorId($procesoID);
+        if (!$proceso->existe()) 
+        {            
+            return new ResponsePostulaGrado(404, "Proceso no encontrado");
         }
 
-        $response->setCode(200);
-        $response->setData($proceso);
-        return $response;
+        return new ResponsePostulaGrado(200, "Proceso obtenido exitosamente", $proceso);
     }
 }

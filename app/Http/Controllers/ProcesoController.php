@@ -12,14 +12,19 @@ use Src\admisiones\usecase\procesos\CrearProcesoUseCase;
 use Src\admisiones\usecase\procesos\EditarProcesoUseCase;
 use Src\admisiones\usecase\procesos\EliminarProcesoUseCase;
 use Src\admisiones\usecase\procesos\ListarProcesosUseCase;
+use Src\shared\di\FabricaDeRepositorios;
 
 class ProcesoController extends Controller
 {
     public function index(Request $request)
     {
-        $procesos = ListarProcesosUseCase::ejecutar();
+        $listarProcesos = new ListarProcesosUseCase(
+            FabricaDeRepositorios::getInstance()->getProcesoRepository()
+        );
         
-        $procesosCollection = collect($procesos);
+        $response = $listarProcesos->ejecutar();
+        
+        $procesosCollection = collect($response->getData());
 
         if ($request->has('search') && !empty($request->search)) {
             $procesosCollection = $procesosCollection->filter(function (Proceso $proceso) use ($request) {
@@ -49,14 +54,22 @@ class ProcesoController extends Controller
 
     public function store(CrearProceso $request)
     {
-        $response = CrearProcesoUseCase::ejecutar($request->validated());
+        $crearProceso = new CrearProcesoUseCase(
+            FabricaDeRepositorios::getInstance()->getProcesoRepository()
+        );
+
+        $response = $crearProceso->ejecutar($request->validated());
         
         return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
     }
 
     public function edit($id)
     {
-        $response = EditarProcesoUseCase::ejecutar($id);
+        $editarProceso = new EditarProcesoUseCase(
+            FabricaDeRepositorios::getInstance()->getProcesoRepository()
+        );
+
+        $response = $editarProceso->ejecutar($id);
         if ($response->getCode() != 200) {
             return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
         }
@@ -68,7 +81,11 @@ class ProcesoController extends Controller
 
     public function update(ActualizarProceso $request, $id)
     {
-        $response = ActualizarProcesoUseCase::ejecutar($request->validated());
+        $actualizarProceso = new ActualizarProcesoUseCase(
+            FabricaDeRepositorios::getInstance()->getProcesoRepository()
+        );
+
+        $response = $actualizarProceso->ejecutar($id, $request->validated());
         
         return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
     }

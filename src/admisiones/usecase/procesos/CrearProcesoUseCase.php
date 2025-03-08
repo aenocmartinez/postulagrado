@@ -3,19 +3,24 @@
 namespace Src\admisiones\usecase\procesos;
 
 use Src\admisiones\dao\mysql\ProcesoDao;
+use Src\admisiones\repositories\ProcesoRepository;
 use Src\shared\response\ResponsePostulaGrado;
 
 class CrearProcesoUseCase
 {
-    public static function ejecutar($datos): ResponsePostulaGrado
-    {
-        $response = new ResponsePostulaGrado();
+    private ProcesoRepository $procesoRepo;
 
-        $proceso = ProcesoDao::buscarProcesoPorNombreYNivelEducativo($datos['nombre'], $datos['nivelEducativo']);
-        if ($proceso->existe()) {
-            $response->setCode(409);
-            $response->setMessage('El nombre del proceso ya está en uso. Por favor, elige un nombre diferente.');
-            return $response;
+    public function __construct(ProcesoRepository $procesoRepo)
+    {
+        $this->procesoRepo = $procesoRepo;    
+    }
+
+    public function ejecutar($datos): ResponsePostulaGrado
+    {
+        $proceso = $this->procesoRepo->buscarProcesoPorNombreYNivelEducativo($datos['nombre'], $datos['nivelEducativo']);
+        if ($proceso->existe()) 
+        {
+            return new ResponsePostulaGrado(409, "El nombre del proceso ya está en uso. Por favor, elige un nombre diferente.");
         }
 
         $proceso->setNombre($datos['nombre']);
@@ -23,15 +28,11 @@ class CrearProcesoUseCase
         $proceso->setEstado('Abierto');
 
         $exito = $proceso->crear();
-
-        if (!$exito) {
-            $response->setCode(500);
-            $response->setMessage('Se ha producido un error en el sistema. Por favor, inténtelo de nuevo más tarde.');
-            return $response;            
+        if (!$exito) 
+        {
+            return new ResponsePostulaGrado(500, "Se ha producido un error en el sistema. Por favor, inténtelo de nuevo más tarde.");   
         }
 
-        $response->setCode(201);
-        $response->setMessage('El proceso se ha creado exitosamente.');
-        return $response;
+        return new ResponsePostulaGrado(201, "El proceso se ha creado exitosamente.");
     }
 }

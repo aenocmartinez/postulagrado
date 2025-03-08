@@ -2,12 +2,22 @@
 
 namespace Src\admisiones\usecase\procesos;
 
-use Src\admisiones\dao\mysql\ProcesoDao;
+use Src\admisiones\repositories\ProcesoRepository;
+use Src\shared\response\ResponsePostulaGrado;
 
 class ListarProcesosUseCase
 {
-    public static function ejecutar(): array
+    private ProcesoRepository $procesoRepo;
+
+    public function __construct(ProcesoRepository $procesoRepo)
     {
-        return ProcesoDao::listarProcesos();
+        $this->procesoRepo = $procesoRepo;
+    }
+
+    public function ejecutar(): ResponsePostulaGrado
+    {
+        $procesos = $this->procesoRepo->listarProcesos();
+        
+        return new ResponsePostulaGrado(200, "Procesos obtenidos exitosamente.", $procesos);
     }
 }

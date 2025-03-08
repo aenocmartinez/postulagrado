@@ -3,19 +3,25 @@
 namespace Src\admisiones\usecase\procesos;
 
 use Src\admisiones\dao\mysql\ProcesoDao;
+use Src\admisiones\repositories\ProcesoRepository;
 use Src\shared\response\ResponsePostulaGrado;
 
 class ActualizarProcesoUseCase
 {
-    public static function ejecutar($datos): ResponsePostulaGrado {
 
-        $response = new ResponsePostulaGrado();
+    private ProcesoRepository $procesoRepo;
 
-        $proceso = ProcesoDao::buscarProcesoPorId($datos['id']);
-        if (!$proceso->existe()) {
-            $response->setCode(404);
-            $response->setMessage('Proceso no encontrado');
-            return $response;                        
+    public function __construct(ProcesoRepository $procesoRepo)
+    {
+        $this->procesoRepo = $procesoRepo;
+    }
+
+    public function ejecutar(int $id, $datos): ResponsePostulaGrado 
+    {
+        $proceso = $this->procesoRepo->buscarProcesoPorId($id);
+        if (!$proceso->existe()) 
+        {
+            return new ResponsePostulaGrado(404, "Proceso no encontrado");
         }
 
         $proceso->setNombre($datos['nombre']);
@@ -23,14 +29,11 @@ class ActualizarProcesoUseCase
         $proceso->setEstado($datos['estado']);
 
         $exito = $proceso->actualizar();
-        if (!$exito) {
-            $response->setCode(500);
-            $response->setMessage('Se ha producido un error en el sistema. Por favor, inténtelo de nuevo más tarde.');
-            return $response;            
+        if (!$exito) 
+        {
+            return new ResponsePostulaGrado(500, "Se ha producido un error en el sistema. Por favor, inténtelo de nuevo más tarde.");
         }
 
-        $response->setCode(200);
-        $response->setMessage('El proceso se ha actualizado exitosamente.');
-        return $response;
+        return new ResponsePostulaGrado(200, "Proceso actualizado exitosamente.", $proceso);
     }
 }
