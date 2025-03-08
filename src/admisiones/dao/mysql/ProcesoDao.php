@@ -12,7 +12,7 @@ use Src\admisiones\repositories\ProcesoRepository;
 class ProcesoDao extends Model implements ProcesoRepository
 {
     protected $table = 'procesos';
-    protected $fillable = ['nombre', 'nivel_educativo', 'ruta_archivo_acto_administrativo', 'estado'];
+    protected $fillable = ['nombre', 'nivel_educativo', 'estado'];
 
     public static function listarProcesos(): array
     {
@@ -28,13 +28,6 @@ class ProcesoDao extends Model implements ProcesoRepository
                 $proceso->setNombre($registro->nombre);
                 $proceso->setNivelEducativo($registro->nivel_educativo);
                 $proceso->setEstado($registro->estado);
-
-                $rutaArchivo = "";
-                if (!is_null($registro->ruta_archivo_acto_administrativo))
-                {
-                    $rutaArchivo = $registro->ruta_archivo_acto_administrativo;
-                }
-                $proceso->setRutaArchivoActoAdministrativo($rutaArchivo);
     
                 $procesos[] = $proceso;
             }
@@ -61,8 +54,6 @@ class ProcesoDao extends Model implements ProcesoRepository
                 $proceso->setNombre($registro->nombre);
                 $proceso->setNivelEducativo($registro->nivel_educativo);
                 $proceso->setEstado($registro->estado);
-
-                $proceso->setRutaArchivoActoAdministrativo($registro->ruta_archivo_acto_administrativo ?? "");
             }
     
         } catch (\Exception $e) {
@@ -85,13 +76,7 @@ class ProcesoDao extends Model implements ProcesoRepository
                 $proceso->setNombre($registro->nombre);
                 $proceso->setNivelEducativo($registro->nivel_educativo);                
                 $proceso->setEstado($registro->estado);
-
-                $rutaArchivo = "";
-                if (!is_null($registro->ruta_archivo_acto_administrativo))
-                {
-                    $rutaArchivo = $registro->ruta_archivo_acto_administrativo;
-                }
-                $proceso->setRutaArchivoActoAdministrativo($rutaArchivo);                
+            
             }
         } catch (\Exception $e) {
             Log::error("Error en buscarProcesoPorId({$id}): " . $e->getMessage());
@@ -148,7 +133,6 @@ class ProcesoDao extends Model implements ProcesoRepository
                 ->update([
                     'nombre' => $proceso->getNombre(),
                     'nivel_educativo' => $proceso->getNivelEducativo(),
-                    'ruta_archivo_acto_administrativo' => $proceso->getRutaArchivoActoAdministrativo(),
                     'estado' => $proceso->getEstado(),
                 ]);
     

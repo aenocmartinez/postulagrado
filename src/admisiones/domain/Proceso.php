@@ -7,21 +7,19 @@ use Src\admisiones\dao\mysql\ProcesoDao;
 use Src\admisiones\repositories\ProcesoRepository;
 
 class Proceso 
-{
-    private int $id;
-    private string $nombre;
-    private string $nivelEducativo;
-    private string $rutaArchivoActoAdmnistrativo;
-    private string $estado;
-    private Calendario $calendario;
-    private ProcesoRepository $repository;
+{    
+    private string              $nombre;
+    private string              $nivelEducativo;
+    private Calendario          $calendario;
+    private ProcesoRepository   $repository;
 
-    public function __construct() {
-        $this->rutaArchivoActoAdmnistrativo = '';
-        $this->nivelEducativo = "";
-        $this->estado = "Abierto";
-        $this->nombre = "";
-        $this->id = 0;
+    /** @var Documento[] $documentos */
+    private $documentos = [];
+    
+    public function __construct(
+        private int $id = 0, 
+        private string $estado = "Abierto"
+    ) {
 
         $this->repository = new ProcesoDao();
     }
@@ -48,14 +46,6 @@ class Proceso
 
     public function getNivelEducativo(): string {
         return $this->nivelEducativo;
-    }
-
-    public function setRutaArchivoActoAdministrativo(string $rutaArchivoActoAdmnistrativo): void {
-        $this->rutaArchivoActoAdmnistrativo = $rutaArchivoActoAdmnistrativo;
-    }
-
-    public function getRutaArchivoActoAdministrativo(): string {
-        return $this->rutaArchivoActoAdmnistrativo;
     }
 
     public function setEstado(string $estado): void {
