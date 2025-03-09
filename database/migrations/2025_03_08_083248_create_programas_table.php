@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('programas', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('programa_id');
             $table->string('nombre', 255);
             $table->integer('codigo');
             $table->integer('snies')->nullable();

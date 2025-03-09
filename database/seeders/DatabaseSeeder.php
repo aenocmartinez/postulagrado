@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Src\admisiones\domain\NivelEducativo;
 
 class DatabaseSeeder extends Seeder
 {
@@ -20,7 +19,8 @@ class DatabaseSeeder extends Seeder
                 ModalidadSeeder::class, 
                 NivelEducativoSeeder::class, 
                 JornadaSeeder::class,
-                UnidadRegionalSeeder::class,            
+                UnidadRegionalSeeder::class,  
+                ProgramaSeeder::class,          
             ]
         );
     }

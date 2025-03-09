@@ -1,0 +1,123 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
+class ProgramaSeeder extends Seeder
+{
+    public function run(): void
+    {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('programas')->truncate();
+
+        $datos = [
+            [8, 15987, 406, 'TECNOLOGÍA EN ADMINISTRACIÓN Y EJECUCIÓN DE CONSTRUCCIONES', 1, 1, 2, 2, 31],
+            [3, 1715, 305, 'TECNOLOGÍA EN ASISTENCIA GERENCIAL PRESENCIAL - DIURNO', 1, 1, 2, 1, 2551],
+            [3, 1715, 305, 'TECNOLOGÍA EN ASISTENCIA GERENCIAL PRESENCIAL - DIURNO', 1, 1, 2, 1, 31],
+            [2235, 1715, 307, 'TECNOLOGÍA EN ASISTENCIA GERENCIAL PRESENCIAL - (FUNZA)', 1, 1, 2, 2, 1992],
+            [4218, 1715, 305, 'TECNOLOGÍA EN ASISTENCIA GERENCIAL PRESENCIAL - NOCTURNO', 1, 1, 2, 2, 2551],
+            [4218, 1715, 305, 'TECNOLOGÍA EN ASISTENCIA GERENCIAL PRESENCIAL - NOCTURNO', 1, 1, 2, 2, 31],
+            [13, 1717, 405, 'TECNOLOGÍA EN DELINEANTES DE ARQUITECTURA E INGENIERÍA', 1, 1, 2, 1, 31],
+            [1425, 1717, 405, 'TECNOLOGÍA EN DELINEANTES DE ARQUITECTURA E INGENIERÍA - NOCTURNO', 1, 1, 2, 2, 31],
+            [4305, 117465, 335, 'TECNOLOGÍA EN GESTIÓN ADMINISTRATIVA Y FINANCIERA - BOGOTÁ', 1, 1, 2, 7, 31],
+            [4306, 117465, 336, 'TECNOLOGÍA EN GESTIÓN ADMINISTRATIVA Y FINANCIERA - FUNZA', 1, 1, 2, 7, 1992],
+            [4058, 111410, 412, 'TECNOLOGÍA EN GESTIÓN Y EJECUCIÓN DE CONSTRUCCIONES', 1, 1, 2, 2, 31],
+            [3941, 3728, 303, 'ADMINISTRACIÓN DE EMPRESAS COMERCIALES - MAÑANA', 1, 1, 3, 28, 31],
+            [3943, 3728, 308, 'ADMINISTRACIÓN DE EMPRESAS COMERCIALES - MAÑANA - TINTAL', 1, 1, 3, 28, 2213],
+            [5, 3728, 303, 'ADMINISTRACIÓN DE EMPRESAS COMERCIALES - NOCHE', 1, 1, 3, 2, 31],
+            [3657, 109541, 309, 'ADMINISTRACIÓN DE EMPRESAS COMERCIALES - NOCHE - FUNZA', 1, 1, 3, 2, 1992],
+            [3437, 3728, 308, 'ADMINISTRACIÓN DE EMPRESAS COMERCIALES - NOCHE TINTAL', 1, 1, 3, 2, 2213],
+            [3940, 3728, 303, 'ADMINISTRACIÓN DE EMPRESAS COMERCIALES - TARDE', 1, 1, 3, 10, 31],
+            [3942, 3728, 308, 'ADMINISTRACIÓN DE EMPRESAS COMERCIALES - TARDE - TINTAL', 1, 1, 3, 10, 2213],
+            [4268, 116954, 413, 'ARQUITECTURA - DIURNO', 1, 1, 3, 1, 2551],
+            [4268, 116954, 413, 'ARQUITECTURA - DIURNO', 1, 1, 3, 1, 31],
+            [4269, 116954, 413, 'ARQUITECTURA - NOCTURNO', 1, 1, 3, 2, 2551],
+            [4269, 116954, 413, 'ARQUITECTURA - NOCTURNO', 1, 1, 3, 2, 31],
+            [1, 1718, 101, 'BACTERIOLOGÍA Y LABORATORIO CLÍNICO', 1, 1, 3, 1, 31],
+            [1448, 4770, 406, 'CONSTRUCCIÓN Y GESTIÓN EN ARQUITECTURA', 1, 1, 3, 2, 31],
+            [4275, 117403, 319, 'CONTADURÍA PÚBLICA - DIURNO', 1, 1, 3, 1, 2551],
+            [4275, 117403, 319, 'CONTADURÍA PÚBLICA - DIURNO', 1, 1, 3, 1, 31],
+            [4276, 117403, 319, 'CONTADURÍA PÚBLICA - NOCTURNO', 1, 1, 3, 2, 2551],
+            [4276, 117403, 319, 'CONTADURÍA PÚBLICA - NOCTURNO', 1, 1, 3, 2, 31],
+            [9, 5110, 601, 'DERECHO', 1, 1, 3, 2, 31],
+            [4241, 5110, 602, 'DERECHO - CALLE 34 DIURNO', 1, 1, 3, 1, 31],
+            [4221, 5110, 607, 'DERECHO - FUSAGASUGÁ', 1, 1, 3, 2, 2461],
+            [3237, 5110, 602, 'DERECHO - NOCTURNO', 1, 1, 3, 2, 31],
+            [3557, 5110, 604, 'DERECHO - NOCTURNO EN FUNZA', 1, 1, 3, 2, 1992],
+            [3537, 5110, 603, 'DERECHO DIURNO - 603 EN TINTAL', 1, 1, 3, 1, 2213],
+            [1627, 54006, 408, 'DISEÑO DIGITAL Y MULTIMEDIA', 1, 1, 3, 1, 31],
+            [6, 51745, 304, 'ECONOMÍA', 1, 1, 3, 10, 31],
+            [4222, 51745, 318, 'ECONOMÍA - FUNZA', 1, 1, 3, 2, 1992],
+            [4274, 117302, 802, 'MATEMÁTICA APLICADA', 1, 1, 3, 1, 2551],
+            [4274, 117302, 802, 'MATEMÁTICA APLICADA', 1, 1, 3, 1, 31],
+            [2, 1719, 201, 'TRABAJO SOCIAL', 1, 1, 3, 1, 31],
+            [4272, 1719, 208, 'TRABAJO SOCIAL - FUNZA', 1, 1, 3, 1, 1992],
+            [1626, 53792, 204, 'TURISMO', 1, 1, 3, 1, 31],
+            [3257, 107540, 410, 'ESPECIALIZACIÓN TECNOLÓGICA METODOLOGÍA BIM PARA EL DESARROLLO DE PROYECTOS DE LA EDIFICACIÓN', 1, 2, 5, 11, 31],
+            [3717, 109908, 605, 'ESPECIALIZACIÓN DERECHO INTERNACIONAL PÚBLICO', 1, 2, 6, 24, 2551],
+            [3717, 109908, 605, 'ESPECIALIZACIÓN DERECHO INTERNACIONAL PÚBLICO', 1, 2, 6, 24, 31],
+            [2295, 102899, 409, 'ESPECIALIZACIÓN EDIFICACIÓN SOSTENIBLE', 1, 2, 6, 11, 31],
+            [4217, 116665, 207, 'ESPECIALIZACIÓN EN INCLUSIÓN SOCIAL', 1, 2, 6, 11, 2551],
+            [4217, 116665, 207, 'ESPECIALIZACIÓN EN INCLUSIÓN SOCIAL', 1, 2, 6, 11, 31],
+            [2375, 103217, 103, 'ESPECIALIZACIÓN GERENCIA DE LA CALIDAD EN SALUD', 1, 2, 6, 11, 31],
+            [3338, 108071, 206, 'ESPECIALIZACIÓN GERENCIA EN SEGURIDAD Y SALUD EN EL TRABAJO', 1, 2, 6, 11, 2551],
+            [3338, 108071, 206, 'ESPECIALIZACIÓN GERENCIA EN SEGURIDAD Y SALUD EN EL TRABAJO', 1, 2, 6, 11, 31],
+            [3438, 108201, 411, 'MAESTRÍA EN CONSTRUCCIÓN SOSTENIBLE', 1, 2, 7, 11, 31],
+            [3878, 110766, 606, 'MAESTRÍA EN DERECHO PENAL', 1, 2, 7, 13, 2551],
+            [3878, 110766, 606, 'MAESTRÍA EN DERECHO PENAL', 1, 2, 7, 13, 31],
+            [3098, 105919, 205, 'MAESTRÍA EN DESARROLLO HUMANO', 1, 2, 7, 11, 2551],
+            [3098, 105919, 205, 'MAESTRÍA EN DESARROLLO HUMANO', 1, 2, 7, 11, 31],
+            [3178, 107007, 104, 'MAESTRÍA EN MICROBIOLOGÍA', 1, 2, 7, 11, 31],
+            [4204, 116294, 310, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - BOGOTÁ', 3, 1, 2, 11, 31],
+            [4216, 116294, 317, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - BOJACÁ', 3, 1, 2, 11, 2463],
+            [4277, 116294, 320, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - CACHIPAY', 3, 1, 2, 11, 2536],
+            [4297, 116294, 328, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - CAMPOALEGRE', 3, 1, 2, 11, 2556],
+            [4278, 116294, 321, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - CÁQUEZA', 3, 1, 2, 11, 2537],
+            [4211, 116294, 312, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - CHOACHÍ', 3, 1, 2, 11, 2470],
+            [4284, 116294, 327, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - FUNZA', 3, 1, 2, 11, 1992],
+            [4213, 116294, 314, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - FUSAGASUGÁ', 3, 1, 2, 11, 2461],
+            [4298, 116294, 329, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - ISNOS', 3, 1, 2, 11, 2557],
+            [4303, 116294, 334, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - LA CALERA', 3, 1, 2, 11, 2562],
+            [4209, 116294, 311, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - LA MESA', 3, 1, 2, 11, 2456],
+            [4299, 116294, 330, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - LA PLATA', 3, 1, 2, 11, 2558],
+            [4215, 116294, 316, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - MADRID', 3, 1, 2, 11, 2460],
+            [4279, 116294, 322, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - MOSQUERA', 3, 1, 2, 11, 2538],
+            [4300, 116294, 331, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - NEIVA', 3, 1, 2, 11, 2559],
+            [4301, 116294, 332, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - SANTA MARÍA', 3, 1, 2, 11, 2560],
+            [4280, 116294, 323, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - SOACHA', 3, 1, 2, 11, 2539],
+            [4281, 116294, 324, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - SOPÓ', 3, 1, 2, 11, 2540],
+            [4212, 116294, 313, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - SUBACHOQUE', 3, 1, 2, 11, 2471],
+            [4282, 116294, 325, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - TABIO', 3, 1, 2, 11, 2541],
+            [4283, 116294, 326, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - TENJO', 3, 1, 2, 11, 2542],
+            [4302, 116294, 333, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - TESALIA', 3, 1, 2, 11, 2561],
+            [4214, 116294, 315, 'TECNOLOGÍA EN GESTIÓN DE NEGOCIOS - ZIPAQUIRÁ', 3, 1, 2, 11, 2462],
+            [4304, 209, 209, 'TECNOLOGÍA EN ATENCIÓN INTEGRAL A LA PERSONA MAYOR', 4, 1, 2, 22, 31],
+            [4307, 105, 105, 'ESPECIALIZACIÓN EN GERENCIA DE LA CALIDAD Y AUDITORÍA EN SALUD', 4, 2, 6, 22, 31],
+        ];
+
+        $insertData = [];
+        foreach ($datos as $d) {
+            $insertData[] = [
+                'programa_id' => $d[0],
+                'snies' => $d[1],
+                'codigo' => $d[2],
+                'nombre' => $d[3],
+                'metodologia_id' => $d[4],
+                'nivel_educativo_id' => $d[5],
+                'modalidad_id' => $d[6],
+                'jornada_id' => $d[7],
+                'unidad_regional_id' => $d[8],
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ];
+        }
+
+        DB::table('programas')->insert($insertData);
+
+        DB::statement('ALTER TABLE programas AUTO_INCREMENT = 4308;');
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+    }
+}
