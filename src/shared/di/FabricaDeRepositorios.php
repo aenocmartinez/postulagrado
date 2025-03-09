@@ -6,15 +6,16 @@ use Src\admisiones\dao\mysql\CalendarioDao;
 use Src\admisiones\dao\mysql\JornadaDao;
 use Src\admisiones\dao\mysql\MetodologiaDao;
 use Src\admisiones\dao\mysql\ModalidadDao;
-use Src\admisiones\dao\mysql\ModalidadDaoDao;
 use Src\admisiones\dao\mysql\NivelEducativoDao;
 use Src\admisiones\dao\mysql\ProcesoDao;
+use Src\admisiones\dao\mysql\UnidadRegionalDao;
 use Src\admisiones\repositories\CalendarioRepository;
 use Src\admisiones\repositories\JornadaRepository;
 use Src\admisiones\repositories\MetodologiaRepository;
 use Src\admisiones\repositories\ModalidadRepository;
 use Src\admisiones\repositories\NivelEducativoRepository;
 use Src\admisiones\repositories\ProcesoRepository;
+use Src\admisiones\repositories\UnidadRegionalRepository;
 
 class FabricaDeRepositorios 
 {
@@ -26,6 +27,7 @@ class FabricaDeRepositorios
     private ModalidadRepository $modalidadRepo;
     private NivelEducativoRepository $nivelEducativoRepo;
     private JornadaRepository $jornadaRepo;
+    private UnidadRegionalRepository $unidadRegionalRepo;
 
     public function __construct()
     {
@@ -35,6 +37,7 @@ class FabricaDeRepositorios
         $this->modalidadRepo = new ModalidadDao();
         $this->nivelEducativoRepo = new NivelEducativoDao();
         $this->jornadaRepo = new JornadaDao();
+        $this->unidadRegionalRepo = new UnidadRegionalDao();
     }
 
     public static function getInstance(): FabricaDeRepositorios 
@@ -71,5 +74,9 @@ class FabricaDeRepositorios
 
     public function getJornadaRepository(): JornadaRepository {
         return $this->jornadaRepo;
+    }
+
+    public function getUnidadRegionalRepository(): UnidadRegionalRepository {
+        return $this->unidadRegionalRepo;
     }
 }

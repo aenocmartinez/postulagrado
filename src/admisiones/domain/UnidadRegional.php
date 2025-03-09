@@ -2,9 +2,12 @@
 
 namespace Src\admisiones\domain;
 
+use Src\admisiones\repositories\UnidadRegionalRepository;
+
 class UnidadRegional
 {
     public function __construct(
+        private UnidadRegionalRepository $repository,
         private int $id = 0, 
         private string $nombre = ""
     ){}
