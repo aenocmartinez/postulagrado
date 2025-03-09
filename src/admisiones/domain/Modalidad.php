@@ -2,11 +2,14 @@
 
 namespace Src\admisiones\domain;
 
+use Src\admisiones\repositories\ModalidadRepository;
+
 class Modalidad
 {
     public function __construct(
+        private ModalidadRepository $repository,
         private int $id = 0, 
-        private string $nombre = ""
+        private string $nombre = ""        
     ){}
 
     public function setId(int $id): void {
