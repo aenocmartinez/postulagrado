@@ -3,10 +3,8 @@
 namespace Database\Seeders;
 
 use Carbon\Carbon;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Src\admisiones\dao\mysql\ModalidadDao;
 
 class ModalidadSeeder extends Seeder
 {
@@ -19,9 +17,11 @@ class ModalidadSeeder extends Seeder
         DB::table('modalidades')->truncate();
 
         DB::table('modalidades')->insert([
-            ['id' => 1, 'nombre' => 'PRESENCIAL', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
-            ['id' => 3, 'nombre' => 'DISTANCIA', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
-            ['id' => 4, 'nombre' => 'VIRTUAL', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['id' => 2, 'nombre' => 'TECNOLÓGICA', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['id' => 3, 'nombre' => 'UNIVERSITARIA', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['id' => 5, 'nombre' => 'ESPECIALIZACIÓN TECNOLÓGICA', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['id' => 6, 'nombre' => 'ESPECIALIZACIÓN', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['id' => 7, 'nombre' => 'MAESTRÍA', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
         ]);
 
         DB::statement('ALTER TABLE modalidades AUTO_INCREMENT = 5;');

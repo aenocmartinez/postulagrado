@@ -2,9 +2,12 @@
 
 namespace Src\admisiones\domain;
 
+use Src\admisiones\repositories\NivelEducativoRepository;
+
 class NivelEducativo
 {
     public function __construct(
+        private NivelEducativoRepository $repository,
         private int $id = 0, 
         private string $nombre = ""
     ){}

@@ -3,10 +3,15 @@
 namespace Src\shared\di;
 
 use Src\admisiones\dao\mysql\CalendarioDao;
+use Src\admisiones\dao\mysql\MetodologiaDao;
 use Src\admisiones\dao\mysql\ModalidadDao;
+use Src\admisiones\dao\mysql\ModalidadDaoDao;
+use Src\admisiones\dao\mysql\NivelEducativoDao;
 use Src\admisiones\dao\mysql\ProcesoDao;
 use Src\admisiones\repositories\CalendarioRepository;
+use Src\admisiones\repositories\MetodologiaRepository;
 use Src\admisiones\repositories\ModalidadRepository;
+use Src\admisiones\repositories\NivelEducativoRepository;
 use Src\admisiones\repositories\ProcesoRepository;
 
 class FabricaDeRepositorios 
@@ -15,13 +20,17 @@ class FabricaDeRepositorios
 
     private ProcesoRepository $procesoRepo;
     private CalendarioRepository $calendarioRepo;
+    private MetodologiaRepository $metodologiaRepo;
     private ModalidadRepository $modalidadRepo;
+    private NivelEducativoRepository $nivelEducativoRepo;
 
     public function __construct()
     {
         $this->procesoRepo = new ProcesoDao();
         $this->calendarioRepo = new CalendarioDao();
+        $this->metodologiaRepo = new MetodologiaDao();
         $this->modalidadRepo = new ModalidadDao();
+        $this->nivelEducativoRepo = new NivelEducativoDao();
     }
 
     public static function getInstance(): FabricaDeRepositorios 
@@ -44,7 +53,15 @@ class FabricaDeRepositorios
         return $this->calendarioRepo;
     }
 
+    public function getMetodologiaRepository(): MetodologiaRepository {
+        return $this->metodologiaRepo;
+    }
+
     public function getModalidadRepository(): ModalidadRepository {
         return $this->modalidadRepo;
+    }
+
+    public function getNivelEducativoRepository(): NivelEducativoRepository {
+        return $this->nivelEducativoRepo;
     }
 }
