@@ -55,7 +55,8 @@ class ProcesoController extends Controller
     public function store(CrearProceso $request)
     {
         $crearProceso = new CrearProcesoUseCase(
-            FabricaDeRepositorios::getInstance()->getProcesoRepository()
+            FabricaDeRepositorios::getInstance()->getProcesoRepository(),
+            FabricaDeRepositorios::getInstance()->getProgramaRepository()
         );
 
         $response = $crearProceso->ejecutar($request->validated());

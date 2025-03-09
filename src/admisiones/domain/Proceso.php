@@ -3,7 +3,7 @@
 namespace Src\admisiones\domain;
 
 use Src\admisiones\dao\mysql\CalendarioDao;
-use Src\admisiones\dao\mysql\ProcesoDao;
+use Src\admisiones\repositories\CalendarioRepository;
 use Src\admisiones\repositories\ProcesoRepository;
 
 class Proceso 
@@ -11,13 +11,13 @@ class Proceso
     private string              $nombre;
     private string              $nivelEducativo;
     private Calendario          $calendario;
-    private ProcesoRepository   $repository;
 
     /** @var Documento[] $documentos */
     private $documentos = [];
     
     public function __construct(
-        ProcesoRepository   $repository,
+        private ProcesoRepository   $repository,
+        private CalendarioRepository $calendarioRepo,
         private int $id = 0, 
         private string $estado = "Abierto"
     ) {
@@ -78,6 +78,11 @@ class Proceso
     }
 
     public function eliminar(): bool {
+        $exito = $this->repository->quitarTodosLosPrograma($this->id);
+        if (!$exito) {
+            return false;
+        }
+        
         return $this->repository->eliminarProceso($this->id);
     }
 
@@ -99,14 +104,18 @@ class Proceso
         $actividad->setFechaInicio($fechaInicio);
         $actividad->setFechaFin($fechaFin);
 
-        return CalendarioDao::agregarActividad($this->id, $actividad);
+        return $this->calendarioRepo->agregarActividad($this->id, $actividad);
     }
 
     public function actualizarActividad(Actividad $actividad): bool {
-        return CalendarioDao::actualizarActividad($actividad);
+        return $this->calendarioRepo->actualizarActividad($actividad);
     }
 
     public function quitarActividad(Actividad $actividad): bool {
-        return CalendarioDao::eliminarActividad($actividad->getId());
+        return $this->calendarioRepo->eliminarActividad($actividad->getId());
+    }
+
+    public function agregarPrograma(Programa $programa): bool {
+        return $this->repository->agregarPrograma($this->id, $programa->getId());
     }
 }

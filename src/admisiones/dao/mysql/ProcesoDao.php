@@ -2,11 +2,12 @@
 
 namespace Src\admisiones\dao\mysql;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
-
-
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Src\admisiones\domain\Proceso;
+use Src\admisiones\domain\Programa;
 use Src\admisiones\repositories\ProcesoRepository;
 use Src\shared\di\FabricaDeRepositorios;
 
@@ -24,7 +25,10 @@ class ProcesoDao extends Model implements ProcesoRepository
             $registros = self::all();
 
             foreach ($registros as $registro) {
-                $proceso = new Proceso(FabricaDeRepositorios::getInstance()->getProcesoRepository());
+                $proceso = new Proceso(
+                    FabricaDeRepositorios::getInstance()->getProcesoRepository(),
+                    FabricaDeRepositorios::getInstance()->getCalendarioRepository()
+                );
                 $proceso->setId($registro->id);
                 $proceso->setNombre($registro->nombre);
                 $proceso->setNivelEducativo($registro->nivel_educativo);
@@ -33,7 +37,7 @@ class ProcesoDao extends Model implements ProcesoRepository
                 $procesos[] = $proceso;
             }
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Error en listarProcesos(): " . $e->getMessage());
         }
     
@@ -42,7 +46,10 @@ class ProcesoDao extends Model implements ProcesoRepository
 
     public static function buscarProcesoPorNombreYNivelEducativo(string $nombre, string $nivelEducativo): Proceso
     {
-        $proceso = new Proceso(FabricaDeRepositorios::getInstance()->getProcesoRepository());
+        $proceso = new Proceso(
+            FabricaDeRepositorios::getInstance()->getProcesoRepository(),
+            FabricaDeRepositorios::getInstance()->getCalendarioRepository(),
+        );
     
         try {
             
@@ -57,7 +64,7 @@ class ProcesoDao extends Model implements ProcesoRepository
                 $proceso->setEstado($registro->estado);
             }
     
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Error en buscarProcesoPorNombreYNivelEducativo({$nombre}, {$nivelEducativo}): " . $e->getMessage());
         }
     
@@ -67,7 +74,10 @@ class ProcesoDao extends Model implements ProcesoRepository
 
     public static function buscarProcesoPorId(int $id): Proceso
     {
-        $proceso = new Proceso(FabricaDeRepositorios::getInstance()->getProcesoRepository());
+        $proceso = new Proceso(
+            FabricaDeRepositorios::getInstance()->getProcesoRepository(),
+            FabricaDeRepositorios::getInstance()->getCalendarioRepository()
+        );
     
         try {
             $registro = self::find($id);
@@ -79,7 +89,7 @@ class ProcesoDao extends Model implements ProcesoRepository
                 $proceso->setEstado($registro->estado);
             
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Error en buscarProcesoPorId({$id}): " . $e->getMessage());
         }
     
@@ -102,7 +112,7 @@ class ProcesoDao extends Model implements ProcesoRepository
                 return true;
             }
     
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
     
@@ -121,7 +131,7 @@ class ProcesoDao extends Model implements ProcesoRepository
             }
     
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Error al eliminar el proceso ID {$procesoID}: " . $e->getMessage());
             return false;
         }
@@ -143,7 +153,7 @@ class ProcesoDao extends Model implements ProcesoRepository
             }
     
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Error al actualizar el proceso ID {$proceso->getId()}: " . $e->getMessage());
             return false;
         }
@@ -157,10 +167,109 @@ class ProcesoDao extends Model implements ProcesoRepository
                 ->where('procesos.id', $procesoID)
                 ->exists();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Error al verificar si el proceso ID {$procesoID} tiene calendario con actividades: " . $e->getMessage());
             return false;
         }
-    }    
+    }   
+    
+    public function agregarPrograma(int $procesoID, int $programaID): bool {
+        try {
+
+            $existe = DB::table('proceso_programa')
+                ->where('proceso_id', $procesoID)
+                ->where('programa_id', $programaID)
+                ->exists();
+    
+            if ($existe) {
+                Log::warning("El programa ID {$programaID} ya está asociado al proceso ID {$procesoID}");
+                return false;
+            }
+    
+            DB::table('proceso_programa')->insert([
+                'proceso_id' => $procesoID,
+                'programa_id' => $programaID,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+    
+            return true;
+        } catch (Exception $e) {
+            Log::error("Error al agregar programa ID {$programaID} al proceso ID {$procesoID}: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    public function quitarPrograma(int $procesoID, int $programaID): bool {
+        try {
+            $existe = DB::table('proceso_programa')
+                ->where('proceso_id', $procesoID)
+                ->where('programa_id', $programaID)
+                ->exists();
+    
+            if (!$existe) {
+                Log::warning("El programa ID {$programaID} no está asociado al proceso ID {$procesoID}");
+                return false;
+            }
+
+            DB::table('proceso_programa')
+                ->where('proceso_id', $procesoID)
+                ->where('programa_id', $programaID)
+                ->delete();
+    
+            return true;
+        } catch (Exception $e) {
+            Log::error("Error al quitar programa ID {$programaID} del proceso ID {$procesoID}: " . $e->getMessage());
+            return false;
+        }
+    }  
+    
+    public function quitarTodosLosPrograma(int $procesoID): bool {
+        try {            
+            DB::table('proceso_programa')->where('proceso_id', $procesoID)->delete();
+            return true;
+        } catch (Exception $e) {
+            Log::error("Error al quitar todos los programas del proceso ID {$procesoID}: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function listarProgramas(int $procesoID): array {
+        $programas = [];
+    
+        try {            
+            $programaIds = DB::table('proceso_programa')
+                ->where('proceso_id', $procesoID)
+                ->pluck('programa_id')
+                ->toArray();
+    
+            if (empty($programaIds)) {
+                return $programas;
+            }
+    
+            $programasDao = ProgramaDao::whereIn('id', $programaIds)->get();
+    
+            foreach ($programasDao as $programaDao) {
+                $programa = new Programa(
+                    FabricaDeRepositorios::getInstance()->getProgramaRepository()
+                );
+    
+                $programa->setId($programaDao->id);
+                $programa->setNombre($programaDao->nombre);
+                $programa->setCodigo($programaDao->codigo);
+                $programa->setSnies($programaDao->snies);
+
+                $programa->setMetodologia($programaDao->metodologia());
+                $programa->setNivelEducativo($programaDao->nivelEducativo());
+    
+                $programas[] = $programa;
+            }
+        } catch (Exception $e) {
+            Log::error("Error al listar programas del proceso ID {$procesoID}: " . $e->getMessage());
+        }
+    
+        return $programas;
+    }
+     
         
 }

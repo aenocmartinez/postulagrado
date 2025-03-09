@@ -2,11 +2,14 @@
 
 namespace Src\admisiones\dao\mysql;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use Src\admisiones\domain\Jornada;
 use Src\admisiones\domain\Metodologia;
 use Src\admisiones\domain\Modalidad;
 use Src\admisiones\domain\NivelEducativo;
+use Src\admisiones\domain\Programa;
 use Src\admisiones\domain\UnidadRegional;
 use Src\admisiones\repositories\ProgramaRepository;
 use Src\shared\di\FabricaDeRepositorios;
@@ -15,7 +18,6 @@ class ProgramaDao extends Model implements ProgramaRepository {
 
     protected $table = 'programas';
     protected $fillable = ['programa_id', 'nombre', 'codigo', 'snies']; 
-
     
     public function metodologia(): Metodologia
     {
@@ -93,5 +95,43 @@ class ProgramaDao extends Model implements ProgramaRepository {
     
         return $unidadRegional;        
     }
+
+    public function buscarProgramasPorNivelEducativo(string $nombreNivelEducativo): array {
+        $programas = [];
+    
+        $nivelEducativoID = 1; // Pregrado por defecto
+        if (strtolower(trim($nombreNivelEducativo)) === "postgrado") {
+            $nivelEducativoID = 2;
+        }
+    
+        try {
+            $programasDao = ProgramaDao::where('nivel_educativo_id', $nivelEducativoID)->get();
+    
+            foreach ($programasDao as $programaDao) {
+                $programa = new Programa(
+                    FabricaDeRepositorios::getInstance()->getProgramaRepository()
+                );
+    
+                $programa->setId($programaDao->id);
+                $programa->setNombre($programaDao->nombre);
+                $programa->setCodigo($programaDao->codigo);
+                $programa->setSnies($programaDao->snies);
+    
+                $nivelEducativo = new NivelEducativo(
+                    FabricaDeRepositorios::getInstance()->getNivelEducativoRepository()
+                );
+                $nivelEducativo->setId($nivelEducativoID);
+                $nivelEducativo->setNombre(ucfirst(strtolower($nombreNivelEducativo))); // Formatear nombre
+                $programa->setNivelEducativo($nivelEducativo);
+    
+                $programas[] = $programa;
+            }
+        } catch (Exception $e) {
+            Log::error("Error al buscar programas por nivel educativo '{$nombreNivelEducativo}': " . $e->getMessage());
+        }
+    
+        return $programas;
+    }
+    
 
 }

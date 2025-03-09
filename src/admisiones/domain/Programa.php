@@ -2,6 +2,8 @@
 
 namespace Src\admisiones\domain;
 
+use Src\admisiones\repositories\ProgramaRepository;
+
 class Programa 
 {
     private string $nombre;
@@ -13,7 +15,10 @@ class Programa
     private Jornada $jornada;
     private UnidadRegional $unidadRegional;
 
-    public function __construct(private int $id = 0) {}
+    public function __construct(
+        private ProgramaRepository $programaRepo,
+        private int $id = 0
+        ) {}
 
     public function getId(): int
     {
