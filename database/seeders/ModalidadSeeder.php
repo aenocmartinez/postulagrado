@@ -24,7 +24,7 @@ class ModalidadSeeder extends Seeder
             ['id' => 7, 'nombre' => 'MAESTRÍA', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
         ]);
 
-        DB::statement('ALTER TABLE modalidades AUTO_INCREMENT = 5;');
+        DB::statement('ALTER TABLE modalidades AUTO_INCREMENT = 8;');
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

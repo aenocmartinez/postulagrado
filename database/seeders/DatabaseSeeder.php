@@ -18,7 +18,8 @@ class DatabaseSeeder extends Seeder
                 UserSeeder::class,
                 MetodologiaSeeder::class,
                 ModalidadSeeder::class, 
-                NivelEducativoSeeder::class,               
+                NivelEducativoSeeder::class, 
+                JornadaSeeder::class,              
             ]
         );
     }
