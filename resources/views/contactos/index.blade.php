@@ -77,70 +77,75 @@
 
     <!-- Menú flotante global (Se mueve dinámicamente) -->
     <div id="action-menu" class="hidden fixed bg-white shadow-lg rounded-md w-32 border border-gray-200 z-50">
+        <a id="view-link" href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Ver datos</a>
         <a id="edit-link" href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Editar</a>
         <button id="delete-btn" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100">
             Eliminar
         </button>
     </div>
 
+
 @endsection
 
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const actionMenu = document.getElementById("action-menu");
-        const editLink = document.getElementById("edit-link");
-        const deleteBtn = document.getElementById("delete-btn");
+document.addEventListener("DOMContentLoaded", function () {
+    const actionMenu = document.getElementById("action-menu");
+    const viewLink = document.getElementById("view-link");
+    const editLink = document.getElementById("edit-link");
+    const deleteBtn = document.getElementById("delete-btn");
 
-        document.querySelectorAll(".menu-btn").forEach(button => {
-            button.addEventListener("click", function (event) {
-                event.stopPropagation();
-                
-                // Obtener posición del botón y el ID del contacto
-                let rect = button.getBoundingClientRect();
-                let contactoId = button.dataset.id;
+    document.querySelectorAll(".menu-btn").forEach(button => {
+        button.addEventListener("click", function (event) {
+            event.stopPropagation();
+            
+            // Obtener posición del botón y el ID del contacto
+            let rect = button.getBoundingClientRect();
+            let contactoId = button.dataset.id;
 
-                // Ajustar posición del menú en la pantalla
-                actionMenu.style.top = `${rect.bottom + window.scrollY}px`;
-                actionMenu.style.left = `${rect.left}px`;
-                actionMenu.classList.remove("hidden");
+            // Ajustar posición del menú en la pantalla
+            actionMenu.style.top = `${rect.bottom + window.scrollY}px`;
+            actionMenu.style.left = `${rect.left}px`;
+            actionMenu.classList.remove("hidden");
 
-                // Asignar rutas correctas al menú de edición y eliminación
-                editLink.href = `{{ route('contactos.edit', ':id') }}`.replace(':id', contactoId);
-                deleteBtn.dataset.url = `{{ route('contactos.destroy', ':id') }}`.replace(':id', contactoId);
-            });
-        });
-
-        // Ocultar menú si se hace clic fuera
-        document.addEventListener("click", function () {
-            actionMenu.classList.add("hidden");
-        });
-
-        // Confirmar eliminación con SweetAlert
-        deleteBtn.addEventListener("click", function () {
-            let url = deleteBtn.dataset.url;
-
-            Swal.fire({
-                title: "¿Estás seguro?",
-                text: "Esta acción no se puede deshacer.",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#6b7280",
-                confirmButtonText: "Sí, eliminar",
-                cancelButtonText: "Cancelar"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    let form = document.createElement("form");
-                    form.action = url;
-                    form.method = "POST";
-                    form.innerHTML = `@csrf @method('DELETE')`;
-                    document.body.appendChild(form);
-                    form.submit();
-                }
-            });
+            // Asignar rutas correctas al menú de edición, eliminación y ver info
+            viewLink.href = `{{ route('contactos.show', ':id') }}`.replace(':id', contactoId);
+            editLink.href = `{{ route('contactos.edit', ':id') }}`.replace(':id', contactoId);
+            deleteBtn.dataset.url = `{{ route('contactos.destroy', ':id') }}`.replace(':id', contactoId);
         });
     });
+
+    // Ocultar menú si se hace clic fuera
+    document.addEventListener("click", function () {
+        actionMenu.classList.add("hidden");
+    });
+
+    // Confirmar eliminación con SweetAlert
+    deleteBtn.addEventListener("click", function () {
+        let url = deleteBtn.dataset.url;
+
+        Swal.fire({
+            title: "¿Estás seguro?",
+            text: "Esta acción no se puede deshacer.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6b7280",
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let form = document.createElement("form");
+                form.action = url;
+                form.method = "POST";
+                form.innerHTML = `@csrf @method('DELETE')`;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    });
+});
+
 </script>
 @endsection

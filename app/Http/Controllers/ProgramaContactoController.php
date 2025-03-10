@@ -7,6 +7,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Src\admisiones\dto\ProgramaContactoDTO;
 use Src\admisiones\usecase\programaContacto\CrearContactoUseCase;
+use Src\admisiones\usecase\programaContacto\EditarContactoUseCase;
+use Src\admisiones\usecase\programaContacto\EliminarContactoUseCase;
 use Src\admisiones\usecase\programaContacto\ListarContactosUseCase;
 use Src\admisiones\usecase\programas\ListarProgramasUseCase;
 use Src\shared\di\FabricaDeRepositorios;
@@ -70,5 +72,34 @@ class ProgramaContactoController extends Controller
         ));
         
         return redirect()->route('contactos.index')->with($response->getCode(), $response->getMessage());
+    }
+
+    public function destroy($id) 
+    {
+
+        $eliminarContacto = new EliminarContactoUseCase(
+            FabricaDeRepositorios::getInstance()->getProgramaContactoRepository()
+        );
+
+        $response = $eliminarContacto->ejecutar($id);
+
+        return redirect()->route('contactos.index')->with($response->getCode(), $response->getMessage());
+    }
+
+    public function show($id) 
+    {
+        $editarContacto = new EditarContactoUseCase(
+            FabricaDeRepositorios::getInstance()->getProgramaContactoRepository()
+        );
+
+        $response = $editarContacto->ejecutar($id);
+
+        if ($response->getCode() != 200) {
+            return redirect()->route('contactos.index')->with($response->getCode(), $response->getMessage());  
+        }
+
+        return view('contactos.show', [
+            'contacto' => $response->getData()
+        ]);
     }
 }
