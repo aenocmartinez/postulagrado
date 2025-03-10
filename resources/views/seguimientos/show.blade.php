@@ -224,6 +224,10 @@
 <!-- ✅ Importar jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 <script>
     $(document).ready(function () {
         inicializarEventos();
@@ -341,9 +345,62 @@
 
     function toggleOmitirPrograma(programaId) {
         let boton = $(`button[data-id="${programaId}"]`);
-        let estado = boton.text().trim();
-        boton.text(estado === "Omitir" ? "Retractar" : "Omitir");
-        boton.toggleClass("bg-red-500 text-white border-red-500");
+        let procesoId = "{{ $proceso->getId() }}";
+        let url = `/procesos/${procesoId}/programas/${programaId}`;
+
+        if (typeof Swal === "undefined") {
+            console.error("SweetAlert2 no está cargado. Verifica que el CDN está incluido.");
+            return;
+        }
+
+        Swal.fire({
+            title: "¿Estás seguro?",
+            text: "Esta acción removerá el programa del proceso.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: url,
+                    type: "DELETE",
+                    headers: {
+                        "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"), // Protección CSRF
+                    },
+                    success: function () {
+                        // ✅ Elimina la fila del programa
+                        let fila = boton.closest("tr");
+                        fila.fadeOut(300, function () {
+                            $(this).remove();
+                            actualizarListaProgramas(); // Llama a la función para cargar más programas
+                        });
+                    },
+                    error: function () {
+                        Swal.fire("Error", "No se pudo eliminar el programa.", "error");
+                    },
+                });
+            }
+        });
+    }
+
+    function actualizarListaProgramas() {
+        let programasVisibles = $("#tabla-programas tbody tr:visible").length;
+        let programasOcultos = $(".programa-oculto:hidden");
+
+        // Si hay menos de 10 programas visibles, mostrar más hasta completar 10
+        while (programasVisibles < 10 && programasOcultos.length > 0) {
+            $(programasOcultos[0]).removeClass("programa-oculto hidden").fadeIn();
+            programasVisibles++;
+            programasOcultos = $(".programa-oculto:hidden"); // Actualiza la lista de ocultos
+        }
+
+        // Si ya no hay más programas ocultos, esconde el botón de "Cargar Más"
+        if (programasOcultos.length === 0) {
+            $("#cargar-mas").hide();
+        }
     }
 
     // ✅ Mantener función toggleLista
