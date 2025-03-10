@@ -82,9 +82,10 @@ Route::middleware('auth')->group(function () {
 
     // Contactos
     Route::get('contactos', [ProgramaContactoController::class, 'index'])->name('contactos.index');
-    Route::get('contactos/create', [ProgramaContactoController::class, 'index'])->name('contactos.create');
+    Route::get('contactos/create', [ProgramaContactoController::class, 'create'])->name('contactos.create');
     Route::get('contactos/{id}/edit', [ProgramaContactoController::class, 'index'])->name('contactos.edit');
     Route::delete('contactos/{id}', [ProgramaContactoController::class, 'index'])->name('contactos.destroy');
+    Route::post('contactos', [ProgramaContactoController::class, 'create'])->name('contactos.store');
     
 
 });

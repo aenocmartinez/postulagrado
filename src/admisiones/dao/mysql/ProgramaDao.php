@@ -166,5 +166,37 @@ class ProgramaDao extends Model implements ProgramaRepository {
 
         return $programa;
     }
+
+    public function listarProgramas(): array 
+    {
+        $programas = [];
+    
+        try {
+            $programasDao = self::all();
+    
+            foreach ($programasDao as $programaDao) {
+                $programa = new Programa(
+                    FabricaDeRepositorios::getInstance()->getProgramaRepository()
+                );
+    
+                $programa->setId($programaDao->id);
+                $programa->setNombre($programaDao->nombre);
+                $programa->setCodigo($programaDao->codigo);
+                $programa->setSnies($programaDao->snies);
+                $programa->setMetodologia($programaDao->metodologia());
+                $programa->setNivelEducativo($programaDao->nivelEducativo());
+                $programa->setModalidad($programaDao->modalidad());
+                $programa->setUnidadRegional($programaDao->unidadRegional());
+                $programa->setJornada($programaDao->jornada());
+    
+                $programas[] = $programa;
+            }
+        } catch (Exception $e) {
+            Log::error("Error al listar programas: " . $e->getMessage());
+        }
+    
+        return $programas;
+    }
+    
     
 }

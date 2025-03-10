@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Src\admisiones\usecase\programaContacto\ListarContactosUseCase;
+use Src\admisiones\usecase\programas\ListarProgramasUseCase;
 use Src\shared\di\FabricaDeRepositorios;
 
 class ProgramaContactoController extends Controller
@@ -33,6 +34,19 @@ class ProgramaContactoController extends Controller
 
         return view("contactos.index", [
             "contactos" => $contactos
+        ]);
+    }
+
+    public function create() 
+    {
+        $listarProgramas = new ListarProgramasUseCase(
+            FabricaDeRepositorios::getInstance()->getProgramaRepository()
+        );
+
+        $response = $listarProgramas->ejecutar();
+
+        return view("contactos.create", [
+            'programas' => $response->getData()
         ]);
     }
 }
