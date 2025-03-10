@@ -2,9 +2,11 @@
 
 namespace Src\admisiones\domain;
 
+use Carbon\Carbon;
 use Src\admisiones\dao\mysql\CalendarioDao;
 use Src\admisiones\repositories\CalendarioRepository;
 use Src\admisiones\repositories\ProcesoRepository;
+use Src\shared\formato\FormatoFecha;
 
 class Proceso 
 {    
@@ -95,9 +97,52 @@ class Proceso
     }
 
     public function getActividades(): array {
-        return CalendarioDao::listarActividades($this->id);
+        return $this->calendarioRepo->listarActividades($this->id);
     }
 
+    public function getActividadesPorEstadoTemporal(): array 
+    {
+        $actividadesClasificadas = [
+            'EnCurso' => [],
+            'Finalizadas' => [],
+            'Programadas' => [],
+            'ProximasIniciar' => []
+        ];
+
+        $fechaActual = Carbon::now();
+
+        foreach ($this->getActividades() as $actividad) 
+        {
+            $fechaInicio = FormatoFecha::ConvertirStringAObjetoCarbon($actividad->getFechaInicio());
+
+            $fechaFin = FormatoFecha::ConvertirStringAObjetoCarbon($actividad->getFechaFin());
+
+            if ($fechaInicio->lessThanOrEqualTo($fechaActual) && $fechaFin->greaterThanOrEqualTo($fechaActual)) 
+            {
+                $actividadesClasificadas['EnCurso'][] = $actividad;
+            } 
+            elseif ($fechaFin->lessThan($fechaActual)) 
+            {
+                $actividadesClasificadas['Finalizadas'][] = $actividad;
+            } 
+            elseif ($fechaInicio->greaterThan($fechaActual)) 
+            {
+                $diasParaIniciar = $fechaInicio->diffInDays($fechaActual);
+
+                if ($diasParaIniciar <= 7) 
+                {
+                    $actividadesClasificadas['ProximasIniciar'][] = $actividad;
+                } 
+                else 
+                {
+                    $actividadesClasificadas['Programadas'][] = $actividad;
+                }
+            }
+        }
+
+        return $actividadesClasificadas;
+    }
+    
     public function agregarActividad(string $descripcion, $fechaInicio, $fechaFin): bool {
         $actividad = new Actividad();
         $actividad->setDescripcion($descripcion);

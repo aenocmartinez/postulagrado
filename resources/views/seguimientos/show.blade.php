@@ -22,29 +22,61 @@
     <!-- 🔴🟡🟢 Segmentación de Actividades con Listado -->
     <h3 class="text-md font-semibold text-gray-700 mt-6 mb-3">Actividades</h3>
     <div class="grid grid-cols-2 gap-6">
-        @php
-            $actividades = [
-                'Finalizadas' => ['color' => 'gray-200', 'text' => 'text-gray-800', 'items' => [
-                    ['Elaboración de Acta', '2024-02-10 - 2024-02-15'],
-                    ['Revisión de Documentos', '2024-01-20 - 2024-02-05'],                    
-                ]],
-                'En Curso' => ['color' => 'green-200', 'text' => 'text-green-800', 'items' => [
-                    ['Publicación de Actas', '2024-03-10 - 2024-03-15'],
-                    ['Verificación de Datos', '2024-03-12 - 2024-03-18'],
-                    ['Preparación de Diplomas', '2024-03-15 - 2024-03-20'],
-                    ['Generación de Resoluciones', '2024-03-17 - 2024-03-22']
-                ]],
-                'Programadas' => ['color' => 'yellow-200', 'text' => 'text-yellow-800', 'items' => [
-                    ['Entrega de Diplomas Oficiales', '2024-03-20 - 2024-03-25'],
-                    ['Revisión de Notas Finales', '2024-03-22 - 2024-03-28'],
-                    ['Generación de Actas de Grado', '2024-03-25 - 2024-03-30'],
-                    ['Validación de Expedientes', '2024-03-28 - 2024-04-02']
-                ]],
-                'Próximas a Iniciar' => ['color' => 'orange-200', 'text' => 'text-orange-800', 'items' => [
-                    ['Ceremonia de Grado', '2024-04-05 - 2024-04-07']
-                ]]
-            ];
-        @endphp
+    @php
+        $actividades = [
+            'Finalizadas' => ['color' => 'gray-200', 'text' => 'text-gray-800', 'items' => []], 
+            'En Curso' => ['color' => 'gray-200', 'text' => 'text-gray-800', 'items' => []], 
+            'Programadas' => ['color' => 'yellow-200', 'text' => 'text-yellow-800', 'items' => []], 
+            'Próximas a Iniciar' => ['color' => 'orange-200', 'text' => 'text-orange-800', 'items' => []],
+        ];
+
+        foreach($proceso->getActividadesPorEstadoTemporal() as $index => $actividad) {
+
+            if ($index == "EnCurso") {
+                foreach($actividad as $item) {
+                    $actividades['En Curso']['items'][] = [
+                        $item->getDescripcion(),
+                        $item->getFechaInicio(),
+                        $item->getFechaFin(),
+                    ];
+                }
+                continue;
+            }
+
+            if ($index == "Finalizadas") {
+                foreach($actividad as $item) {
+                    $actividades['Finalizadas']['items'][] = [
+                        $item->getDescripcion(),
+                        $item->getFechaInicio(),
+                        $item->getFechaFin(),
+                    ];
+                }
+                continue;
+            }
+
+            if ($index == "Programadas") {
+                foreach($actividad as $item) {
+                    $actividades['Programadas']['items'][] = [
+                        $item->getDescripcion(),
+                        $item->getFechaInicio(),
+                        $item->getFechaFin(),
+                    ];
+                }
+                continue;
+            } 
+
+            if ($index == "ProximasIniciar") {
+                foreach($actividad as $item) {
+                    $actividades['Próximas a Iniciar']['items'][] = [
+                        $item->getDescripcion(),
+                        $item->getFechaInicio(),
+                        $item->getFechaFin(),
+                    ];
+                }
+                continue;
+            }                
+        }
+    @endphp
 
         @foreach ($actividades as $titulo => $data)
         <div class="bg-{{ $data['color'] }} p-4 rounded-lg">

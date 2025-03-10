@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
                 JornadaSeeder::class,
                 UnidadRegionalSeeder::class,  
                 ProgramaSeeder::class,  
-                ProgramaContactosSeeder::class,        
+                // ProgramaContactosSeeder::class,        
             ]
         );
     }
