@@ -102,10 +102,10 @@
     <input type="text" id="buscar-programa" placeholder="Buscar programa..." 
            class="border border-gray-300 px-3 py-2 rounded-md text-sm w-64 focus:ring focus:ring-gray-400 outline-none">
 
-    <button id="ver-todos" 
+    <!-- <button id="ver-todos" 
             class="px-4 py-2 border border-gray-400 text-gray-700 rounded-md hover:bg-gray-100 transition">
         Ver Todos
-    </button>
+    </button> -->
 </div>
 
 <!-- Tabla de Programas -->
@@ -232,14 +232,68 @@
     function inicializarEventos() {
         $("#buscar-programa").on("input", filtrarProgramas);
         $("#cargar-mas").on("click", cargarMasProgramas);
-        $("#ver-todos").on("click", mostrarTodosLosProgramas);
+        $("#ver-todos").on("click", mostrarTodosLosProgramas); // 🟢 Asegurar que esta función existe
         actualizarEventosTooltips();
         actualizarEventosOmitir();
     }
 
-    // ✅ TOOLTIP MEJORADO (Se oculta correctamente)
+    // ✅ 🔍 FILTRAR PROGRAMAS (Soporte para mayúsculas y tildes)
+    function filtrarProgramas() {
+        let input = $("#buscar-programa").val().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        let hayResultados = false;
+
+        console.log(input)
+
+        $("#tabla-programas tr").each(function () {
+
+            let nombrePrograma = $(this).find(".tooltip").text().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+            if (nombrePrograma.includes(input)) {
+                $(this).removeClass("hidden").show();
+                hayResultados = true;
+            } else {
+                $(this).addClass("hidden").hide();
+            }
+        });
+
+        if (input === "") {
+            //mostrarTodosLosProgramas(); // 🟢 Restablece la tabla si no hay texto
+            $("#tabla-programas tr").each(function (index) {
+                if (index < 10) {
+                    $(this).removeClass("hidden").show();
+                } else {
+                    $(this).addClass("hidden").hide();
+                }
+            });
+
+            $("#no-resultados").remove();
+            $("#cargar-mas").show(); // 🟢 Volver a mostrar el botón de paginación si había desaparecido
+            return; // ⬅️ Detener aquí la función
+        }
+
+        if (!hayResultados) {
+            if ($("#no-resultados").length === 0) {
+                $("#tabla-programas tbody").append(`
+                    <tr id="no-resultados">
+                        <td colspan="3" class="text-center text-gray-500">No se encontraron programas</td>
+                    </tr>`);
+            }
+        } else {
+            $("#no-resultados").remove();
+        }
+
+        actualizarEventosTooltips();
+    }
+
+    // ✅ MOSTRAR TODOS LOS PROGRAMAS (Corrige error)
+    function mostrarTodosLosProgramas() {
+        $(".programa-oculto").removeClass("hidden").show();
+        $("#cargar-mas").hide();
+    }
+
+    // ✅ TOOLTIP MEJORADO
     function actualizarEventosTooltips() {
-        $(".tooltip").hover(function () {
+        $(".tooltip").off("mouseenter mouseleave").hover(function () {
             let info = $(this).data("info");
             let tooltip = $("<div>")
                 .addClass("tooltip-box absolute bg-gray-800 text-white text-xs rounded p-2 shadow-lg")
@@ -266,33 +320,19 @@
         });
     }
 
-    // ✅ FILTRAR PROGRAMAS (Funciona correctamente)
-    function filtrarProgramas() {
-        let input = $("#buscar-programa").val().toLowerCase();
-        
-        $("#tabla-programas tbody tr").each(function () {
-            let nombrePrograma = $(this).find(".tooltip").text().toLowerCase();
-            $(this).toggle(nombrePrograma.includes(input));
-        });
-    }
-
-    // ✅ CARGAR MÁS PROGRAMAS (Ahora funciona correctamente)
+    // ✅ CARGAR MÁS PROGRAMAS
     function cargarMasProgramas() {
         let programasOcultos = $(".programa-oculto:hidden").slice(0, 10);
-        programasOcultos.removeClass("hidden");
+        programasOcultos.removeClass("programa-oculto hidden").fadeIn();
 
         if ($(".programa-oculto:hidden").length === 0) {
             $("#cargar-mas").hide();
         }
+
+        actualizarEventosTooltips();
     }
 
-    // ✅ MOSTRAR TODOS LOS PROGRAMAS (Elimina la paginación)
-    function mostrarTodosLosProgramas() {
-        $(".programa-oculto").removeClass("hidden");
-        $("#cargar-mas").hide();
-    }
-
-    // ✅ OMISIÓN DE PROGRAMAS (Funciona correctamente)
+    // ✅ OMISIÓN DE PROGRAMAS
     function actualizarEventosOmitir() {
         $(".btn-omitir").on("click", function () {
             toggleOmitirPrograma($(this).data("id"));
@@ -305,14 +345,14 @@
         boton.text(estado === "Omitir" ? "Retractar" : "Omitir");
         boton.toggleClass("bg-red-500 text-white border-red-500");
     }
-</script>
 
-<!-- ✅ Mantener función toggleLista -->
-<script>
+    // ✅ Mantener función toggleLista
     function toggleLista(id) {
         let element = document.getElementById(id);
         element.classList.toggle('hidden');
     }
+
 </script>
 
 @endsection
+
