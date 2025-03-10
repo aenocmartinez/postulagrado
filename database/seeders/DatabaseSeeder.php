@@ -20,7 +20,8 @@ class DatabaseSeeder extends Seeder
                 NivelEducativoSeeder::class, 
                 JornadaSeeder::class,
                 UnidadRegionalSeeder::class,  
-                ProgramaSeeder::class,          
+                ProgramaSeeder::class,  
+                ProgramaContactosSeeder::class,        
             ]
         );
     }
