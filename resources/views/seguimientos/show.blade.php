@@ -94,16 +94,15 @@
         @endforeach
     </div>    
 
-    <!-- 📚 Avance de Programas Académicos (Listado en Tabla) -->
+    <!-- 📚 Avance de Programas Académicos (Listado en Tabla) -->       
     <h3 class="text-md font-semibold text-gray-700 mt-6 mb-3">Avance por Programa Académico</h3>
 
 <!-- Buscador -->
 <div class="flex justify-between items-center mb-4">
     <input type="text" id="buscar-programa" placeholder="Buscar programa..." 
-           class="border border-gray-300 px-3 py-2 rounded-md text-sm w-64 focus:ring focus:ring-gray-400 outline-none"
-           onkeyup="filtrarProgramas()">
+           class="border border-gray-300 px-3 py-2 rounded-md text-sm w-64 focus:ring focus:ring-gray-400 outline-none">
 
-    <button onclick="verTodosLosProgramas()" 
+    <button id="ver-todos" 
             class="px-4 py-2 border border-gray-400 text-gray-700 rounded-md hover:bg-gray-100 transition">
         Ver Todos
     </button>
@@ -120,15 +119,13 @@
             </tr>
         </thead>
         <tbody id="tabla-programas">
-            @php
-                $programas = collect($proceso->getProgramas())->take(10); // Tomar solo 10 programas iniciales
-            @endphp
-
-            @forelse ($programas as $programaProceso)
-            <tr class="border-b border-gray-300 bg-white hover:bg-gray-100 transition">
+            @foreach ($proceso->getProgramas() as $index => $programaProceso)
+            <tr class="border-b border-gray-300 bg-white hover:bg-gray-100 transition 
+                       {{ $index >= 10 ? 'programa-oculto hidden' : '' }}">
                 <!-- Nombre con Tooltip -->
                 <td class="px-4 py-2 text-gray-900 relative group">
-                    <span class="cursor-pointer tooltip" data-info="{{ $programaProceso->getPrograma()->getUnidadRegional()->getNombre() }}">
+                    <span class="cursor-pointer tooltip" 
+                          data-info="Unidad Regional: {{ $programaProceso->getPrograma()->getUnidadRegional()->getNombre() }}">
                         {{ $programaProceso->getPrograma()->getNombre() }}
                     </span>
                 </td>
@@ -143,29 +140,24 @@
 
                 <!-- Acciones -->
                 <td class="px-4 py-2 text-center">
-                    <button class="text-sm px-3 py-1 rounded border border-gray-400 text-gray-700 hover:bg-gray-100 transition"
-                        onclick="toggleOmitirPrograma({{ $programaProceso->getPrograma()->getId() }})">
-                        {{ true ? 'Retractar' : 'Omitir' }}
+                    <button class="text-sm px-3 py-1 rounded border border-gray-400 text-gray-700 hover:bg-gray-100 transition btn-omitir"
+                        data-id="{{ $programaProceso->getPrograma()->getId() }}">
+                        Omitir
                     </button>
                 </td>
             </tr>
-            @empty
-            <tr>
-                <td colspan="3" class="text-center py-4 text-gray-500">No se encontraron programas.</td>
-            </tr>
-            @endforelse
+            @endforeach
         </tbody>
     </table>
 </div>
 
 <!-- Paginación -->
 <div class="mt-4 flex justify-center">
-    <button onclick="cargarMasProgramas()" id="cargar-mas" 
+    <button id="cargar-mas"
             class="px-4 py-2 border border-gray-400 text-gray-700 rounded-md hover:bg-gray-100 transition">
         Cargar Más
     </button>
 </div>
-
 
 
 
@@ -235,21 +227,17 @@
 <script>
     $(document).ready(function () {
         inicializarEventos();
-        $("#tabla-programas tbody tr").slice(10).addClass("programa-oculto").hide(); // Ocultar desde el 11 en adelante
     });
 
     function inicializarEventos() {
         $("#buscar-programa").on("input", filtrarProgramas);
         $("#cargar-mas").on("click", cargarMasProgramas);
-        $(".toggle-lista").on("click", function () {
-            let target = $(this).data("target");
-            $("#" + target).toggleClass("hidden");
-        });
+        $("#ver-todos").on("click", mostrarTodosLosProgramas);
         actualizarEventosTooltips();
         actualizarEventosOmitir();
     }
 
-    // ✅ TOOLTIP MEJORADO (AHORA SE OCULTA BIEN)
+    // ✅ TOOLTIP MEJORADO (Se oculta correctamente)
     function actualizarEventosTooltips() {
         $(".tooltip").hover(function () {
             let info = $(this).data("info");
@@ -278,7 +266,7 @@
         });
     }
 
-    // ✅ FILTRAR PROGRAMAS
+    // ✅ FILTRAR PROGRAMAS (Funciona correctamente)
     function filtrarProgramas() {
         let input = $("#buscar-programa").val().toLowerCase();
         
@@ -288,17 +276,23 @@
         });
     }
 
-    // ✅ CARGAR MÁS PROGRAMAS (paginación)
+    // ✅ CARGAR MÁS PROGRAMAS (Ahora funciona correctamente)
     function cargarMasProgramas() {
-        let programasOcultos = $(".programa-oculto").slice(0, 5);
-        programasOcultos.removeClass("programa-oculto").fadeIn();
+        let programasOcultos = $(".programa-oculto:hidden").slice(0, 10);
+        programasOcultos.removeClass("hidden");
 
-        if ($(".programa-oculto").length === 0) {
+        if ($(".programa-oculto:hidden").length === 0) {
             $("#cargar-mas").hide();
         }
     }
 
-    // ✅ OMISIÓN DE PROGRAMAS
+    // ✅ MOSTRAR TODOS LOS PROGRAMAS (Elimina la paginación)
+    function mostrarTodosLosProgramas() {
+        $(".programa-oculto").removeClass("hidden");
+        $("#cargar-mas").hide();
+    }
+
+    // ✅ OMISIÓN DE PROGRAMAS (Funciona correctamente)
     function actualizarEventosOmitir() {
         $(".btn-omitir").on("click", function () {
             toggleOmitirPrograma($(this).data("id"));
@@ -310,6 +304,14 @@
         let estado = boton.text().trim();
         boton.text(estado === "Omitir" ? "Retractar" : "Omitir");
         boton.toggleClass("bg-red-500 text-white border-red-500");
+    }
+</script>
+
+<!-- ✅ Mantener función toggleLista -->
+<script>
+    function toggleLista(id) {
+        let element = document.getElementById(id);
+        element.classList.toggle('hidden');
     }
 </script>
 
