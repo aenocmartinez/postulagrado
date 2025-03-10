@@ -4,14 +4,17 @@ namespace Src\admisiones\dto;
 
 class ProgramaContactoDTO {
 
+    private int $id;
+
     public function __construct(
         private string $nombre,
         private string $telefono,
         private string $email,
         private int $programaID,
-        private int $id = 0,
         private string $observacion = ""
-    ){}
+    ){
+        $this->id = 0;
+    }
 
     public function setId(int $id): void {
         $this->id = $id;

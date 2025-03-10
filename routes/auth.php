@@ -85,7 +85,7 @@ Route::middleware('auth')->group(function () {
     Route::get('contactos/create', [ProgramaContactoController::class, 'create'])->name('contactos.create');
     Route::get('contactos/{id}/edit', [ProgramaContactoController::class, 'index'])->name('contactos.edit');
     Route::delete('contactos/{id}', [ProgramaContactoController::class, 'index'])->name('contactos.destroy');
-    Route::post('contactos', [ProgramaContactoController::class, 'create'])->name('contactos.store');
+    Route::post('contactos', [ProgramaContactoController::class, 'store'])->name('contactos.store');
     
 
 });
