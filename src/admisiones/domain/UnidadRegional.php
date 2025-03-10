@@ -3,6 +3,7 @@
 namespace Src\admisiones\domain;
 
 use Src\admisiones\repositories\UnidadRegionalRepository;
+use Src\shared\formato\FormatoString;
 
 class UnidadRegional
 {
@@ -24,7 +25,7 @@ class UnidadRegional
         return $this->id;
     }
 
-    public function getNombre(): string {
-        return $this->nombre;
+    public function getNombre(): string {        
+        return FormatoString::capital($this->nombre);
     }    
 }

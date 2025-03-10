@@ -127,7 +127,7 @@ class Proceso
             } 
             elseif ($fechaInicio->greaterThan($fechaActual)) 
             {
-                $diasParaIniciar = $fechaInicio->diffInDays($fechaActual);
+                $diasParaIniciar = $fechaInicio->greaterThan($fechaActual) ? $fechaActual->diffInDays($fechaInicio) : 0;
 
                 if ($diasParaIniciar <= 7) 
                 {
@@ -162,5 +162,9 @@ class Proceso
 
     public function agregarPrograma(Programa $programa): bool {
         return $this->repository->agregarPrograma($this->id, $programa->getId());
+    }
+
+    public function getProgramas(): array {
+        return $this->repository->listarProgramas($this->id);
     }
 }

@@ -6,8 +6,11 @@ class ProgramaProceso
 {
     private Programa $programa;
     private Proceso $proceso;
+    private int $porcentajeAvance;
 
-    public function __construct(private int $id = 0) {}
+    public function __construct(private int $id = 0) {
+        $this->porcentajeAvance = 0;
+    }
 
     public function getId(): int
     {
@@ -38,4 +41,12 @@ class ProgramaProceso
     {
         $this->proceso = $proceso;
     }
+
+    public function setPorcentajeAvance(int $porcentajeAvance): void {
+        $this->porcentajeAvance = $porcentajeAvance;
+    }
+
+    public function getPorcentajeAvance(): int {
+        return $this->porcentajeAvance;
+    }    
 }

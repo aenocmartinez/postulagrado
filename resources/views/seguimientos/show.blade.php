@@ -25,7 +25,7 @@
     @php
         $actividades = [
             'Finalizadas' => ['color' => 'gray-200', 'text' => 'text-gray-800', 'items' => []], 
-            'En Curso' => ['color' => 'gray-200', 'text' => 'text-gray-800', 'items' => []], 
+            'En Curso' => ['color' => 'green-200', 'text' => 'text-green-800', 'items' => []], 
             'Programadas' => ['color' => 'yellow-200', 'text' => 'text-yellow-800', 'items' => []], 
             'Próximas a Iniciar' => ['color' => 'orange-200', 'text' => 'text-orange-800', 'items' => []],
         ];
@@ -105,28 +105,17 @@
                 </tr>
             </thead>
             <tbody>
-                @php
-                    $programas = [
-                        ['Ingeniería de Sistemas', 80],
-                        ['Derecho', 65],
-                        ['Administración de Empresas', 45],
-                        ['Psicología', 90],
-                        ['Contaduría Pública', 55],
-                        ['Bacteriología', 35],
-                        ['Medicina', 40],
-                        ['Ingeniería electrónica', 60],
-                        ['Economía', 25]
-                    ];
-                @endphp
 
-                @foreach ($programas as [$nombre, $avance])
+                @foreach ($proceso->getProgramas() as $programaProceso)
                 <tr class="border-b border-gray-300 bg-white hover:bg-gray-100 transition">
-                    <td class="px-4 py-2 text-gray-900">{{ $nombre }}</td>
+                    <td class="px-4 py-2 text-gray-900">
+                        {{ $programaProceso->getPrograma()->getNombre() }}
+                    </td>
                     <td class="px-4 py-2 text-center">
                         <div class="w-full bg-gray-300 rounded h-2">
-                            <div class="h-2 bg-blue-500 rounded" style="width: {{ $avance }}%"></div>
+                            <div class="h-2 bg-blue-500 rounded" style="width: {{ $programaProceso->getPorcentajeAvance() }}%"></div>
                         </div>
-                        <span class="text-xs text-gray-600">{{ $avance }}%</span>
+                        <span class="text-xs text-gray-600">{{ $programaProceso->getPorcentajeAvance() }}%</span>
                     </td>
                 </tr>
                 @endforeach
