@@ -35,6 +35,8 @@ class ProgramaContactoDao extends Model implements ProgramaContactoRepository {
                       ->orWhere('programas.nombre', 'LIKE', "%{$criterio}%");
                 });
             }
+
+            $query->orderBy('programa_contactos.nombre');
     
             $registros = $query->get();
     

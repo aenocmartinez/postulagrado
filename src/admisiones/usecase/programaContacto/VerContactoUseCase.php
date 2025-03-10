@@ -2,17 +2,14 @@
 
 namespace Src\admisiones\usecase\programaContacto;
 
-use Src\admisiones\domain\ProgramaContacto;
 use Src\admisiones\repositories\ProgramaContactoRepository;
-use Src\admisiones\repositories\ProgramaRepository;
 use Src\shared\response\ResponsePostulaGrado;
 
-class EditarContactoUseCase
-{
+class VerContactoUseCase {
+
     public function __construct(
         private ProgramaContactoRepository $programaContactoRepo,
-        private ProgramaRepository $programaRepo,
-    ) {}
+    ) {}    
 
     public function ejecutar(int $contactoID): ResponsePostulaGrado {
 
@@ -21,12 +18,7 @@ class EditarContactoUseCase
             return new ResponsePostulaGrado(404, "Contacto no encontrado encontrado");
         }
 
-        $programas = $this->programaRepo->listarProgramas();
 
-        $data['contacto'] = $contacto;
-        $data['programas'] = $programas;
-
-
-        return new ResponsePostulaGrado(200, "Contacto encontrado", $data);
-    }
+        return new ResponsePostulaGrado(200, "Contacto encontrado", $contacto);
+    }    
 }

@@ -6,6 +6,8 @@
 
 @section('content')
 
+<h2 class="text-lg font-semibold text-gray-800">Información del Contacto</h2>
+
 <div class="flex justify-center mt-12">
     <div class="w-full max-w-2xl bg-white rounded-xl p-10">
 

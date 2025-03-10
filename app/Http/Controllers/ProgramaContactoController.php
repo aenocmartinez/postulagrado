@@ -6,10 +6,12 @@ use App\Http\Requests\CrearContacto;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Src\admisiones\dto\ProgramaContactoDTO;
+use Src\admisiones\usecase\programaContacto\ActualizarContactoUseCase;
 use Src\admisiones\usecase\programaContacto\CrearContactoUseCase;
 use Src\admisiones\usecase\programaContacto\EditarContactoUseCase;
 use Src\admisiones\usecase\programaContacto\EliminarContactoUseCase;
 use Src\admisiones\usecase\programaContacto\ListarContactosUseCase;
+use Src\admisiones\usecase\programaContacto\VerContactoUseCase;
 use Src\admisiones\usecase\programas\ListarProgramasUseCase;
 use Src\shared\di\FabricaDeRepositorios;
 
@@ -88,11 +90,11 @@ class ProgramaContactoController extends Controller
 
     public function show($id) 
     {
-        $editarContacto = new EditarContactoUseCase(
-            FabricaDeRepositorios::getInstance()->getProgramaContactoRepository()
+        $verContacto = new VerContactoUseCase(
+            FabricaDeRepositorios::getInstance()->getProgramaContactoRepository(),
         );
 
-        $response = $editarContacto->ejecutar($id);
+        $response = $verContacto->ejecutar($id);
 
         if ($response->getCode() != 200) {
             return redirect()->route('contactos.index')->with($response->getCode(), $response->getMessage());  
@@ -102,4 +104,43 @@ class ProgramaContactoController extends Controller
             'contacto' => $response->getData()
         ]);
     }
+
+    public function edit($id) 
+    {
+        $editarContacto = new EditarContactoUseCase(
+            FabricaDeRepositorios::getInstance()->getProgramaContactoRepository(),
+            FabricaDeRepositorios::getInstance()->getProgramaRepository(),
+        );
+
+        $response = $editarContacto->ejecutar($id);
+        if ($response->getCode() != 200) {
+            return redirect()->route('contactos.index')->with($response->getCode(), $response->getMessage());  
+        }
+
+        $data = $response->getData();
+        
+        return view('contactos.edit', [
+            'contacto' => $data['contacto'],
+            'programas' => $data['programas'],
+        ]);
+    }    
+
+    public function update(CrearContacto $req, int $id) {
+        $datosValidados = $req->validated();
+    
+        $actualizarContacto = new ActualizarContactoUseCase(
+            FabricaDeRepositorios::getInstance()->getProgramaContactoRepository()
+        );
+    
+        $response = $actualizarContacto->ejecutar($id, new ProgramaContactoDTO(
+            $datosValidados['nombre'],
+            $datosValidados['telefono'],
+            $datosValidados['email'],
+            (int)$datosValidados['programa_id'],
+            $datosValidados['observacion'],
+        ));
+    
+        return redirect()->route('contactos.index')->with($response->getCode(), $response->getMessage());
+    }
+    
 }
