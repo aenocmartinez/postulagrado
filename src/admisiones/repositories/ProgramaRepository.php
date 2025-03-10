@@ -6,6 +6,7 @@ use Src\admisiones\domain\Jornada;
 use Src\admisiones\domain\Metodologia;
 use Src\admisiones\domain\Modalidad;
 use Src\admisiones\domain\NivelEducativo;
+use Src\admisiones\domain\Programa;
 use Src\admisiones\domain\UnidadRegional;
 
 interface ProgramaRepository {
@@ -15,4 +16,5 @@ interface ProgramaRepository {
     public function jornada(): Jornada;
     public function unidadRegional(): UnidadRegional;
     public function buscarProgramasPorNivelEducativo(string $nombreNivelEducativo): array;
+    public function buscarPorID(int $programaID): Programa;
 }

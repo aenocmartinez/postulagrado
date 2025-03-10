@@ -47,7 +47,13 @@
                                 Seguimientos
                             </a>                            
                         </li>
-                        <li><a href="#" onclick="closeSidebarAfterClick()">Directorio de contactos</a></li>
+                        <li>
+                            <a href="{{ route('contactos.index') }}" 
+                                class="{{ request()->routeIs('contactos.*') ? 'active' : '' }}"
+                                onclick="closeSidebarAfterClick()">
+                                Directorio de contactos
+                            </a>                            
+                        </li>
                         <li><a href="#" onclick="closeSidebarAfterClick()">Notificaciones</a></li>
                         <li><a href="#" onclick="closeSidebarAfterClick()">Reportes</a></li>
                         <!-- <li><a href="#" onclick="closeSidebarAfterClick()">Tablero de Control</a></li>

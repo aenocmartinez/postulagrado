@@ -2,6 +2,8 @@
 
 namespace Src\admisiones\domain;
 
+use Src\admisiones\repositories\ProgramaContactoRepository;
+
 class ProgramaContacto 
 {
     private string $nombre;
@@ -10,7 +12,10 @@ class ProgramaContacto
     private string $observacion;
     private Programa $programa;
 
-    public function __construct(private int $id = 0) {}
+    public function __construct(
+        private ProgramaContactoRepository $repository,
+        private int $id = 0
+        ) {}
 
     public function getId(): int
     {
@@ -70,5 +75,21 @@ class ProgramaContacto
     public function setPrograma(Programa $programa): void
     {
         $this->programa = $programa;
+    }
+
+    public function existe(): bool {
+        return $this->id > 0;
+    }
+
+    public function crear(): bool {
+        return $this->repository->crear($this);
+    }
+
+    public function actualizar(): bool {
+        return $this->repository->actualizar($this);
+    }
+
+    public function eliminar(): bool {
+        return $this->repository->eliminar($this->getId());
     }
 }

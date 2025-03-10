@@ -11,8 +11,10 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\CalendarioController;
 use App\Http\Controllers\ProcesoController;
+use App\Http\Controllers\ProgramaContactoController;
 use App\Http\Controllers\SeguimientoController;
 use Illuminate\Support\Facades\Route;
+use Src\admisiones\dto\ProgramaContactoDTO;
 
 Route::middleware('guest')->group(function () {
     // Route::get('register', [RegisteredUserController::class, 'create'])
@@ -78,5 +80,11 @@ Route::middleware('auth')->group(function () {
     Route::get('seguimientos', [SeguimientoController::class, 'index'])->name('seguimientos.index');
     Route::get('procesos/{id}/seguimiento', [SeguimientoController::class, 'show'])->name('seguimientos.show');
 
+    // Contactos
+    Route::get('contactos', [ProgramaContactoController::class, 'index'])->name('contactos.index');
+    Route::get('contactos/create', [ProgramaContactoController::class, 'index'])->name('contactos.create');
+    Route::get('contactos/{id}/edit', [ProgramaContactoController::class, 'index'])->name('contactos.edit');
+    Route::delete('contactos/{id}', [ProgramaContactoController::class, 'index'])->name('contactos.destroy');
+    
 
 });

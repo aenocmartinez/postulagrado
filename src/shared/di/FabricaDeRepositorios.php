@@ -8,6 +8,7 @@ use Src\admisiones\dao\mysql\MetodologiaDao;
 use Src\admisiones\dao\mysql\ModalidadDao;
 use Src\admisiones\dao\mysql\NivelEducativoDao;
 use Src\admisiones\dao\mysql\ProcesoDao;
+use Src\admisiones\dao\mysql\ProgramaContactoDao;
 use Src\admisiones\dao\mysql\ProgramaDao;
 use Src\admisiones\dao\mysql\UnidadRegionalDao;
 use Src\admisiones\repositories\CalendarioRepository;
@@ -16,6 +17,7 @@ use Src\admisiones\repositories\MetodologiaRepository;
 use Src\admisiones\repositories\ModalidadRepository;
 use Src\admisiones\repositories\NivelEducativoRepository;
 use Src\admisiones\repositories\ProcesoRepository;
+use Src\admisiones\repositories\ProgramaContactoRepository;
 use Src\admisiones\repositories\ProgramaRepository;
 use Src\admisiones\repositories\UnidadRegionalRepository;
 
@@ -31,6 +33,7 @@ class FabricaDeRepositorios
     private JornadaRepository $jornadaRepo;
     private UnidadRegionalRepository $unidadRegionalRepo;
     private ProgramaRepository $programaRepo;
+    private ProgramaContactoRepository $programaContactoRepo;
 
     public function __construct()
     {
@@ -42,6 +45,7 @@ class FabricaDeRepositorios
         $this->jornadaRepo = new JornadaDao();
         $this->unidadRegionalRepo = new UnidadRegionalDao();
         $this->programaRepo = new ProgramaDao();
+        $this->programaContactoRepo = new ProgramaContactoDao();
     }
 
     public static function getInstance(): FabricaDeRepositorios 
@@ -86,5 +90,9 @@ class FabricaDeRepositorios
 
     public function getProgramaRepository(): ProgramaRepository {
         return $this->programaRepo;
+    }
+
+    public function getProgramaContactoRepository(): ProgramaContactoRepository {
+        return $this->programaContactoRepo;
     }
 }

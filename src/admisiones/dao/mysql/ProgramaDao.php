@@ -40,7 +40,7 @@ class ProgramaDao extends Model implements ProgramaRepository {
             FabricaDeRepositorios::getInstance()->getNivelEducativoRepository()
         );
     
-        $registro = $this->belongsTo(MetodologiaDao::class, 'nivel_educativo_id')->first();
+        $registro = $this->belongsTo(NivelEducativoDao::class, 'nivel_educativo_id')->first();
     
         if ($registro) {
             $nivelEducativo->setId($registro->id);
@@ -55,7 +55,7 @@ class ProgramaDao extends Model implements ProgramaRepository {
             FabricaDeRepositorios::getInstance()->getModalidadRepository()
         );
     
-        $registro = $this->belongsTo(MetodologiaDao::class, 'modalidad_id')->first();
+        $registro = $this->belongsTo(ModalidadDao::class, 'modalidad_id')->first();
     
         if ($registro) {
             $modalidad->setId($registro->id);
@@ -70,7 +70,7 @@ class ProgramaDao extends Model implements ProgramaRepository {
             FabricaDeRepositorios::getInstance()->getJornadaRepository()
         );
     
-        $registro = $this->belongsTo(MetodologiaDao::class, 'jornada_id')->first();
+        $registro = $this->belongsTo(JornadaDao::class, 'jornada_id')->first();
     
         if ($registro) {
             $jornada->setId($registro->id);
@@ -86,7 +86,7 @@ class ProgramaDao extends Model implements ProgramaRepository {
             FabricaDeRepositorios::getInstance()->getUnidadRegionalRepository()
         );
     
-        $registro = $this->belongsTo(MetodologiaDao::class, 'unidad_regional_id')->first();
+        $registro = $this->belongsTo(UnidadRegionalDao::class, 'unidad_regional_id')->first();
     
         if ($registro) {
             $unidadRegional->setId($registro->id);
@@ -99,7 +99,7 @@ class ProgramaDao extends Model implements ProgramaRepository {
     public function buscarProgramasPorNivelEducativo(string $nombreNivelEducativo): array {
         $programas = [];
     
-        $nivelEducativoID = 1; // Pregrado por defecto
+        $nivelEducativoID = 1;
         if (strtolower(trim($nombreNivelEducativo)) === "postgrado") {
             $nivelEducativoID = 2;
         }
@@ -133,5 +133,38 @@ class ProgramaDao extends Model implements ProgramaRepository {
         return $programas;
     }
     
+    public function buscarPorID(int $programaID): Programa {
 
+        try {
+            $programaDao = ProgramaDao::find($programaID);
+    
+            if (!$programaDao) {
+                Log::warning("No se encontró el programa con ID {$programaID}");
+                return new Programa(
+                    FabricaDeRepositorios::getInstance()->getProgramaRepository()
+                );
+            }
+    
+            $programa = new Programa(
+                FabricaDeRepositorios::getInstance()->getProgramaRepository()
+            );
+
+            $programa->setId($programaDao->id);
+            $programa->setNombre($programaDao->nombre);
+            $programa->setCodigo($programaDao->codigo);
+            $programa->setSnies($programaDao->snies);
+            $programa->setModalidad($programaDao->modalidad());
+            $programa->setUnidadRegional($programaDao->unidadRegional());
+            $programa->setNivelEducativo($programaDao->nivelEducativo());
+            $programa->setMetodologia($programaDao->metodologia());
+            $programa->setJornada($programaDao->jornada());
+    
+        } catch (\Exception $e) {
+            Log::error("Error al buscar el programa por ID {$programaID}: " . $e->getMessage());
+            return new Programa(FabricaDeRepositorios::getInstance()->getProgramaRepository());
+        }
+
+        return $programa;
+    }
+    
 }

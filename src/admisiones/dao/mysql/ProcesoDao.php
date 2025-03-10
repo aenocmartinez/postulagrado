@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Src\admisiones\domain\Proceso;
 use Src\admisiones\domain\Programa;
+use Src\admisiones\domain\ProgramaProceso;
 use Src\admisiones\repositories\ProcesoRepository;
 use Src\shared\di\FabricaDeRepositorios;
 
@@ -229,47 +230,58 @@ class ProcesoDao extends Model implements ProcesoRepository
             DB::table('proceso_programa')->where('proceso_id', $procesoID)->delete();
             return true;
         } catch (Exception $e) {
-            Log::error("Error al quitar todos los programas del proceso ID {$procesoID}: " . $e->getMessage());
+            Log::error("Error al quitar todos los programa del proceso ID {$procesoID}: " . $e->getMessage());
             return false;
         }
     }
 
     public function listarProgramas(int $procesoID): array {
-        $programas = [];
+        $programasProceso = [];
     
         try {            
-            $programaIds = DB::table('proceso_programa')
+
+            $procesoProgramas = DB::table('proceso_programa')
                 ->where('proceso_id', $procesoID)
-                ->pluck('programa_id')
-                ->toArray();
+                ->select('id as proceso_programa_id', 'programa_id')
+                ->get()
+                ->keyBy('programa_id');
     
-            if (empty($programaIds)) {
-                return $programas;
+            if ($procesoProgramas->isEmpty()) {
+                return $programasProceso;
             }
-    
+
+            $programaIds = $procesoProgramas->keys()->toArray();
+
             $programasDao = ProgramaDao::whereIn('id', $programaIds)->get();
     
             foreach ($programasDao as $programaDao) {
                 $programa = new Programa(
                     FabricaDeRepositorios::getInstance()->getProgramaRepository()
                 );
-    
+
                 $programa->setId($programaDao->id);
                 $programa->setNombre($programaDao->nombre);
                 $programa->setCodigo($programaDao->codigo);
                 $programa->setSnies($programaDao->snies);
-
                 $programa->setMetodologia($programaDao->metodologia());
                 $programa->setNivelEducativo($programaDao->nivelEducativo());
-    
-                $programas[] = $programa;
+                $programa->setModalidad($programaDao->modalidad());
+                $programa->setUnidadRegional($programaDao->unidadRegional());
+                $programa->setJornada($programaDao->jornada());
+
+                $proceso_programa_id = $procesoProgramas[$programaDao->id]->proceso_programa_id ?? null;
+
+                $programaProceso = new ProgramaProceso();
+                $programaProceso->setId($proceso_programa_id);
+                $programaProceso->setPrograma($programa);
+
+                $programasProceso[] = $programaProceso;
             }
         } catch (Exception $e) {
             Log::error("Error al listar programas del proceso ID {$procesoID}: " . $e->getMessage());
         }
     
-        return $programas;
+        return $programasProceso;
     }
-     
-        
+    
 }

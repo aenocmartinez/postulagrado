@@ -3,6 +3,7 @@
 namespace Src\admisiones\domain;
 
 use Src\admisiones\repositories\ProgramaRepository;
+use Src\shared\formato\FormatoString;
 
 class Programa 
 {
@@ -31,8 +32,8 @@ class Programa
     }
 
     public function getNombre(): string
-    {
-        return $this->nombre;
+    {        
+        return FormatoString::capital($this->nombre);
     }
 
     public function setNombre(string $nombre): void
@@ -108,5 +109,9 @@ class Programa
     public function setUnidadRegional(UnidadRegional $unidadRegional): void
     {
         $this->unidadRegional = $unidadRegional;
+    }
+
+    public function existe(): bool {
+        return $this->id > 0;
     }
 }
