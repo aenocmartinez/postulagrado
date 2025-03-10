@@ -70,6 +70,7 @@ Route::middleware('auth')->group(function () {
     Route::get('procesos/{id}/edit', [ProcesoController::class, 'edit'])->name('procesos.edit');
     Route::put('procesos/{id}', [ProcesoController::class, 'update'])->name('procesos.update');
     Route::delete('procesos/{id}', [ProcesoController::class, 'destroy'])->name('procesos.destroy');
+    Route::delete('procesos/{procesoID}/programas/{programaID}', [ProcesoController::class, 'quitarPrograma'])->name('procesos.quitar-programa');
     
     // Calendarios
     Route::get('procesos/{id}/calendario/actividades', [CalendarioController::class, 'index'])->name('procesos.actividades');

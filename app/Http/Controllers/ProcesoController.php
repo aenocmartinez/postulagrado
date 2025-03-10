@@ -12,6 +12,7 @@ use Src\admisiones\usecase\procesos\CrearProcesoUseCase;
 use Src\admisiones\usecase\procesos\EditarProcesoUseCase;
 use Src\admisiones\usecase\procesos\EliminarProcesoUseCase;
 use Src\admisiones\usecase\procesos\ListarProcesosUseCase;
+use Src\admisiones\usecase\procesos\QuitarProgramaAProcesoUseCase;
 use Src\shared\di\FabricaDeRepositorios;
 
 class ProcesoController extends Controller
@@ -102,5 +103,15 @@ class ProcesoController extends Controller
         $response = $eliminarProceso->ejecutar($id);
 
         return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
+    }
+
+    public function quitarPrograma($procesoID, $programaID)
+    {
+        $quitarPrograma = new QuitarProgramaAProcesoUseCase(
+            FabricaDeRepositorios::getInstance()->getProcesoRepository(),
+            FabricaDeRepositorios::getInstance()->getProgramaRepository(),
+        );
+
+        $quitarPrograma->ejecutar($procesoID, $programaID);
     }
 }

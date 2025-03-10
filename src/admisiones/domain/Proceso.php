@@ -164,6 +164,10 @@ class Proceso
         return $this->repository->agregarPrograma($this->id, $programa->getId());
     }
 
+    public function quitarPrograma(Programa $programa): bool {
+        return $this->repository->quitarPrograma($this->id, $programa->getId());
+    }
+
     public function getProgramas(): array {
         return $this->repository->listarProgramas($this->id);
     }

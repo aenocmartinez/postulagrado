@@ -203,16 +203,6 @@ class ProcesoDao extends Model implements ProcesoRepository
     
     public function quitarPrograma(int $procesoID, int $programaID): bool {
         try {
-            $existe = DB::table('proceso_programa')
-                ->where('proceso_id', $procesoID)
-                ->where('programa_id', $programaID)
-                ->exists();
-    
-            if (!$existe) {
-                Log::warning("El programa ID {$programaID} no está asociado al proceso ID {$procesoID}");
-                return false;
-            }
-
             DB::table('proceso_programa')
                 ->where('proceso_id', $procesoID)
                 ->where('programa_id', $programaID)
