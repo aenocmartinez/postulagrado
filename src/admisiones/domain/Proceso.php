@@ -171,4 +171,8 @@ class Proceso
     public function getProgramas(): array {
         return $this->repository->listarProgramas($this->id);
     }
+
+    public function getPrograma(int $programaID): ProgramaProceso {
+        return $this->repository->buscarProgramaPorProceso($this->id, $programaID);
+    } 
 }

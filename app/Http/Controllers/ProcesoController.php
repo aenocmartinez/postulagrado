@@ -8,6 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Src\admisiones\domain\Proceso;
 use Src\admisiones\usecase\procesos\ActualizarProcesoUseCase;
+use Src\admisiones\usecase\procesos\BuscarProgramaPorProcesoUseCase;
 use Src\admisiones\usecase\procesos\CrearProcesoUseCase;
 use Src\admisiones\usecase\procesos\EditarProcesoUseCase;
 use Src\admisiones\usecase\procesos\EliminarProcesoUseCase;
@@ -114,4 +115,19 @@ class ProcesoController extends Controller
 
         $quitarPrograma->ejecutar($procesoID, $programaID);
     }
+
+    public function consultarAvancePrograma($procesoID, $programaID) {
+
+        $buscarProgramaProceso = new BuscarProgramaPorProcesoUseCase(
+            FabricaDeRepositorios::getInstance()->getProcesoRepository(),
+            FabricaDeRepositorios::getInstance()->getProgramaRepository(),
+        );
+
+        $response = $buscarProgramaProceso->ejecutar($procesoID, $programaID);
+
+        return view('seguimientos.programa-avance', [
+            'programaProceso' => $response->getData()
+        ]);
+    }
+    
 }

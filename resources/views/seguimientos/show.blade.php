@@ -120,12 +120,12 @@
         </thead>
         <tbody id="tabla-programas">
             @foreach ($proceso->getProgramas() as $index => $programaProceso)
-            <tr class="border-b border-gray-300 bg-white hover:bg-gray-100 transition 
-                       {{ $index >= 10 ? 'programa-oculto hidden' : '' }}">
+            <tr class="border-b border-gray-300 bg-white hover:bg-gray-100 transition  text-xs 
+                    {{ $index >= 10 ? 'programa-oculto hidden' : '' }}">
                 <!-- Nombre con Tooltip -->
                 <td class="px-4 py-2 text-gray-900 relative group">
                     <span class="cursor-pointer tooltip" 
-                          data-info="Unidad Regional: {{ $programaProceso->getPrograma()->getUnidadRegional()->getNombre() }}">
+                        data-info="Unidad Regional: {{ $programaProceso->getPrograma()->getUnidadRegional()->getNombre() }}">
                         {{ $programaProceso->getPrograma()->getNombre() }}
                     </span>
                 </td>
@@ -140,21 +140,32 @@
 
                 <!-- Acciones -->
                 <td class="px-4 py-2 text-center">
-                    <button class="text-sm px-3 py-1 rounded border border-gray-400 text-gray-700 hover:bg-gray-100 transition btn-omitir"
-                        data-id="{{ $programaProceso->getPrograma()->getId() }}">
-                        Omitir
-                    </button>
+                    <div class="flex justify-center space-x-2">
+                        <button class="text-sm px-3 py-1 rounded border border-gray-400 text-gray-700 hover:bg-gray-100 transition btn-ver-mas"
+                                data-proceso-id="{{ $proceso->getId() }}" 
+                                data-programa-id="{{ $programaProceso->getPrograma()->getId() }}"
+                                onclick="cargarVistaProgramaAvance({{ $proceso->getId() }}, {{ $programaProceso->getPrograma()->getId() }})">
+                            Más información
+                        </button>
+
+                        <button class="text-sm px-3 py-1 rounded border border-gray-400 text-gray-700 hover:bg-gray-100 transition btn-omitir"
+                            data-id="{{ $programaProceso->getPrograma()->getId() }}">
+                            Omitir
+                        </button>
+                    </div>
                 </td>
+
             </tr>
             @endforeach
         </tbody>
+
     </table>
 </div>
 
 <!-- Paginación -->
 <div class="mt-4 flex justify-center">
     <button id="cargar-mas"
-            class="px-4 py-2 border border-gray-400 text-gray-700 rounded-md hover:bg-gray-100 transition">
+            class="px-4 py-2 border border-gray-400 text-gray-700 rounded-md hover:bg-gray-100 transition text-xs">
         Cargar Más
     </button>
 </div>
@@ -236,9 +247,26 @@
     function inicializarEventos() {
         $("#buscar-programa").on("input", filtrarProgramas);
         $("#cargar-mas").on("click", cargarMasProgramas);
-        $("#ver-todos").on("click", mostrarTodosLosProgramas); // 🟢 Asegurar que esta función existe
+
+        $(".btn-ver-mas").on("click", function () {
+            let procesoID = $(this).data("proceso-id");
+            let programaID = $(this).data("programa-id");
+
+            cargarVistaProgramaAvance(procesoID, programaID);
+
+            // 🔹 Remover el fondo sombreado de cualquier otra fila antes de aplicar
+            $("#tabla-programas tr").css("background-color", "");
+
+            // 🔹 Aplicar fondo amarillo directamente con estilos en línea
+            let filaSeleccionada = $(this).closest("tr");
+            filaSeleccionada.css("background-color", "#edf6fa"); // Amarillo claro
+        });
+
+        $(".btn-omitir").on("click", function () {
+            toggleOmitirPrograma($(this).data("id"));
+        });
+
         actualizarEventosTooltips();
-        actualizarEventosOmitir();
     }
 
     // ✅ 🔍 FILTRAR PROGRAMAS (Soporte para mayúsculas y tildes)
@@ -383,6 +411,25 @@
                     },
                 });
             }
+        });
+    }
+
+    // ✅ FUNCIÓN PARA MOSTRAR MÁS DETALLES DEL PROGRAMA
+    function cargarVistaProgramaAvance(procesoID, programaID) {
+        $.get(`{{ url('procesos') }}/${procesoID}/programas/${programaID}`, function (data) {
+            
+            // Insertar el contenido en la sección de notificaciones
+            $("#seccion-notificaciones").html(data);
+
+            // Ajustar la posición desplazando la pantalla hacia la sección
+            let posicion = $("#seccion-notificaciones").offset().top;
+
+            $("html, body").animate({
+                scrollTop: posicion - 20 // Ajuste pequeño para evitar que quede pegado al borde
+            }, 500);
+
+        }).fail(function () {
+            console.error("Error al cargar el avance del programa.");
         });
     }
 

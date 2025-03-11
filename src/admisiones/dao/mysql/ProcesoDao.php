@@ -273,5 +273,52 @@ class ProcesoDao extends Model implements ProcesoRepository
     
         return $programasProceso;
     }
+
+    public function buscarProgramaPorProceso(int $procesoID, int $programaID): ProgramaProceso
+    {
+        $programaProceso = new ProgramaProceso();
+        try {
+            $procesoPrograma = DB::table('proceso_programa')
+                ->where('proceso_id', $procesoID)
+                ->where('programa_id', $programaID)
+                ->select('id as proceso_programa_id', 'programa_id')
+                ->first();
+
+            if (!$procesoPrograma) {
+                return $programaProceso;
+            }
+
+            $programaDao = ProgramaDao::where('id', $programaID)->first();
+
+            if (!$programaDao) {
+                return $programaProceso;
+            }
+
+            $programa = new Programa(
+                FabricaDeRepositorios::getInstance()->getProgramaRepository()
+            );
+
+            $programa->setId($programaDao->id);
+            $programa->setNombre($programaDao->nombre);
+            $programa->setCodigo($programaDao->codigo);
+            $programa->setSnies($programaDao->snies);
+            $programa->setMetodologia($programaDao->metodologia());
+            $programa->setNivelEducativo($programaDao->nivelEducativo());
+            $programa->setModalidad($programaDao->modalidad());
+            $programa->setUnidadRegional($programaDao->unidadRegional());
+            $programa->setJornada($programaDao->jornada());
+
+            
+            $programaProceso->setId($procesoPrograma->proceso_programa_id);
+            $programaProceso->setPrograma($programa);
+
+        } catch (Exception $e) {
+            Log::error("Error al buscar el programa ID {$programaID} en el proceso ID {$procesoID}: " . $e->getMessage());
+            return $programaProceso;
+        }
+        
+        return $programaProceso;
+    }
+
     
 }

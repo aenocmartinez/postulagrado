@@ -48,5 +48,9 @@ class ProgramaProceso
 
     public function getPorcentajeAvance(): int {
         return $this->porcentajeAvance;
-    }    
+    }  
+    
+    public function existe(): bool {
+        return $this->id > 0;
+    }
 }

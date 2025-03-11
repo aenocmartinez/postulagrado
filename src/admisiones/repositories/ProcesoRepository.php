@@ -3,6 +3,7 @@
 namespace Src\admisiones\repositories;
 
 use Src\admisiones\domain\Proceso;
+use Src\admisiones\domain\ProgramaProceso;
 
 interface ProcesoRepository {
     public static function listarProcesos(): array;
@@ -16,4 +17,5 @@ interface ProcesoRepository {
     public function quitarPrograma(int $procesoID, int $programaID): bool;
     public function quitarTodosLosPrograma(int $procesoID): bool;
     public function listarProgramas(int $procesoID): array;
+    public function buscarProgramaPorProceso(int $procesoID, int $programaID): ProgramaProceso;
 }

@@ -71,7 +71,8 @@ Route::middleware('auth')->group(function () {
     Route::put('procesos/{id}', [ProcesoController::class, 'update'])->name('procesos.update');
     Route::delete('procesos/{id}', [ProcesoController::class, 'destroy'])->name('procesos.destroy');
     Route::delete('procesos/{procesoID}/programas/{programaID}', [ProcesoController::class, 'quitarPrograma'])->name('procesos.quitar-programa');
-    
+    Route::get('procesos/{procesoID}/programas/{programaID}', [ProcesoController::class, 'consultarAvancePrograma'])->name('seguimiento.programa-avance');
+
     // Calendarios
     Route::get('procesos/{id}/calendario/actividades', [CalendarioController::class, 'index'])->name('procesos.actividades');
     Route::post('procesos/{id}/calendario/actividades', [CalendarioController::class, 'store'])->name('actividades.store');

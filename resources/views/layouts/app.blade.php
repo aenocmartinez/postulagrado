@@ -110,18 +110,21 @@
                 </div>
                 
                 <!-- Notificaciones más compactas con altura fija -->
-                <div class="bg-white shadow-md rounded-lg p-4 border border-gray-200 text-sm h-[300px] overflow-y-auto">
-                    <h3 class="text-blue-900 text-base font-semibold">🔔 Últimas Notificaciones</h3>
-                    <ul class="text-gray-700 space-y-2 mt-2 notification-list text-xs">
-                        <li>📌 Nueva convocatoria abierta</li>
-                        <li>⚠️ Actualiza tus datos antes del 10 de marzo</li>
-                        <li>✅ Revisión de postulaciones completada</li>
-                        <li>🔄 Mantenimiento programado el 15 de marzo</li>
-                        <li>📅 Próximo cierre de postulaciones el 20 de marzo</li>
-                        <li>🚀 Nueva actualización disponible</li>
-                        <li>🔔 Recordatorio: Verificar documentos</li>
-                    </ul>
-                </div>
+                 <div id="seccion-notificaciones">
+
+                     <div class="bg-white shadow-md rounded-lg p-4 border border-gray-200 text-sm h-[300px] overflow-y-auto">
+                         <h3 class="text-blue-900 text-base font-semibold">🔔 Últimas Notificaciones</h3>
+                         <ul class="text-gray-700 space-y-2 mt-2 notification-list text-xs">
+                             <li>📌 Nueva convocatoria abierta</li>
+                             <li>⚠️ Actualiza tus datos antes del 10 de marzo</li>
+                             <li>✅ Revisión de postulaciones completada</li>
+                             <li>🔄 Mantenimiento programado el 15 de marzo</li>
+                             <li>📅 Próximo cierre de postulaciones el 20 de marzo</li>
+                             <li>🚀 Nueva actualización disponible</li>
+                             <li>🔔 Recordatorio: Verificar documentos</li>
+                         </ul>
+                     </div>
+                 </div>
             </div>
 
             <!-- Footer -->
