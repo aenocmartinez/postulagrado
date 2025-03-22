@@ -14,18 +14,23 @@
 <body class="bg-gray-100 font-sans h-screen flex flex-col">
     @php
         $httpCodes = [
-            200 => ['color' => 'bg-green-500 text-white', 'icon' => '✅'],
-            201 => ['color' => 'bg-green-600 text-white', 'icon' => '✅'],
-            404 => ['color' => 'bg-yellow-400 text-black', 'icon' => '⚠️'],
-            409 => ['color' => 'bg-red-500 text-white', 'icon' => '❌'],
+            200 => ['bg' => 'bg-green-100', 'text' => 'text-green-800', 'border' => 'border-green-300', 'icon' => '✅'],
+            201 => ['bg' => 'bg-green-100', 'text' => 'text-green-800', 'border' => 'border-green-300', 'icon' => '✅'],
+            404 => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800', 'border' => 'border-yellow-300', 'icon' => '⚠️'],
+            409 => ['bg' => 'bg-red-100', 'text' => 'text-red-800', 'border' => 'border-red-300', 'icon' => '❌'],
         ];
 
         $alertCode = collect($httpCodes)->keys()->first(fn($code) => session()->has($code));
     @endphp
 
     @if ($alertCode)
-        <div id="alert-message" class="{{ $httpCodes[$alertCode]['color'] }} px-4 py-3 text-sm text-center font-medium shadow-md">
-            {{ $httpCodes[$alertCode]['icon'] }} {{ session($alertCode) }}
+        <div id="alert-message"
+            class="w-full flex items-center justify-center px-4 py-3 border-b shadow transition-opacity duration-500 opacity-100
+                    {{ $httpCodes[$alertCode]['bg'] }} {{ $httpCodes[$alertCode]['text'] }} {{ $httpCodes[$alertCode]['border'] }}">
+            <div class="flex items-center gap-2 max-w-4xl w-full justify-center relative">
+                <p class="text-sm font-medium text-center w-full">{{ session($alertCode) }}</p>
+
+            </div>
         </div>
     @endif
 

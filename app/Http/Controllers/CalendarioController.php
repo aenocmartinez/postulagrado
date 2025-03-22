@@ -48,8 +48,7 @@ class CalendarioController extends Controller
             return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
         }
 
-        return redirect()->route('procesos.actividades', $procesoID)
-                ->with('status', ['code' => $response->getCode(), 'message' => $response->getMessage()]);
+        return redirect()->route('procesos.actividades', $procesoID)->with($response->getCode(), $response->getMessage());
     }
 
     private function actualizarActividad($procesoID, $datos): ResponsePostulaGrado
@@ -82,8 +81,7 @@ class CalendarioController extends Controller
         
         $response = $quitarActividad->ejecutar($procesoID, $actividadID);
         
-        return redirect()->route('procesos.actividades', $procesoID)
-                ->with('status', ['code' => $response->getCode(), 'message' => $response->getMessage()]);
+        return redirect()->route('procesos.actividades', $procesoID)->with($response->getCode(), $response->getMessage());
     }
     
 }
