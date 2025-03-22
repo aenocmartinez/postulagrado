@@ -85,9 +85,11 @@
             </h4>
             <div id="{{ strtolower(str_replace(' ', '_', $titulo)) }}" class="hidden">
                 <ul class="list-disc pl-4">
-                    @foreach ($data['items'] as $actividad)
-                        <li class="text-xs {{ $data['text'] }}">{{ $actividad[0] }} ({{ $actividad[1] }})</li>
-                    @endforeach
+                    @forelse ($data['items'] as $actividad)
+                        <li class="text-xs {{ $data['text'] }}">{{ $actividad[0] }} ({{ $actividad[2] }})</li>
+                    @empty
+                        <li class="text-xs">No se encontraron registros</li>
+                    @endforelse
                 </ul>
             </div>
         </div>

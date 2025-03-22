@@ -19,7 +19,7 @@
 
     <!-- Botón para mostrar el formulario alineado a la derecha -->
     <div class="mb-4 flex justify-end">
-        <button onclick="toggleFormulario()" id="btn-nueva-actividad" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+        <button onclick="toggleFormulario()" id="btn-nueva-actividad" class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition">
             + Nueva Actividad
         </button>
     </div>
@@ -76,7 +76,7 @@
             </div>
 
             <button type="submit" id="submit-btn"
-                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition">
                 Agregar Actividad
             </button>
         </form>

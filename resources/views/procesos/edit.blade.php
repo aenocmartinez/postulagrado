@@ -22,7 +22,7 @@
         
         <!-- Botones -->
         <div class="flex justify-end space-x-2">
-            <a href="{{ route('procesos.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
+            <a href="{{ route('procesos.index') }}" class="px-4 py-2 border border-gray-400 text-gray-700 rounded-md hover:bg-gray-100 transition">
                 Cancelar
             </a>
             <button type="submit" class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition">
