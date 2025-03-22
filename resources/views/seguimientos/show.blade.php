@@ -38,6 +38,7 @@
                         $item->getDescripcion(),
                         $item->getFechaInicio(),
                         $item->getFechaFin(),
+                        'finalizará el ',
                     ];
                 }
                 continue;
@@ -49,6 +50,7 @@
                         $item->getDescripcion(),
                         $item->getFechaInicio(),
                         $item->getFechaFin(),
+                        'finalizó el ',
                     ];
                 }
                 continue;
@@ -60,6 +62,7 @@
                         $item->getDescripcion(),
                         $item->getFechaInicio(),
                         $item->getFechaFin(),
+                        'iniciará el ',
                     ];
                 }
                 continue;
@@ -71,6 +74,7 @@
                         $item->getDescripcion(),
                         $item->getFechaInicio(),
                         $item->getFechaFin(),
+                        'iniciará el ',
                     ];
                 }
                 continue;
@@ -86,7 +90,17 @@
             <div id="{{ strtolower(str_replace(' ', '_', $titulo)) }}" class="hidden">
                 <ul class="list-disc pl-4">
                     @forelse ($data['items'] as $actividad)
-                        <li class="text-xs {{ $data['text'] }}">{{ $actividad[0] }} ({{ $actividad[2] }})</li>
+                    @php
+                        \Carbon\Carbon::setLocale('es');
+                        $fechaFormateada = \Carbon\Carbon::parse($actividad[2])->translatedFormat('d \d\e F \d\e Y');
+                        if ($titulo == "Programadas" || $titulo == "Próximas a Iniciar") {
+                            $fechaFormateada = \Carbon\Carbon::parse($actividad[1])->translatedFormat('d \d\e F \d\e Y');
+                        }
+
+                        $label = $actividad[3];
+
+                    @endphp
+                        <li class="text-xs {{ $data['text'] }}">{{ $actividad[0] }} ({{ $label .  $fechaFormateada }})</li>
                     @empty
                         <li class="text-xs">No se encontraron registros</li>
                     @endforelse
