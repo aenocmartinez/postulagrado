@@ -112,6 +112,22 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        'oracle_academico' => [
+            'driver'   => 'odbc',
+            'dsn'      => env('DB_ORACLE_DSN', 'oracle_uniauxs'),
+            'username' => env('DB_ORACLE_USERNAME', 'ACADEMICO'),
+            'password' => env('DB_ORACLE_PASSWORD', ''),
+            'database' => 'dummy', 
+        ],
+
+        'oracle_general' => [
+            'driver'   => 'odbc',
+            'dsn'      => env('DB_ORACLE_GENERAL_DSN', 'oracle_uniauxs'),
+            'username' => env('DB_ORACLE_GENERAL_USERNAME', 'GENERAL'),
+            'password' => env('DB_ORACLE_GENERAL_PASSWORD', ''),
+            'database' => 'dummy', 
+        ],
+
     ],
 
     /*
