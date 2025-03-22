@@ -12,6 +12,23 @@
 
 </head>
 <body class="bg-gray-100 font-sans h-screen flex flex-col">
+    @php
+        $httpCodes = [
+            200 => ['color' => 'bg-green-500 text-white', 'icon' => '✅'],
+            201 => ['color' => 'bg-green-600 text-white', 'icon' => '✅'],
+            404 => ['color' => 'bg-yellow-400 text-black', 'icon' => '⚠️'],
+            409 => ['color' => 'bg-red-500 text-white', 'icon' => '❌'],
+        ];
+
+        $alertCode = collect($httpCodes)->keys()->first(fn($code) => session()->has($code));
+    @endphp
+
+    @if ($alertCode)
+        <div id="alert-message" class="{{ $httpCodes[$alertCode]['color'] }} px-4 py-3 text-sm text-center font-medium shadow-md">
+            {{ $httpCodes[$alertCode]['icon'] }} {{ session($alertCode) }}
+        </div>
+    @endif
+
 
     <div class="flex flex-1 h-screen">
         <!-- Sidebar -->
@@ -149,6 +166,17 @@
             // document.getElementById('sidebar').classList.add('hidden');
         }
     </script>
+
+    <script>
+        setTimeout(() => {
+            const alert = document.getElementById('alert-message');
+            if (alert) {
+                alert.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+                setTimeout(() => alert.remove(), 500);
+            }
+        }, 4000);
+    </script>
+
 
     <!-- Sección para scripts adicionales -->
     @yield('scripts')
