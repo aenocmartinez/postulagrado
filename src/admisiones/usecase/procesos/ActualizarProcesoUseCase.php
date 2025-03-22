@@ -24,7 +24,7 @@ class ActualizarProcesoUseCase
 
         $proceso->setNombre($datos['nombre']);
         $proceso->setNivelEducativo($datos['nivelEducativo']);
-        $proceso->setEstado($datos['estado']);
+        // $proceso->setEstado($datos['estado']);
 
         $exito = $proceso->actualizar();
         if (!$exito) 

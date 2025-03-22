@@ -30,21 +30,3 @@
         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
     @enderror
 </div>
-
-<!-- Estado (Solo en edición) -->
-@if(isset($proceso))
-<div class="mb-4">
-    <label for="estado" class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
-    <select name="estado" id="estado"
-        class="border border-gray-300 px-3 py-2 rounded-md text-sm w-full focus:ring focus:ring-gray-400 outline-none
-        @error('estado') border-red-500 @enderror">
-        
-        <option value="Abierto" {{ old('estado', $proceso->getEstado()) == 'Abierto' ? 'selected' : '' }}>Abierto</option>
-        <option value="Cerrado" {{ old('estado', $proceso->getEstado()) == 'Cerrado' ? 'selected' : '' }}>Cerrado</option>
-    </select>
-
-    @error('estado')
-        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-    @enderror
-</div>
-@endif

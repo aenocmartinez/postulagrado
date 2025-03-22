@@ -23,7 +23,7 @@ class ActualizarProceso extends FormRequest
             'id' => $this->route('id'), // Obtiene el ID desde la URL
             'nombre' => trim($this->nombre),
             'nivelEducativo' => trim($this->nivelEducativo),
-            'estado' => trim($this->estado),
+            // 'estado' => trim($this->estado),
         ]);
     }
 
@@ -36,7 +36,7 @@ class ActualizarProceso extends FormRequest
             'id' => 'required|integer|exists:procesos,id',
             'nombre' => 'required|string|max:255|unique:procesos,nombre,' . $this->id . ',id,nivel_educativo,' . $this->nivelEducativo,
             'nivelEducativo' => 'required|in:Pregrado,Postgrado',
-            'estado' => 'required|in:Abierto,Cerrado',
+            // 'estado' => 'required|in:Abierto,Cerrado',
         ];
     }
 
@@ -58,8 +58,8 @@ class ActualizarProceso extends FormRequest
             'nivelEducativo.required' => 'El nivel educativo es obligatorio.',
             'nivelEducativo.in' => 'El nivel educativo debe ser Pregrado o Postgrado.',
 
-            'estado.required' => 'El estado del proceso es obligatorio.',
-            'estado.in' => 'El estado debe ser Abierto o Cerrado.',
+            // 'estado.required' => 'El estado del proceso es obligatorio.',
+            // 'estado.in' => 'El estado debe ser Abierto o Cerrado.',
         ];
     }
 }
