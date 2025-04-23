@@ -64,41 +64,72 @@ class ProgramaDao implements ProgramaRepository
         $programa = new Programa(
             FabricaDeRepositorios::getInstance()->getProgramaRepository()
         );
-
+    
         try {
-            $registro = DB::connection('oracle_academico')->table('ACADEMICO.PROGRAMA AS PROG')
-                ->select('PROG.PROG_ID AS id', 'PROG.PROG_NOMBRE AS nombre', 'PROG.PROG_CODIGO AS codigo', 'PROG.PROG_SNIES AS snies',
-                        'PROG.MOD_ID AS modalidad_id', 'PROG.METOD_ID AS metodologia_id', 'PROG.NIVEL_ID AS nivel_id', 'PROG.JORN_ID AS jornada_id')
-                ->where('PROG.PROG_ID', $programaID)
-                ->first();
-
-            if (!$registro) {
+            $sql = "
+                SELECT DISTINCT
+                    PROG.PROG_ID,
+                    PROG.PROG_NOMBRE,
+                    PROG.PROG_CODIGOPROGRAMA,
+                    PROG.PROG_CODIGOSNIES,
+                    MODA.MODA_ID,
+                    METO.METO_ID,
+                    NIED.NIED_ID,
+                    JORN.JORN_ID,
+                    UNID.UNID_ID
+                FROM
+                    ACADEMICO.PROGRAMA PROG,
+                    ACADEMICO.UNIDADPROGRAMA UNPR,
+                    ACADEMICO.UNIDAD UNID,
+                    ACADEMICO.METODOLOGIA METO,
+                    ACADEMICO.MODALIDAD MODA,
+                    ACADEMICO.JORNADA JORN,
+                    ACADEMICO.NIVELEDUCATIVO NIED
+                WHERE
+                    PROG.PROG_ID = UNPR.PROG_ID
+                    AND UNID.UNID_ID = UNPR.UNID_ID
+                    AND PROG.JORN_ID = JORN.JORN_ID
+                    AND PROG.MODA_ID = MODA.MODA_ID
+                    AND MODA.NIED_ID = NIED.NIED_ID
+                    AND METO.METO_ID = PROG.METO_ID
+                    AND UNID.UNID_REGIONAL = '1'
+                    AND PROG.PROG_ESTADO = 1
+                    AND NIED.NIED_ID IN (1, 2)
+                    AND PROG.PROG_ID = :id
+            ";
+    
+            $resultados = DB::connection('oracle_academico')->select($sql, ['id' => $programaID]);
+    
+            if (empty($resultados)) {
                 Log::warning("No se encontró el programa con ID {$programaID}");
                 return $programa;
             }
-
-            $this->programa_id = $registro->id;
-            $this->modalidad_id = $registro->modalidad_id;
-            $this->metodologia_id = $registro->metodologia_id;
-            $this->nivel_id = $registro->nivel_id;
-            $this->jornada_id = $registro->jornada_id;
-
-            $programa->setId($registro->id);
-            $programa->setNombre($registro->nombre);
-            $programa->setCodigo($registro->codigo);
-            $programa->setSnies($registro->snies);
+    
+            $registro = $resultados[0];
+    
+            // Guardamos IDs para búsquedas adicionales
+            $this->programa_id = $registro->PROG_ID;
+            $this->modalidad_id = $registro->MODA_ID;
+            $this->metodologia_id = $registro->METO_ID;
+            $this->nivel_id = $registro->NIED_ID;
+            $this->jornada_id = $registro->JORN_ID;
+    
+            $programa->setId($registro->PROG_ID);
+            $programa->setNombre($registro->PROG_NOMBRE);
+            $programa->setCodigo($registro->PROG_CODIGOPROGRAMA);
+            $programa->setSnies($registro->PROG_CODIGOSNIES);
             $programa->setModalidad($this->modalidad());
             $programa->setMetodologia($this->metodologia());
             $programa->setNivelEducativo($this->nivelEducativo());
             $programa->setJornada($this->jornada());
             $programa->setUnidadRegional($this->unidadRegional());
-
-        } catch (Exception $e) {
-            Log::error("Error al buscar el programa por ID {$programaID}: " . $e->getMessage());
+    
+        } catch (\Exception $e) {
+            Log::error("ProgramaDao / buscarPorID: " . $e->getMessage());
         }
-
+    
         return $programa;
-    }
+    }    
 
     public function listarProgramas(): array
     {
