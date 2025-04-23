@@ -10,31 +10,36 @@ use Src\shared\di\FabricaDeRepositorios;
 
 class UnidadRegionalDao implements UnidadRegionalRepository {
 
-    public function BuscarPorID(int $programaID): UnidadRegional {
+    public function BuscarPorID(int $programaID): UnidadRegional
+    {
         $unidadRegional = new UnidadRegional(
             FabricaDeRepositorios::getInstance()->getUnidadRegionalRepository()
         );
-
+    
         try {
-            $registro = DB::connection('oracle_academico')
-                ->table('ACADEMICO.UNIDADPROGRAMA AS UNPR')
-                ->join('ACADEMICO.UNIDAD AS UNID', 'UNID.UNID_ID', '=', 'UNPR.UNID_ID')
-                ->select('UNID.UNID_ID AS UNID_ID', 'UNID.UNID_NOMBRE AS UNID_NOMBRE')
-                ->where('UNPR.PROG_ID', $programaID)
-                ->where('UNID.UNID_REGIONAL', '1')
-                ->first();
-
+            $registro = DB::connection('oracle_academico')->selectOne(
+                "
+                SELECT UNID.UNID_ID, UNID.UNID_NOMBRE
+                FROM ACADEMICO.UNIDADPROGRAMA UNPR
+                JOIN ACADEMICO.UNIDAD UNID ON UNID.UNID_ID = UNPR.UNID_ID
+                WHERE UNPR.PROG_ID = :id
+                  AND UNID.UNID_REGIONAL = '1'
+                ",
+                ['id' => $programaID]
+            );
+    
             if ($registro) {
                 $unidadRegional->setId((int) $registro->UNID_ID);
                 $unidadRegional->setNombre((string) $registro->UNID_NOMBRE);
             }
-
+    
         } catch (\Exception $e) {
             Log::error("UnidadRegionalDao / BuscarPorID: " . $e->getMessage());
         }
-
+    
         return $unidadRegional;
     }
+    
 
     public function Listar(): array {
         $unidadesRegionales = [];

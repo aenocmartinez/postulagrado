@@ -10,17 +10,22 @@ use Src\shared\di\FabricaDeRepositorios;
 
 class MetodologiaDao implements MetodologiaRepository
 {
-    public function BuscarPorID(int $metodologiaID): Metodologia {
+    public function BuscarPorID(int $metodologiaID): Metodologia
+    {
         $metodologia = new Metodologia(
             FabricaDeRepositorios::getInstance()->getMetodologiaRepository()
         );
-
+    
         try {
-            $registro = DB::connection('oracle_academico')
-                ->table('ACADEMICO.METODOLOGIA')
-                ->where('METO_ID', $metodologiaID)
-                ->first();
-
+            $registro = DB::connection('oracle_academico')->selectOne(
+                "
+                SELECT METO_ID, METO_DESCRIPCION
+                FROM ACADEMICO.METODOLOGIA
+                WHERE METO_ID = :id
+                ",
+                ['id' => $metodologiaID]
+            );
+    
             if ($registro) {
                 $metodologia->setId((int) $registro->METO_ID);
                 $metodologia->setNombre((string) $registro->METO_DESCRIPCION);
@@ -28,9 +33,10 @@ class MetodologiaDao implements MetodologiaRepository
         } catch (\Exception $e) {
             Log::error("MetodologiaDao / BuscarPorID: " . $e->getMessage());
         }
-
+    
         return $metodologia;
     }
+    
 
     public function Listar(): array {
         $metodologias = [];

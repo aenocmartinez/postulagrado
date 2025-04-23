@@ -10,17 +10,22 @@ use Src\shared\di\FabricaDeRepositorios;
 
 class JornadaDao implements JornadaRepository
 {
-    public function BuscarPorID(int $jornadaID): Jornada {
+    public function BuscarPorID(int $jornadaID): Jornada
+    {
         $jornada = new Jornada(
             FabricaDeRepositorios::getInstance()->getJornadaRepository()
         );
-
+    
         try {
-            $registro = DB::connection('oracle_academico')
-                ->table('ACADEMICO.JORNADA')
-                ->where('JORN_ID', $jornadaID)
-                ->first();
-
+            $registro = DB::connection('oracle_academico')->selectOne(
+                "
+                SELECT JORN_ID, JORN_DESCRIPCION
+                FROM ACADEMICO.JORNADA
+                WHERE JORN_ID = :id
+                ",
+                ['id' => $jornadaID]
+            );
+    
             if ($registro) {
                 $jornada->setId((int) $registro->JORN_ID);
                 $jornada->setNombre((string) $registro->JORN_DESCRIPCION);
@@ -28,9 +33,9 @@ class JornadaDao implements JornadaRepository
         } catch (\Exception $e) {
             Log::error("JornadaDao / BuscarPorID: " . $e->getMessage());
         }
-
+    
         return $jornada;
-    }
+    }    
 
     public function Listar(): array {
         $jornadas = [];

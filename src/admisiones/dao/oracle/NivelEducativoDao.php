@@ -18,24 +18,29 @@ class NivelEducativoDao implements NivelEducativoRepository
         $nivelEducativo = new NivelEducativo(
             FabricaDeRepositorios::getInstance()->getNivelEducativoRepository()
         );
-
+    
         try {
-            $registro = DB::connection($this->conexion)
-                ->table($this->tabla)
-                ->where('NIED_ID', $nivelEducativoID)
-                ->first();
-
+            $registro = DB::connection('oracle_academico')->selectOne(
+                "
+                SELECT NIED_ID, NIED_DESCRIPCION
+                FROM ACADEMICO.NIVELEDUCATIVO
+                WHERE NIED_ID = :id
+                ",
+                ['id' => $nivelEducativoID]
+            );
+    
             if ($registro) {
                 $nivelEducativo->setId((int) $registro->NIED_ID);
                 $nivelEducativo->setNombre((string) $registro->NIED_DESCRIPCION);
             }
-
+    
         } catch (\Exception $e) {
             Log::error("NivelEducativoDao / BuscarPorID: " . $e->getMessage());
         }
-
+    
         return $nivelEducativo;
     }
+    
 
     public function Listar(): array
     {

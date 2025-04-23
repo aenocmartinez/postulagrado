@@ -10,27 +10,31 @@ use Src\shared\di\FabricaDeRepositorios;
 
 class ModalidadDao implements ModalidadRepository
 {
-    public function BuscarPorID(int $modalidadID): Modalidad {
+    public function BuscarPorID(int $modalidadID): Modalidad
+    {
         $modalidad = new Modalidad(
             FabricaDeRepositorios::getInstance()->getModalidadRepository()
         );
-
+    
         try {
-            $registro = DB::connection('oracle_academico')
-                ->table('ACADEMICO.MODALIDAD')
-                ->where('MODA_ID', $modalidadID)
-                ->first();
-
+            $sql = '
+                SELECT MODA_ID, MODA_DESCRIPCION FROM ACADEMICO.MODALIDAD WHERE MODA_ID = :id
+            ';
+            
+            $registro = DB::connection('oracle_academico')->selectOne($sql, ['id' => $modalidadID]);
+    
             if ($registro) {
                 $modalidad->setId((int) $registro->MODA_ID);
                 $modalidad->setNombre((string) $registro->MODA_DESCRIPCION);
             }
+    
         } catch (\Exception $e) {
             Log::error("ModalidadDao / BuscarPorID: " . $e->getMessage());
         }
-
+    
         return $modalidad;
     }
+    
 
     public function Listar(): array {
         $modalidades = [];
