@@ -1,6 +1,6 @@
 <?php
 
-namespace Src\admisiones\dao\oracle;
+namespace Src\admisiones\infraestructure\dao\oracle;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

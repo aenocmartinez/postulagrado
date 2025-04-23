@@ -1,6 +1,6 @@
 <?php
 
-namespace Src\admisiones\dao\mysql;
+namespace Src\admisiones\infraestructure\dao\mysql;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
