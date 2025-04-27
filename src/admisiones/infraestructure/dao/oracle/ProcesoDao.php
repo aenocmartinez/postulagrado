@@ -2,6 +2,7 @@
 
 namespace Src\admisiones\infraestructure\dao\oracle;
 
+use Illuminate\Support\Facades\Auth;
 use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Model;
@@ -141,8 +142,10 @@ class ProcesoDao extends Model implements ProcesoRepository
                     'PROC_NOMBRE'        => $proceso->getNombre(),
                     'NIED_ID'            => $nivelEducativoID,
                     'PROC_ESTADO'        => $proceso->getEstado(),
-                    'PROC_REGISTRADOPOR' => 'ABIMELEC',
+                    'PROC_REGISTRADOPOR' => Auth::user()->id,
                 ]);
+
+                Cache::forget('procesos_listado');
     
             return $insertado;
         } catch (Exception $e) {
@@ -159,6 +162,8 @@ class ProcesoDao extends Model implements ProcesoRepository
                 ->table('ACADEMPOSTULGRADO.PROCESO')
                 ->where('PROC_ID', $procesoID)
                 ->delete();
+
+                Cache::forget('procesos_listado');
 
             return $eliminados > 0;
         } 
@@ -186,7 +191,9 @@ class ProcesoDao extends Model implements ProcesoRepository
                 Log::warning("Intento de actualizar un proceso inexistente: {$proceso->getId()}");
                 return false;
             }
-    
+            
+            Cache::forget('procesos_listado');
+
             return true;
         } 
         catch (Exception $e) 

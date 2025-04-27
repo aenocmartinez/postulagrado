@@ -110,10 +110,15 @@ class ProcesoController extends Controller
     public function update(ActualizarProceso $request, $id)
     {
         $actualizarProceso = new ActualizarProcesoUseCase(
-            FabricaDeRepositorios::getInstance()->getProcesoRepository()
+            FabricaDeRepositorios::getInstance()->getProcesoRepository(),
+            FabricaDeRepositorios::getInstance()->getNivelEducativoRepository(),
         );
 
-        $response = $actualizarProceso->ejecutar($id, $request->validated());
+
+        $procesoDTO  = new ProcesoDTO($request['nombre']);
+        $procesoDTO->setNivelEducativo($request['nivelEducativo']);
+
+        $response = $actualizarProceso->ejecutar($id, $procesoDTO);
         
         return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
     }
