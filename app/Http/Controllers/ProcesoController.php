@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Http\Requests\ActualizarProceso;
 use App\Http\Requests\CrearProceso;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Src\admisiones\domain\Proceso;
+use Src\admisiones\dto\proceso\ProcesoDTO;
 use Src\admisiones\usecase\general\ListarNivelEducativoUseCase;
 use Src\admisiones\usecase\procesos\ActualizarProcesoUseCase;
 use Src\admisiones\usecase\procesos\BuscarProgramaPorProcesoUseCase;
@@ -62,15 +64,21 @@ class ProcesoController extends Controller
         ]);
     }
 
+    
     public function store(CrearProceso $request)
     {
+        $validatedData = $request->validated();
+
         $crearProceso = new CrearProcesoUseCase(
             FabricaDeRepositorios::getInstance()->getProcesoRepository(),
             FabricaDeRepositorios::getInstance()->getProgramaRepository(),
             FabricaDeRepositorios::getInstance()->getNivelEducativoRepository(),
         );
 
-        $response = $crearProceso->ejecutar($request->validated());
+        $procesoDTO  = new ProcesoDTO($validatedData['nombre']);
+        $procesoDTO->setNivelEducativo($validatedData['nivelEducativo']);
+
+        $response = $crearProceso->ejecutar($procesoDTO);
         
         return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
     }
@@ -79,15 +87,22 @@ class ProcesoController extends Controller
     {
         $editarProceso = new EditarProcesoUseCase(
             FabricaDeRepositorios::getInstance()->getProcesoRepository()
+        );      
+
+        $listarNivelEducativo = new ListarNivelEducativoUseCase(
+            FabricaDeRepositorios::getInstance()->getNivelEducativoRepository()
         );
 
         $response = $editarProceso->ejecutar($id);
         if ($response->getCode() != 200) {
             return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
         }
+        
+        $nivelesEducativo = $listarNivelEducativo->ejecutar();
 
         return view('procesos.edit', [
-            'proceso' => $response->getData()
+            'proceso' => $response->getData(),
+            'listaNivelEduactivo' => $nivelesEducativo->getData(),
         ]);
     }
 

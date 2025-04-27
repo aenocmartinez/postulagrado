@@ -179,7 +179,7 @@
                 alert.classList.add('opacity-0', 'transition-opacity', 'duration-500');
                 setTimeout(() => alert.remove(), 500);
             }
-        }, 4000);
+        }, 6000);
     </script>
 
 

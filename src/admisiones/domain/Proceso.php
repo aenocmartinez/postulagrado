@@ -23,7 +23,7 @@ class Proceso
         private CalendarioRepository $calendarioRepo,
         private NivelEducativoRepository $nivelRepo,
         private int $id = 0, 
-        private string $estado = "Abierto"
+        private string $estado = "ABIERTO"
     ) {
 
         

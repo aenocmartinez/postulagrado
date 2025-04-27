@@ -2,6 +2,7 @@
 
 namespace Src\admisiones\usecase\procesos;
 
+use Src\admisiones\dto\proceso\ProcesoDTO;
 use Src\admisiones\repositories\NivelEducativoRepository;
 use Src\admisiones\repositories\ProcesoRepository;
 use Src\admisiones\repositories\ProgramaRepository;
@@ -19,23 +20,23 @@ class CrearProcesoUseCase
         $this->nivelRepo = $nivelRepo;
     }
 
-    public function ejecutar($datos): ResponsePostulaGrado
+    public function ejecutar(ProcesoDTO $procesoDTO): ResponsePostulaGrado
     {
-        $nivelEducativo = $this->nivelRepo->BuscarPorID($datos['nivelEducativo']);
+        $nivelEducativo = $this->nivelRepo->BuscarPorID($procesoDTO->getNivelEducativo()->getId());
         if (!$nivelEducativo->existe()) 
         {
             return new ResponsePostulaGrado(404, "Nivel educativo no encontrado.");
         }
 
-        $proceso = $this->procesoRepo->buscarProcesoPorNombreYNivelEducativo($datos['nombre'], $nivelEducativo);
+        $proceso = $this->procesoRepo->buscarProcesoPorNombreYNivelEducativo($procesoDTO->getNombre(), $nivelEducativo);
         if ($proceso->existe()) 
         {
             return new ResponsePostulaGrado(409, "El nombre del proceso ya está en uso. Por favor, elige un nombre diferente.");
         }
 
-        $proceso->setNombre($datos['nombre']);
+        $proceso->setNombre($procesoDTO->getNombre());
         $proceso->setNivelEducativo($nivelEducativo);
-        $proceso->setEstado('Abierto');
+        $proceso->setEstado('ABIERTO');
 
         $exito = $proceso->crear();
         if (!$exito) 

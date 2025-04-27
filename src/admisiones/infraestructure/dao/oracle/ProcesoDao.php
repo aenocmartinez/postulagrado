@@ -3,6 +3,7 @@
 namespace Src\admisiones\infraestructure\dao\oracle;
 
 use Exception;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -26,40 +27,42 @@ class ProcesoDao extends Model implements ProcesoRepository
 
     public static function listarProcesos(): array
     {
-        $procesos = [];
-    
-        try 
-        {
-            $registros = DB::connection('oracle_academpostulgrado')
-                ->table('ACADEMPOSTULGRADO.PROCESO')
-                ->select('PROC_ID', 'PROC_NOMBRE', 'NIED_ID', 'PROC_ESTADO')
-                ->orderBy('PROC_ID')
-                ->get();
-    
-            $procesoRepo = FabricaDeRepositorios::getInstance()->getProcesoRepository();
-            $calendarioRepo = FabricaDeRepositorios::getInstance()->getCalendarioRepository();
-            $nivelEducativoRepo = FabricaDeRepositorios::getInstance()->getNivelEducativoRepository();
-    
-            foreach ($registros as $registro) {
-                $proceso = new Proceso($procesoRepo, $calendarioRepo, $nivelEducativoRepo);
-    
-                $nivelEducativo = $nivelEducativoRepo->BuscarPorID($registro->nied_id);
-    
-                $proceso->setId($registro->proc_id);
-                $proceso->setNombre($registro->proc_nombre);
-                $proceso->setNivelEducativo($nivelEducativo);
-                $proceso->setEstado($registro->proc_estado);
-    
-                $procesos[] = $proceso;
+        return Cache::remember('procesos_listado', now()->addMinutes(15), function () {
+            $procesos = [];
+
+            try 
+            {
+                $registros = DB::connection('oracle_academpostulgrado')
+                    ->table('ACADEMPOSTULGRADO.PROCESO')
+                    ->select('PROC_ID', 'PROC_NOMBRE', 'NIED_ID', 'PROC_ESTADO')
+                    ->orderBy('PROC_ID')
+                    ->get();
+
+                $procesoRepo = FabricaDeRepositorios::getInstance()->getProcesoRepository();
+                $calendarioRepo = FabricaDeRepositorios::getInstance()->getCalendarioRepository();
+                $nivelEducativoRepo = FabricaDeRepositorios::getInstance()->getNivelEducativoRepository();
+
+                foreach ($registros as $registro) {
+                    $proceso = new Proceso($procesoRepo, $calendarioRepo, $nivelEducativoRepo);
+
+                    $nivelEducativo = $nivelEducativoRepo->BuscarPorID($registro->nied_id);
+
+                    $proceso->setId($registro->proc_id);
+                    $proceso->setNombre($registro->proc_nombre);
+                    $proceso->setNivelEducativo($nivelEducativo);
+                    $proceso->setEstado($registro->proc_estado);
+
+                    $procesos[] = $proceso;
+                }
+            } 
+            catch (Exception $e) 
+            {
+                Log::error("Error en listarProcesos(): " . $e->getMessage());
             }
-        } 
-        catch (Exception $e) 
-        {
-            Log::error("Error en listarProcesos(): " . $e->getMessage());
-        }
-    
-        return $procesos;
-    }    
+
+            return $procesos;
+        });
+    }  
 
     public static function buscarProcesoPorNombreYNivelEducativo(string $nombre, NivelEducativo $nivelEducativo): Proceso
     {

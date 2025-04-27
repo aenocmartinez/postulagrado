@@ -20,7 +20,10 @@
 
         <option value=""></option>
         @foreach($listaNivelEduactivo as $nivelEducativo)
-            <option value="{{ $nivelEducativo->getId() }}">
+            <option value="{{ $nivelEducativo->getId() }}" 
+                    {{ isset($proceso) && $proceso->getNivelEducativo()->getId() == $nivelEducativo->getId() ? 'selected' : '' }}
+                    {{ old('nivelEducativo') == $nivelEducativo->getId() ? 'selected' : '' }}
+                >
             {{ $nivelEducativo->getNombre() }}
             </option>
         @endforeach
