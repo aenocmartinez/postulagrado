@@ -23,7 +23,7 @@ class CrearContacto extends FormRequest
             'nombre' => 'required|string|max:255',
             'telefono' => 'required|string|max:40',
             'email' => 'required|email|max:255',
-            'programa_id' => 'required|integer|exists:programas,id',
+            'programa_id' => 'required|integer',
             'observacion' => 'nullable|string|max:2000', // Permite nulo o texto
         ];
     }
@@ -43,7 +43,6 @@ class CrearContacto extends FormRequest
             'email.max' => 'El correo electrónico no puede superar los 255 caracteres.',
             'programa_id.required' => 'Debe seleccionar un programa.',
             'programa_id.integer' => 'El programa debe ser un número entero.',
-            'programa_id.exists' => 'El programa seleccionado no es válido.',
             'observacion.max' => 'La observación no puede superar los 2000 caracteres.',
         ];
     }

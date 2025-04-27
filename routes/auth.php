@@ -90,7 +90,7 @@ Route::middleware('auth')->group(function () {
     Route::get('contactos/{id}', [ProgramaContactoController::class, 'show'])->name('contactos.show');
     Route::delete('contactos/{id}', [ProgramaContactoController::class, 'destroy'])->name('contactos.destroy');
     Route::post('contactos', [ProgramaContactoController::class, 'store'])->name('contactos.store');
-    Route::put('contactos', [ProgramaContactoController::class, 'store'])->name('contactos.update');
+    Route::put('contactos/{id}', [ProgramaContactoController::class, 'update'])->name('contactos.update');
     
 
 });

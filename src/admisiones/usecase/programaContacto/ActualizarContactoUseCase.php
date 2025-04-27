@@ -2,6 +2,7 @@
 
 namespace Src\admisiones\usecase\programaContacto;
 
+use Illuminate\Support\Facades\Cache;
 use Src\admisiones\dto\ProgramaContactoDTO;
 use Src\admisiones\repositories\ProgramaContactoRepository;
 use Src\shared\di\FabricaDeRepositorios;
@@ -36,6 +37,8 @@ class ActualizarContactoUseCase {
         if (!$exito) {
             return new ResponsePostulaGrado(500, "Ha ocurrido un error en el sistema.");
         }
+
+        Cache::forget('contacto_' . $programaContactoID);
 
         return new ResponsePostulaGrado(200, "Contacto acutalizado exitosamente");
     }
