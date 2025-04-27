@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Cache;
 use Src\admisiones\domain\Actividad;
 use Src\admisiones\repositories\ProcesoRepository;
 use Src\shared\response\ResponsePostulaGrado;
+use Src\Admisiones\UseCase\Notificaciones\InformarActividadesProcesoUseCase;
 
 class AgregarActividadesMasivoUseCase
 {
@@ -13,27 +14,20 @@ class AgregarActividadesMasivoUseCase
 
     public function __construct(ProcesoRepository $procesoRepo)
     {
-        $this->procesoRepo = $procesoRepo;
+        $this->procesoRepo = $procesoRepo;        
     }
 
     public function ejecutar(int $procesoID, array $actividades): ResponsePostulaGrado
     {
         $proceso = $this->procesoRepo->buscarProcesoPorId($procesoID);
-        if (!$proceso->existe()) 
-        {
+        if (!$proceso->existe()) {
             return new ResponsePostulaGrado(404, "Proceso no encontrado.");
         }
-    
-        // if (empty($actividades)) 
-        // {
-        //     return new ResponsePostulaGrado(400, "No se recibieron actividades para guardar.");
-        // }
       
         $idsExistentes = array_map(function($actividad) {
             return $actividad->getId();
         }, $proceso->getActividades());
     
-
         $idsRecibidos = array_filter(array_column($actividades, 'id'), fn($id) => $id > 0);
     
         $idsEliminados = array_diff($idsExistentes, $idsRecibidos);
@@ -44,8 +38,7 @@ class AgregarActividadesMasivoUseCase
             $proceso->quitarActividad($actividad); 
         }
     
-        foreach ($actividades as $item) 
-        {
+        foreach ($actividades as $item) {
             $actividad = new Actividad();
             $actividad->setId($item['id']);
             $actividad->setDescripcion($item['descripcion']);
@@ -54,16 +47,18 @@ class AgregarActividadesMasivoUseCase
     
             $exito = $proceso->agregarActividad($actividad);
     
-            if (!$exito) 
-            {
+            if (!$exito) {
                 return new ResponsePostulaGrado(500, "Se produjo un error al guardar las actividades. Intente nuevamente.");
             }
         }
-        
+
+
+        $notificarCronograma = new InformarActividadesProcesoUseCase();        
+        $notificarCronograma->ejecutar($proceso, false); 
+
         Cache::forget('actividades_listado_proceso_' . $procesoID);
         Cache::forget('proceso_'.$procesoID);
     
         return new ResponsePostulaGrado(201, "La información se ha guardado con éxito.");
     }
-    
 }

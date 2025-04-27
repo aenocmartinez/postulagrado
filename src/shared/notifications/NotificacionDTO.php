@@ -7,12 +7,14 @@ class NotificacionDTO
     private $asunto;
     private $mensaje;
     private $destinatarios;
+    private $canales; 
 
-    public function __construct(string $asunto, string $mensaje, array $destinatarios)
+    public function __construct(string $asunto, string $mensaje, array $destinatarios, array $canales)
     {
         $this->asunto = $asunto;
         $this->mensaje = $mensaje;
         $this->destinatarios = $destinatarios;
+        $this->canales = $canales; 
     }
 
     public function getAsunto(): string
@@ -28,5 +30,10 @@ class NotificacionDTO
     public function getDestinatarios(): array
     {
         return $this->destinatarios;
+    }
+
+    public function getCanales(): array
+    {
+        return $this->canales; 
     }
 }
