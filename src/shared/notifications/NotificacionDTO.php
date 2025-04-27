@@ -14,7 +14,7 @@ class NotificacionDTO
         $this->asunto = $asunto;
         $this->mensaje = $mensaje;
         $this->destinatarios = $destinatarios;
-        $this->canales = $canales; 
+        $this->canales = $canales;
     }
 
     public function getAsunto(): string
@@ -34,6 +34,6 @@ class NotificacionDTO
 
     public function getCanales(): array
     {
-        return $this->canales; 
+        return $this->canales;
     }
 }

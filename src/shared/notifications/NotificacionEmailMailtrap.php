@@ -20,9 +20,8 @@ class NotificacionEmailMailtrap implements Notificacion
             $mensaje = $notificacionDTO->getMensaje();
             $asunto = $notificacionDTO->getAsunto();
 
-
+            // Enviar el correo a cada destinatario
             foreach ($destinatarios as $destinatario) {
-                
                 Mail::html($mensaje, function ($message) use ($destinatario, $asunto) {
                     $message->to($destinatario)
                             ->subject($asunto)

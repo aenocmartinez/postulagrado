@@ -2,10 +2,12 @@
 
 namespace Src\Admisiones\UseCase\Notificaciones;
 
-use Src\Shared\Notifications\GestorNotificaciones;
 use Src\Shared\Notifications\NotificacionDTO;
-use Src\Admisiones\Domain\Proceso;
+use Src\Admisiones\Repositories\ProgramaContactoRepository;
+use Src\Shared\Notifications\GestorNotificaciones;
 use Src\Shared\DI\FabricaDeRepositorios;
+use Carbon\Carbon;
+use Src\admisiones\domain\Proceso;
 
 class InformarActividadesProcesoUseCase
 {
@@ -29,18 +31,30 @@ class InformarActividadesProcesoUseCase
     {
         $contactos = $this->contactoRepo->listar();
 
+        // Crear asunto
         $asunto = $this->crearAsunto($proceso, $hayCambioCronograma);
 
-        $mensaje = $this->crearMensaje($proceso, $hayCambioCronograma);
-
+        // Preparar destinatarios y nombres
         $destinatarios = [];
+        $nombresDestinatarios = [];
+        
         foreach ($contactos as $contacto) {
-            $destinatarios[] = $contacto->getEmail(); 
+            // Crear el mensaje para cada destinatario
+            $mensaje = $this->crearMensaje($proceso, $hayCambioCronograma, $contacto);
+
+            // Crear el DTO con los datos del mensaje personalizado para cada destinatario
+            $notificacionDTO = new NotificacionDTO(
+                $asunto,
+                $mensaje,
+                [$contacto->getEmail()],  // Enviar solo a un destinatario
+                ['mailtrap'] // Canal de notificación
+            );
+
+            // Enviar la notificación
+            $this->gestorNotificaciones->enviarNotificacion($notificacionDTO);
         }
 
-        $notificacionDTO = new NotificacionDTO($asunto, $mensaje, $destinatarios, ['mailtrap']);
-
-        return $this->gestorNotificaciones->enviarNotificacion($notificacionDTO);
+        return true;
     }
 
     /**
@@ -53,10 +67,10 @@ class InformarActividadesProcesoUseCase
     private function crearAsunto(Proceso $proceso, bool $hayCambioCronograma): string
     {
         if ($hayCambioCronograma) {
-            return "Actualización cronograma de actividades: " . $proceso->getNombre();
+            return "Actualización del cronograma de actividades del proceso de grado: " . $proceso->getNombre();
         }
 
-        return "Cronograma de actividades: " . $proceso->getNombre();
+        return "Cronograma de actividades del proceso de grado: " . $proceso->getNombre();
     }
 
     /**
@@ -64,30 +78,43 @@ class InformarActividadesProcesoUseCase
      *
      * @param Proceso $proceso
      * @param bool $hayCambioCronograma
+     * @param $contacto
      * @return string
      */
-    private function crearMensaje(Proceso $proceso, bool $hayCambioCronograma): string
+    private function crearMensaje(Proceso $proceso, bool $hayCambioCronograma, $contacto): string
     {
         $actividades = $proceso->getActividades(); 
-        $mensaje = $hayCambioCronograma ? "Este es el cronograma actualizado de actividades del proceso de grado:\n\n" : "El cronograma de actividades del proceso de grado incluye las siguientes actividades:\n\n";
 
+        // Generamos el encabezado con el saludo genérico y personalizamos con el nombre del contacto
+        $mensaje = $hayCambioCronograma
+            ? "Estimado(a) " . $contacto->getNombre() . ",<br><br>A continuación se brinda la información actualizada sobre el cronograma de actividades del proceso de grado:<br><br>"
+            : "Estimado(a) " . $contacto->getNombre() . ",<br><br>A continuación se presenta el cronograma de actividades del proceso de grado:<br><br>";
+
+        // Mensaje HTML con la tabla de actividades
         $mensajeHTML = "<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; width: 100%;'>
                         <tr style='background-color: #f2f2f2;'>
-                            <th>Descripción</th>
-                            <th>Fecha de Inicio</th>
-                            <th>Fecha de Fin</th>
+                            <th style='padding: 8px;'>Descripción</th>
+                            <th style='padding: 8px;'>Fecha de Inicio</th>
+                            <th style='padding: 8px;'>Fecha de Fin</th>
                         </tr>";
 
         foreach ($actividades as $actividad) {
+            // Formateamos las fechas para que solo aparezca la fecha (sin hora)
+            $fechaInicio = Carbon::parse($actividad->getFechaInicio())->format('Y-m-d');
+            $fechaFin = Carbon::parse($actividad->getFechaFin())->format('Y-m-d');
+            
             $mensajeHTML .= "<tr>
-                                <td>" . $actividad->getDescripcion() . "</td>
-                                <td>" . $actividad->getFechaInicio() . "</td>
-                                <td>" . $actividad->getFechaFin() . "</td>
+                                <td style='padding: 8px;'>" . $actividad->getDescripcion() . "</td>
+                                <td style='padding: 8px;'>" . $fechaInicio . "</td>
+                                <td style='padding: 8px;'>" . $fechaFin . "</td>
                               </tr>";
         }
 
         $mensajeHTML .= "</table>";
 
-        return $mensaje . $mensajeHTML; 
+        // Agregar la firma institucional al final
+        $mensaje .= $mensajeHTML . "<br><br>Atentamente,<br><br><strong>Área de Admisiones</strong><br><strong>Universidad Colegio Mayor de Cundinamarca</strong>";
+
+        return $mensaje;
     }
 }
