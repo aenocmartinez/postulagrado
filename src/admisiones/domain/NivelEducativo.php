@@ -26,5 +26,9 @@ class NivelEducativo
 
     public function getNombre(): string {
         return $this->nombre;
-    }    
+    } 
+    
+    public function existe(): bool {
+        return $this->id > 0;
+    }
 }

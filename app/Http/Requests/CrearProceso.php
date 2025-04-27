@@ -37,7 +37,7 @@ class CrearProceso extends FormRequest
                 'max:255', 
                 'unique:procesos,nombre,NULL,id,nivel_educativo,' . $this->nivelEducativo
             ],
-            'nivelEducativo' => 'required|in:Pregrado,Postgrado',
+            'nivelEducativo' => 'required',
         ];
     }
 
@@ -52,7 +52,6 @@ class CrearProceso extends FormRequest
             'nombre.max' => 'El nombre no debe exceder los 255 caracteres.',
             'nombre.unique' => 'Ya existe un proceso con este nombre y nivel educativo.',
             'nivelEducativo.required' => 'El nivel educativo es obligatorio.',
-            'nivelEducativo.in' => 'El nivel educativo debe ser Pregrado o Postgrado.',
         ];
     }
 }

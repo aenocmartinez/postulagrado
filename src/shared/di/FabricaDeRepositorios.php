@@ -17,7 +17,7 @@ use Src\admisiones\infraestructure\dao\oracle\JornadaDao;
 use Src\admisiones\infraestructure\dao\oracle\MetodologiaDao;
 use Src\admisiones\infraestructure\dao\oracle\ModalidadDao;
 use Src\admisiones\infraestructure\dao\oracle\NivelEducativoDao;
-use Src\admisiones\infraestructure\dao\mysql\ProcesoDao;
+use Src\admisiones\infraestructure\dao\oracle\ProcesoDao;
 use Src\admisiones\infraestructure\dao\mysql\ProgramaContactoDao;
 use Src\admisiones\infraestructure\dao\oracle\ProgramaDao;
 use Src\admisiones\infraestructure\dao\oracle\UnidadRegionalDao;

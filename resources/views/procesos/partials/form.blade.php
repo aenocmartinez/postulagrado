@@ -17,13 +17,14 @@
     <select name="nivelEducativo" id="nivelEducativo"
         class="border border-gray-300 px-3 py-2 rounded-md text-sm w-full focus:ring focus:ring-gray-400 outline-none
         @error('nivelEducativo') border-red-500 @enderror">
+
+        <option value=""></option>
+        @foreach($listaNivelEduactivo as $nivelEducativo)
+            <option value="{{ $nivelEducativo->getId() }}">
+            {{ $nivelEducativo->getNombre() }}
+            </option>
+        @endforeach
         
-        <option value="Pregrado" {{ old('nivelEducativo', isset($proceso) ? $proceso->getNivelEducativo() : '') == 'Pregrado' ? 'selected' : '' }}>
-            Pregrado
-        </option>
-        <option value="Postgrado" {{ old('nivelEducativo', isset($proceso) ? $proceso->getNivelEducativo() : '') == 'Postgrado' ? 'selected' : '' }}>
-            Postgrado
-        </option>
     </select>
 
     @error('nivelEducativo')

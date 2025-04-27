@@ -7,6 +7,7 @@ use App\Http\Requests\CrearProceso;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Src\admisiones\domain\Proceso;
+use Src\admisiones\usecase\general\ListarNivelEducativoUseCase;
 use Src\admisiones\usecase\procesos\ActualizarProcesoUseCase;
 use Src\admisiones\usecase\procesos\BuscarProgramaPorProcesoUseCase;
 use Src\admisiones\usecase\procesos\CrearProcesoUseCase;
@@ -51,14 +52,22 @@ class ProcesoController extends Controller
 
     public function create()
     {
-        return view('procesos.create');
+        $listarNivelEducativo = new ListarNivelEducativoUseCase(
+            FabricaDeRepositorios::getInstance()->getNivelEducativoRepository()
+        );
+
+        $response = $listarNivelEducativo->ejecutar();        
+        return view('procesos.create', [
+            'listaNivelEduactivo' => $response->getData(),
+        ]);
     }
 
     public function store(CrearProceso $request)
     {
         $crearProceso = new CrearProcesoUseCase(
             FabricaDeRepositorios::getInstance()->getProcesoRepository(),
-            FabricaDeRepositorios::getInstance()->getProgramaRepository()
+            FabricaDeRepositorios::getInstance()->getProgramaRepository(),
+            FabricaDeRepositorios::getInstance()->getNivelEducativoRepository(),
         );
 
         $response = $crearProceso->ejecutar($request->validated());

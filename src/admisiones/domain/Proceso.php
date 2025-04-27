@@ -5,13 +5,14 @@ namespace Src\admisiones\domain;
 use Carbon\Carbon;
 use Src\admisiones\dao\mysql\CalendarioDao;
 use Src\admisiones\repositories\CalendarioRepository;
+use Src\admisiones\repositories\NivelEducativoRepository;
 use Src\admisiones\repositories\ProcesoRepository;
 use Src\shared\formato\FormatoFecha;
 
 class Proceso 
 {    
     private string              $nombre;
-    private string              $nivelEducativo;
+    private NivelEducativo      $nivelEducativo;
     private Calendario          $calendario;
 
     /** @var Documento[] $documentos */
@@ -20,11 +21,12 @@ class Proceso
     public function __construct(
         private ProcesoRepository   $repository,
         private CalendarioRepository $calendarioRepo,
+        private NivelEducativoRepository $nivelRepo,
         private int $id = 0, 
         private string $estado = "Abierto"
     ) {
 
-        $this->repository = $repository;
+        
     }
 
     public function setId(int $id): void {
@@ -43,11 +45,11 @@ class Proceso
         return $this->nombre;
     }
 
-    public function setNivelEducativo(string $nivelEducativo): void {
+    public function setNivelEducativo(NivelEducativo $nivelEducativo): void {
         $this->nivelEducativo = $nivelEducativo;
     }
 
-    public function getNivelEducativo(): string {
+    public function getNivelEducativo(): NivelEducativo {
         return $this->nivelEducativo;
     }
 
@@ -73,10 +75,12 @@ class Proceso
             return false;
         }
 
-        $calendario = new Calendario();
-        $calendario->setProceso($this);
+        return true;
 
-        return CalendarioDao::crearCalendario($calendario);
+        // $calendario = new Calendario();
+        // $calendario->setProceso($this);
+
+        // return $this->calendarioRepo->crearCalendario($calendario);
     }
 
     public function eliminar(): bool {

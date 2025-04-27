@@ -50,7 +50,7 @@
                     @forelse($procesos as $proceso)
                         <tr class="border-b border-gray-300 bg-white hover:bg-gray-100 transition">
                             <td class="px-4 py-2 text-gray-900">{{ $proceso->getNombre() }}</td>
-                            <td class="px-4 py-2 text-gray-900">{{ $proceso->getNivelEducativo() }}</td>
+                            <td class="px-4 py-2 text-gray-900">{{ $proceso->getNivelEducativo()->getNombre() }}</td>
                             <td class="px-4 py-2 font-semibold {{ $proceso->getEstado() == 'Abierto' ? 'text-orange-500' : 'text-gray-900' }}">
                                 {{ ucfirst($proceso->getEstado()) }}
                             </td>

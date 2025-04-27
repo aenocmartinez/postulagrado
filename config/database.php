@@ -128,6 +128,14 @@ return [
             'database' => 'dummy', 
         ],
 
+        'oracle_academpostulgrado' => [
+            'driver'   => 'odbc',
+            'dsn'      => env('DB_ORACLE_ACADEMPOSTULGRADO_DSN', 'oracle_uniauxs'),
+            'username' => env('DB_ORACLE_ACADEMPOSTULGRADO_USERNAME', 'ACADEMPOSTULGRADO'),
+            'password' => env('DB_ORACLE_ACADEMPOSTULGRADO_PASSWORD', ''),
+            'database' => 'dummy', 
+        ],
+
     ],
 
     /*

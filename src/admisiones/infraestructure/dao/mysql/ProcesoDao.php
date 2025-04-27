@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Src\admisiones\domain\NivelEducativo;
 use Src\admisiones\domain\Proceso;
 use Src\admisiones\domain\Programa;
 use Src\admisiones\domain\ProgramaProceso;
@@ -45,7 +46,7 @@ class ProcesoDao extends Model implements ProcesoRepository
         return $procesos;
     }
 
-    public static function buscarProcesoPorNombreYNivelEducativo(string $nombre, string $nivelEducativo): Proceso
+    public static function buscarProcesoPorNombreYNivelEducativo(string $nombre, NivelEducativo $nivelEducativo): Proceso
     {
         $proceso = new Proceso(
             FabricaDeRepositorios::getInstance()->getProcesoRepository(),
@@ -55,7 +56,7 @@ class ProcesoDao extends Model implements ProcesoRepository
         try {
             
             $registro = self::where('nombre', $nombre)
-                            ->where('nivel_educativo', $nivelEducativo)
+                            ->where('nivel_educativo', $nivelEducativo->getNombre())
                             ->first();
     
             if ($registro) {
