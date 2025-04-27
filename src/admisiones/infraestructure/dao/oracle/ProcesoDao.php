@@ -138,24 +138,32 @@ class ProcesoDao extends Model implements ProcesoRepository
     {
         try {
             $nivelEducativoID = $proceso->getNivelEducativo()->getId();
-    
-            $insertado = DB::connection('oracle_academpostulgrado')
+
+            $nuevoID = DB::connection('oracle_academpostulgrado')
+                ->selectOne('SELECT ACADEMPOSTULGRADO.S_PROCESO_ID.NEXTVAL AS id FROM DUAL')
+                ->id;
+
+            DB::connection('oracle_academpostulgrado')
                 ->table('ACADEMPOSTULGRADO.PROCESO')
                 ->insert([
+                    'PROC_ID'            => $nuevoID,
                     'PROC_NOMBRE'        => $proceso->getNombre(),
                     'NIED_ID'            => $nivelEducativoID,
                     'PROC_ESTADO'        => $proceso->getEstado(),
                     'PROC_REGISTRADOPOR' => Auth::user()->id,
+                    'PROC_FECHACAMBIO'   => now(),
                 ]);
 
-                Cache::forget('procesos_listado');
+            $proceso->setId($nuevoID);
+
+            Cache::forget('procesos_listado');
     
-            return $insertado;
-        } catch (Exception $e) {
+            return true;
+        } catch (\Exception $e) {
             Log::error("Error en crearProceso(): " . $e->getMessage());
             return false;
         }
-    }
+    }    
     
     public function eliminarProceso(int $procesoID): bool
     {
@@ -222,151 +230,134 @@ class ProcesoDao extends Model implements ProcesoRepository
     }
     
     
-    public function agregarPrograma(int $procesoID, int $programaID): bool {
+    public function agregarPrograma(int $procesoID, int $programaID): bool
+    {
         try {
-
-            $existe = DB::table('proceso_programa')
-                ->where('proceso_id', $procesoID)
-                ->where('programa_id', $programaID)
-                ->exists();
     
-            if ($existe) {
-                Log::warning("El programa ID {$programaID} ya está asociado al proceso ID {$procesoID}");
-                return false;
-            }
-    
-            DB::table('proceso_programa')->insert([
-                'proceso_id' => $procesoID,
-                'programa_id' => $programaID,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            DB::connection('oracle_academpostulgrado')
+                ->table('ACADEMPOSTULGRADO.PROCESO_PROGRAMA')
+                ->insert([
+                    'PROC_ID'            => $procesoID,
+                    'PROG_ID'            => $programaID,
+                    'PROGR_REGISTRADOPOR' => Auth::user()->id ?? 'system', // O usuario del sistema si aplica
+                    'PROGR_FECHACAMBIO'   => now(),
+                ]);
     
             return true;
-        } catch (Exception $e) {
+
+        } catch (\Exception $e) {
             Log::error("Error al agregar programa ID {$programaID} al proceso ID {$procesoID}: " . $e->getMessage());
             return false;
         }
     }
     
-    public function quitarPrograma(int $procesoID, int $programaID): bool {
+    public function quitarPrograma(int $procesoID, int $programaID): bool
+    {
         try {
-            DB::table('proceso_programa')
-                ->where('proceso_id', $procesoID)
-                ->where('programa_id', $programaID)
+            DB::connection('oracle_academpostulgrado')
+                ->table('ACADEMPOSTULGRADO.PROCESO_PROGRAMA')
+                ->where('PROC_ID', $procesoID)
+                ->where('PROG_ID', $programaID)
                 ->delete();
     
             return true;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::error("Error al quitar programa ID {$programaID} del proceso ID {$procesoID}: " . $e->getMessage());
             return false;
         }
-    }  
+    }
     
-    public function quitarTodosLosPrograma(int $procesoID): bool {
+    public function quitarTodosLosPrograma(int $procesoID): bool
+    {
         try {            
-            DB::table('proceso_programa')->where('proceso_id', $procesoID)->delete();
+            DB::connection('oracle_academpostulgrado')
+                ->table('ACADEMPOSTULGRADO.PROCESO_PROGRAMA')
+                ->where('PROC_ID', $procesoID)
+                ->delete();
+    
             return true;
-        } catch (Exception $e) {
-            Log::error("Error al quitar todos los programa del proceso ID {$procesoID}: " . $e->getMessage());
+        } catch (\Exception $e) {
+            Log::error("Error al quitar todos los programas del proceso ID {$procesoID}: " . $e->getMessage());
             return false;
         }
-    }
+    }    
 
-    public function listarProgramas(int $procesoID): array {
-        $programasProceso = [];
+    public function listarProgramas(int $procesoID): array
+    {
+        return Cache::remember('programas_proceso_' . $procesoID, now()->addHours(4), function () use ($procesoID) {
+            $programasProceso = [];
     
-        // try {            
-
-        //     $procesoProgramas = DB::table('proceso_programa')
-        //         ->where('proceso_id', $procesoID)
-        //         ->select('id as proceso_programa_id', 'programa_id')
-        //         ->get()
-        //         ->keyBy('programa_id');
+            try {
+                $procesoProgramas = DB::connection('oracle_academpostulgrado')
+                    ->table('ACADEMPOSTULGRADO.PROCESO_PROGRAMA')
+                    ->where('PROC_ID', $procesoID)
+                    ->select('PROGR_ID AS proceso_programa_id', 'PROG_ID AS programa_id')
+                    ->get()
+                    ->keyBy('programa_id');
     
-        //     if ($procesoProgramas->isEmpty()) {
-        //         return $programasProceso;
-        //     }
-
-        //     $programaIds = $procesoProgramas->keys()->toArray();
-
-        //     $programasDao = ProgramaDao::whereIn('id', $programaIds)->get();
+                if ($procesoProgramas->isEmpty()) {
+                    return $programasProceso;
+                }
     
-        //     foreach ($programasDao as $programaDao) {
-        //         $programa = new Programa(
-        //             FabricaDeRepositorios::getInstance()->getProgramaRepository()
-        //         );
-
-        //         $programa->setId($programaDao->id);
-        //         $programa->setNombre($programaDao->nombre);
-        //         $programa->setCodigo($programaDao->codigo);
-        //         $programa->setSnies($programaDao->snies);
-        //         $programa->setMetodologia($programaDao->metodologia());
-        //         $programa->setNivelEducativo($programaDao->nivelEducativo());
-        //         $programa->setModalidad($programaDao->modalidad());
-        //         $programa->setUnidadRegional($programaDao->unidadRegional());
-        //         $programa->setJornada($programaDao->jornada());
-
-        //         $proceso_programa_id = $procesoProgramas[$programaDao->id]->proceso_programa_id ?? null;
-
-        //         $programaProceso = new ProgramaProceso();
-        //         $programaProceso->setId($proceso_programa_id);
-        //         $programaProceso->setPrograma($programa);
-
-        //         $programasProceso[] = $programaProceso;
-        //     }
-        // } catch (Exception $e) {
-        //     Log::error("Error al listar programas del proceso ID {$procesoID}: " . $e->getMessage());
-        // }
+                $programaRepository = FabricaDeRepositorios::getInstance()->getProgramaRepository();
     
-        return $programasProceso;
+                foreach ($procesoProgramas as $programaID => $procesoPrograma) {
+                    $programa = $programaRepository->buscarPorId($programaID);
+    
+                    if (!$programa || !$programa->existe()) {
+                        continue;
+                    }
+    
+                    $programaProceso = new ProgramaProceso();
+                    $programaProceso->setId($procesoPrograma->proceso_programa_id);
+                    $programaProceso->setPrograma($programa);
+    
+                    $programasProceso[] = $programaProceso;
+                }
+            } catch (\Exception $e) {
+                Log::error("Error al listar programas del proceso ID {$procesoID}: " . $e->getMessage());
+            }
+    
+            return $programasProceso;
+        });
     }
 
     public function buscarProgramaPorProceso(int $procesoID, int $programaID): ProgramaProceso
     {
-        $programaProceso = new ProgramaProceso();
-        // try {
-        //     $procesoPrograma = DB::table('proceso_programa')
-        //         ->where('proceso_id', $procesoID)
-        //         ->where('programa_id', $programaID)
-        //         ->select('id as proceso_programa_id', 'programa_id')
-        //         ->first();
-
-        //     if (!$procesoPrograma) {
-        //         return $programaProceso;
-        //     }
-
-        //     $programaDao = ProgramaDao::where('id', $programaID)->first();
-
-        //     if (!$programaDao) {
-        //         return $programaProceso;
-        //     }
-
-        //     $programa = new Programa(
-        //         FabricaDeRepositorios::getInstance()->getProgramaRepository()
-        //     );
-
-        //     $programa->setId($programaDao->id);
-        //     $programa->setNombre($programaDao->nombre);
-        //     $programa->setCodigo($programaDao->codigo);
-        //     $programa->setSnies($programaDao->snies);
-        //     $programa->setMetodologia($programaDao->metodologia());
-        //     $programa->setNivelEducativo($programaDao->nivelEducativo());
-        //     $programa->setModalidad($programaDao->modalidad());
-        //     $programa->setUnidadRegional($programaDao->unidadRegional());
-        //     $programa->setJornada($programaDao->jornada());
-
-            
-        //     $programaProceso->setId($procesoPrograma->proceso_programa_id);
-        //     $programaProceso->setPrograma($programa);
-
-        // } catch (Exception $e) {
-        //     Log::error("Error al buscar el programa ID {$programaID} en el proceso ID {$procesoID}: " . $e->getMessage());
-        //     return $programaProceso;
-        // }
-        
-        return $programaProceso;
+        return Cache::remember('programa_proceso_' . $procesoID . '_' . $programaID, now()->addHours(4), function () use ($procesoID, $programaID) {
+            $programaProceso = new ProgramaProceso();
+    
+            try {
+                $procesoPrograma = DB::connection('oracle_academpostulgrado')
+                    ->table('ACADEMPOSTULGRADO.PROCESO_PROGRAMA')
+                    ->where('PROC_ID', $procesoID)
+                    ->where('PROG_ID', $programaID)
+                    ->select('PROGR_ID AS proceso_programa_id', 'PROG_ID AS programa_id')
+                    ->first();
+    
+                if (!$procesoPrograma) {
+                    return $programaProceso;
+                }
+    
+                $programa = FabricaDeRepositorios::getInstance()
+                    ->getProgramaRepository()
+                    ->buscarPorId($programaID);
+    
+                if (!$programa || !$programa->existe()) {
+                    return $programaProceso;
+                }
+    
+                $programaProceso->setId($procesoPrograma->proceso_programa_id);
+                $programaProceso->setPrograma($programa);
+    
+            } catch (\Exception $e) {
+                Log::error("Error al buscar el programa ID {$programaID} en el proceso ID {$procesoID}: " . $e->getMessage());
+                return $programaProceso;
+            }
+    
+            return $programaProceso;
+        });
     }
-
+      
     
 }

@@ -44,12 +44,12 @@ class CrearProcesoUseCase
             return new ResponsePostulaGrado(500, "Se ha producido un error en el sistema. Por favor, inténtelo de nuevo más tarde.");   
         }
 
-        // $programas = $this->programaRepo->buscarProgramasPorNivelEducativo($proceso->getNivelEducativo()->getNombre());
+        $programas = $this->programaRepo->buscarProgramasPorNivelEducativo($proceso->getNivelEducativo()->getId());
 
-        // foreach($programas as $programa) {
+        foreach($programas as $programa) {
 
-        //     $proceso->agregarPrograma($programa);
-        // }
+            $proceso->agregarPrograma($programa);
+        }
 
         return new ResponsePostulaGrado(201, "El proceso se ha creado exitosamente.");
     }

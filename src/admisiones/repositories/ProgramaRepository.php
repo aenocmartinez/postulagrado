@@ -15,7 +15,7 @@ interface ProgramaRepository {
     public function modalidad(): Modalidad;
     public function jornada(): Jornada;
     public function unidadRegional(): UnidadRegional;
-    public function buscarProgramasPorNivelEducativo(string $nombreNivelEducativo): array;
+    public function buscarProgramasPorNivelEducativo(int $nivelEducativoID): array;
     public function buscarPorID(int $programaID): Programa;
     public function listarProgramas(): array;
 }
