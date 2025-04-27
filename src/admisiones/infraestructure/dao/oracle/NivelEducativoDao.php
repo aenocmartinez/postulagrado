@@ -17,27 +17,30 @@ class NivelEducativoDao implements NivelEducativoRepository
 
     public function BuscarPorID(int $nivelEducativoID): NivelEducativo
     {
-        $nivelEducativo = new NivelEducativo(
-            FabricaDeRepositorios::getInstance()->getNivelEducativoRepository()
-        );
+        return Cache::remember('nivel_educativo_' . $nivelEducativoID, now()->addHours(4), function () use ($nivelEducativoID) {
+            $nivelEducativo = new NivelEducativo(
+                FabricaDeRepositorios::getInstance()->getNivelEducativoRepository()
+            );
     
-        try {
-            $registro = DB::connection('oracle_academico')
-                ->table('ACADEMICO.NIVELEDUCATIVO')
-                ->select('NIED_ID', 'NIED_DESCRIPCION')
-                ->where('NIED_ID', $nivelEducativoID)
-                ->first();
+            try {
+                $registro = DB::connection('oracle_academico')
+                    ->table('ACADEMICO.NIVELEDUCATIVO')
+                    ->select('NIED_ID', 'NIED_DESCRIPCION')
+                    ->where('NIED_ID', $nivelEducativoID)
+                    ->first();
     
-            if ($registro) {
-                $nivelEducativo->setId((int) $registro->nied_id);
-                $nivelEducativo->setNombre((string) $registro->nied_descripcion);
+                if ($registro) {
+                    $nivelEducativo->setId((int) $registro->nied_id);
+                    $nivelEducativo->setNombre((string) $registro->nied_descripcion);
+                }
+            } catch (\Exception $e) {
+                Log::error("NivelEducativoDao / BuscarPorID: " . $e->getMessage());
             }
-        } catch (\Exception $e) {
-            Log::error("NivelEducativoDao / BuscarPorID: " . $e->getMessage());
-        }
     
-        return $nivelEducativo;
-    }    
+            return $nivelEducativo;
+        });
+    }
+    
 
     public function Listar(): array
     {

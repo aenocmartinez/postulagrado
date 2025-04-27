@@ -16,6 +16,7 @@ class SeguimientoController extends Controller
         );
 
         $response = $listaProcesos->ejecutar();
+
         return view('seguimientos.index', [
             'procesos' => $response->getData()
         ]);

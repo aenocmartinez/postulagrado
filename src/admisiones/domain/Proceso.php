@@ -62,6 +62,14 @@ class Proceso
         return $this->estado;
     }
 
+    public function estaAbierto(): bool {
+        return $this->estado === "ABIERTO";
+    }
+
+    public function estaCerrado(): bool {
+        return $this->estado === "CERRADO";
+    }
+
     public function crear(): bool {
         $exito = $this->repository->crearProceso($this);
         if (!$exito) {
