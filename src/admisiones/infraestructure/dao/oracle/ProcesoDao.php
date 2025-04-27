@@ -40,7 +40,7 @@ class ProcesoDao extends Model implements ProcesoRepository
                     ->get();
 
                 $procesoRepo = FabricaDeRepositorios::getInstance()->getProcesoRepository();
-                $calendarioRepo = FabricaDeRepositorios::getInstance()->getCalendarioRepository();
+                $calendarioRepo = FabricaDeRepositorios::getInstance()->getActividadRepository();
                 $nivelEducativoRepo = FabricaDeRepositorios::getInstance()->getNivelEducativoRepository();
 
                 foreach ($registros as $registro) {
@@ -69,7 +69,7 @@ class ProcesoDao extends Model implements ProcesoRepository
     {
         $proceso = new Proceso(
             FabricaDeRepositorios::getInstance()->getProcesoRepository(),
-            FabricaDeRepositorios::getInstance()->getCalendarioRepository(),
+            FabricaDeRepositorios::getInstance()->getActividadRepository(),
             FabricaDeRepositorios::getInstance()->getNivelEducativoRepository(),
         );
     
@@ -101,7 +101,7 @@ class ProcesoDao extends Model implements ProcesoRepository
     {
         $proceso = new Proceso(
             FabricaDeRepositorios::getInstance()->getProcesoRepository(),
-            FabricaDeRepositorios::getInstance()->getCalendarioRepository(),
+            FabricaDeRepositorios::getInstance()->getActividadRepository(),
             FabricaDeRepositorios::getInstance()->getNivelEducativoRepository(),
         );
     

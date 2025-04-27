@@ -10,9 +10,9 @@
     
     <!-- Información del proceso -->
     <div class="mb-6">
-        <h2 class="text-lg font-semibold text-gray-800">Proceso: {{ $proceso->getNombre() }}</h2>
-        <p class="text-sm text-gray-600">Nivel Educativo: <strong>{{ $proceso->getNivelEducativo() }}</strong></p>
-        <p class="text-sm text-gray-600">Estado: 
+        <h2 class="text-lg font-semibold text-gray-800"> {{ $proceso->getNombre() }}</h2>
+        <p class="text-sm text-gray-600"><strong>{{ $proceso->getNivelEducativo()->getNombre() }}</strong></p>
+        <p class="text-sm text-gray-600"> 
             <span class="text-green-600">{{$proceso->getEstado() }}</span>
         </p>
     </div>

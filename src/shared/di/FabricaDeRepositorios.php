@@ -12,7 +12,8 @@ namespace Src\shared\di;
 // use Src\admisiones\infraestructure\dao\mysql\ProgramaDao;
 // use Src\admisiones\infraestructure\dao\mysql\UnidadRegionalDao;
 
-use Src\admisiones\infraestructure\dao\mysql\CalendarioDao;
+use Src\admisiones\domain\Actividad;
+use Src\admisiones\infraestructure\dao\oracle\ActividadDao;
 use Src\admisiones\infraestructure\dao\oracle\JornadaDao;
 use Src\admisiones\infraestructure\dao\oracle\MetodologiaDao;
 use Src\admisiones\infraestructure\dao\oracle\ModalidadDao;
@@ -21,7 +22,7 @@ use Src\admisiones\infraestructure\dao\oracle\ProcesoDao;
 use Src\admisiones\infraestructure\dao\mysql\ProgramaContactoDao;
 use Src\admisiones\infraestructure\dao\oracle\ProgramaDao;
 use Src\admisiones\infraestructure\dao\oracle\UnidadRegionalDao;
-use Src\admisiones\repositories\CalendarioRepository;
+use Src\admisiones\repositories\ActividadRepository;
 use Src\admisiones\repositories\JornadaRepository;
 use Src\admisiones\repositories\MetodologiaRepository;
 use Src\admisiones\repositories\ModalidadRepository;
@@ -36,7 +37,7 @@ class FabricaDeRepositorios
     private static ?FabricaDeRepositorios $instance = null;
 
     private ProcesoRepository $procesoRepo;
-    private CalendarioRepository $calendarioRepo;
+    private ActividadRepository $actividadRepo;
     private MetodologiaRepository $metodologiaRepo;
     private ModalidadRepository $modalidadRepo;
     private NivelEducativoRepository $nivelEducativoRepo;
@@ -48,7 +49,7 @@ class FabricaDeRepositorios
     public function __construct()
     {
         $this->procesoRepo = new ProcesoDao();
-        $this->calendarioRepo = new CalendarioDao();
+        $this->actividadRepo = new ActividadDao();
         $this->metodologiaRepo = new MetodologiaDao();
         $this->modalidadRepo = new ModalidadDao();
         $this->nivelEducativoRepo = new NivelEducativoDao();
@@ -73,9 +74,9 @@ class FabricaDeRepositorios
         return $this->procesoRepo;
     }
 
-    public function getCalendarioRepository(): CalendarioRepository
+    public function getActividadRepository(): ActividadRepository
     {
-        return $this->calendarioRepo;
+        return $this->actividadRepo;
     }
 
     public function getMetodologiaRepository(): MetodologiaRepository {

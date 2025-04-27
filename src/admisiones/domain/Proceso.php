@@ -4,7 +4,7 @@ namespace Src\admisiones\domain;
 
 use Carbon\Carbon;
 use Src\admisiones\dao\mysql\CalendarioDao;
-use Src\admisiones\repositories\CalendarioRepository;
+use Src\admisiones\repositories\ActividadRepository;
 use Src\admisiones\repositories\NivelEducativoRepository;
 use Src\admisiones\repositories\ProcesoRepository;
 use Src\shared\formato\FormatoFecha;
@@ -20,7 +20,7 @@ class Proceso
     
     public function __construct(
         private ProcesoRepository   $repository,
-        private CalendarioRepository $calendarioRepo,
+        private ActividadRepository $actividadRepo,
         private NivelEducativoRepository $nivelRepo,
         private int $id = 0, 
         private string $estado = "ABIERTO"
@@ -101,7 +101,7 @@ class Proceso
     }
 
     public function getActividades(): array {
-        return $this->calendarioRepo->listarActividades($this->id);
+        return $this->actividadRepo->listarActividades($this->id);
     }
 
     public function getActividadesPorEstadoTemporal(): array 
@@ -153,15 +153,15 @@ class Proceso
         $actividad->setFechaInicio($fechaInicio);
         $actividad->setFechaFin($fechaFin);
 
-        return $this->calendarioRepo->agregarActividad($this->id, $actividad);
+        return $this->actividadRepo->agregarActividad($this->id, $actividad);
     }
 
     public function actualizarActividad(Actividad $actividad): bool {
-        return $this->calendarioRepo->actualizarActividad($actividad);
+        return $this->actividadRepo->actualizarActividad($actividad);
     }
 
     public function quitarActividad(Actividad $actividad): bool {
-        return $this->calendarioRepo->eliminarActividad($actividad->getId());
+        return $this->actividadRepo->eliminarActividad($actividad->getId());
     }
 
     public function agregarPrograma(Programa $programa): bool {

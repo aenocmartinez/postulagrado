@@ -11,7 +11,7 @@ use Src\admisiones\usecase\calendarios\QuitarActividadUseCase;
 use Src\shared\di\FabricaDeRepositorios;
 use Src\shared\response\ResponsePostulaGrado;
 
-class CalendarioController extends Controller
+class ActividadController extends Controller
 {
     public function index($procesoID)
     {
@@ -27,7 +27,7 @@ class CalendarioController extends Controller
         }
 
 
-        return view('calendarios.index', [
+        return view('actividades.index', [
             'proceso' => $response->getData(),
         ]);
     }
@@ -57,7 +57,7 @@ class CalendarioController extends Controller
 
         $actualizarActividad = new ActualizarActividadUseCase(
             FabricaDeRepositorios::getInstance()->getProcesoRepository(),
-            FabricaDeRepositorios::getInstance()->getCalendarioRepository()                
+            FabricaDeRepositorios::getInstance()->getActividadRepository(),
         );
         
         return $actualizarActividad->ejecutar($procesoID, $datos);
@@ -76,7 +76,7 @@ class CalendarioController extends Controller
     {
         $quitarActividad = new QuitarActividadUseCase(
             FabricaDeRepositorios::getInstance()->getProcesoRepository(),
-            FabricaDeRepositorios::getInstance()->getCalendarioRepository()                 
+            FabricaDeRepositorios::getInstance()->getActividadRepository(),                 
         );
         
         $response = $quitarActividad->ejecutar($procesoID, $actividadID);

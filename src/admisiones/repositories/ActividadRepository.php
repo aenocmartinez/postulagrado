@@ -5,7 +5,7 @@ namespace Src\admisiones\repositories;
 use Src\admisiones\domain\Actividad;
 use Src\admisiones\domain\Calendario;
 
-interface CalendarioRepository {
+interface ActividadRepository {
     public static function crearCalendario(Calendario $calendario);
     public static function listarActividades(int $procesoID): array;
     public static function agregarActividad(int $procesoID, Actividad $actividad): bool;

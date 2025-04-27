@@ -2,19 +2,19 @@
 
 namespace Src\admisiones\usecase\calendarios;
 
-use Src\admisiones\repositories\CalendarioRepository;
+use Src\admisiones\repositories\ActividadRepository;
 use Src\admisiones\repositories\ProcesoRepository;
 use Src\shared\response\ResponsePostulaGrado;
 
 class QuitarActividadUseCase
 {
     private ProcesoRepository $procesoRepo;
-    private CalendarioRepository $calendarioRepo;
+    private ActividadRepository $actividadRepo;
 
-    public function __construct(ProcesoRepository $procesoRepo, CalendarioRepository $calendarioRepo)
+    public function __construct(ProcesoRepository $procesoRepo, ActividadRepository $calendarioRepo)
     {
         $this->procesoRepo = $procesoRepo;
-        $this->calendarioRepo = $calendarioRepo;
+        $this->actividadRepo = $calendarioRepo;
     }
 
     public function ejecutar(int $procesoID, int $actividadID): ResponsePostulaGrado 
@@ -25,7 +25,7 @@ class QuitarActividadUseCase
             return new ResponsePostulaGrado(404, "Proceso no encontrado");           
         }
 
-        $actividad = $this->calendarioRepo->buscarActividadPorId($actividadID);
+        $actividad = $this->actividadRepo->buscarActividadPorId($actividadID);
         if (!$actividad->existe()) 
         {
             return new ResponsePostulaGrado(404, "Actividad no encontrada");  

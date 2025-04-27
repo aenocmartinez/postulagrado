@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActividadController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
@@ -9,7 +10,6 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
-use App\Http\Controllers\CalendarioController;
 use App\Http\Controllers\ProcesoController;
 use App\Http\Controllers\ProgramaContactoController;
 use App\Http\Controllers\SeguimientoController;
@@ -74,9 +74,9 @@ Route::middleware('auth')->group(function () {
     Route::get('procesos/{procesoID}/programas/{programaID}', [ProcesoController::class, 'consultarAvancePrograma'])->name('seguimiento.programa-avance');
 
     // Actividades
-    Route::get('procesos/{id}/actividades', [CalendarioController::class, 'index'])->name('procesos.actividades');
-    Route::post('procesos/{id}/actividades', [CalendarioController::class, 'store'])->name('actividades.store');
-    Route::delete('procesos/{id}/actividades/{actividad}', [CalendarioController::class, 'destroy'])->name('actividades.destroy');
+    Route::get('procesos/{id}/actividades', [ActividadController::class, 'index'])->name('procesos.actividades');
+    Route::post('procesos/{id}/actividades', [ActividadController::class, 'store'])->name('actividades.store');
+    Route::delete('procesos/{id}/actividades/{actividad}', [ActividadController::class, 'destroy'])->name('actividades.destroy');
 
     // Seguimientos
     Route::get('seguimientos', [SeguimientoController::class, 'index'])->name('seguimientos.index');

@@ -1,15 +1,15 @@
 <?php
 
-namespace Src\admisiones\infraestructure\dao\mysql;
+namespace Src\admisiones\infraestructure\dao\oracle;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Src\admisiones\domain\Actividad;
 use Src\admisiones\domain\Calendario;
-use Src\admisiones\repositories\CalendarioRepository;
+use Src\admisiones\repositories\ActividadRepository;
 
-class CalendarioDao extends Model implements CalendarioRepository
+class ActividadDao extends Model implements ActividadRepository
 {
     protected $table = 'calendarios';
     protected $fillable = ['proceso_id'];    
