@@ -28,7 +28,7 @@ class ProcesoDao extends Model implements ProcesoRepository
 
     public static function listarProcesos(): array
     {
-        return Cache::remember('procesos_listado', now()->addMinutes(15), function () {
+        return Cache::remember('procesos_listado', now()->addHour(8), function () {
             $procesos = [];
 
             try 
@@ -99,37 +99,40 @@ class ProcesoDao extends Model implements ProcesoRepository
 
     public static function buscarProcesoPorId(int $id): Proceso
     {
-        $proceso = new Proceso(
-            FabricaDeRepositorios::getInstance()->getProcesoRepository(),
-            FabricaDeRepositorios::getInstance()->getActividadRepository(),
-            FabricaDeRepositorios::getInstance()->getNivelEducativoRepository(),
-        );
+        return Cache::remember('proceso_' . $id, now()->addHours(4), function () use ($id) {
+            $proceso = new Proceso(
+                FabricaDeRepositorios::getInstance()->getProcesoRepository(),
+                FabricaDeRepositorios::getInstance()->getActividadRepository(),
+                FabricaDeRepositorios::getInstance()->getNivelEducativoRepository(),
+            );
     
-        try 
-        {
-            $registro = DB::connection('oracle_academpostulgrado')
-                ->table('ACADEMPOSTULGRADO.PROCESO')
-                ->select('PROC_ID', 'PROC_NOMBRE', 'NIED_ID', 'PROC_ESTADO')
-                ->where('PROC_ID', $id)
-                ->first();
+            try 
+            {
+                $registro = DB::connection('oracle_academpostulgrado')
+                    ->table('ACADEMPOSTULGRADO.PROCESO')
+                    ->select('PROC_ID', 'PROC_NOMBRE', 'NIED_ID', 'PROC_ESTADO')
+                    ->where('PROC_ID', $id)
+                    ->first();
     
-            if ($registro) {
-                $nivelEducativoRepo = FabricaDeRepositorios::getInstance()->getNivelEducativoRepository();
-                $nivelEducativo = $nivelEducativoRepo->BuscarPorID($registro->nied_id);
+                if ($registro) {
+                    $nivelEducativoRepo = FabricaDeRepositorios::getInstance()->getNivelEducativoRepository();
+                    $nivelEducativo = $nivelEducativoRepo->BuscarPorID($registro->nied_id);
     
-                $proceso->setId($registro->proc_id);
-                $proceso->setNombre($registro->proc_nombre);
-                $proceso->setNivelEducativo($nivelEducativo);
-                $proceso->setEstado($registro->proc_estado);
+                    $proceso->setId($registro->proc_id);
+                    $proceso->setNombre($registro->proc_nombre);
+                    $proceso->setNivelEducativo($nivelEducativo);
+                    $proceso->setEstado($registro->proc_estado);
+                }
+            } 
+            catch (Exception $e) 
+            {
+                Log::error("Error en buscarProcesoPorId({$id}): " . $e->getMessage());
             }
-        } 
-        catch (Exception $e) 
-        {
-            Log::error("Error en buscarProcesoPorId({$id}): " . $e->getMessage());
-        }
     
-        return $proceso;
-    }    
+            return $proceso;
+        });
+    }
+    
     
     public function crearProceso(Proceso $proceso): bool
     {

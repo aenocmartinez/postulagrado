@@ -4,6 +4,8 @@ namespace Src\admisiones\infraestructure\dao\oracle;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Src\admisiones\domain\Actividad;
 use Src\admisiones\domain\Calendario;
@@ -36,49 +38,47 @@ class ActividadDao extends Model implements ActividadRepository
     
     public static function listarActividades(int $procesoID): array
     {
-        $actividades = [];
+        return Cache::remember('actividades_listado_proceso_' . $procesoID, now()->addHours(4), function () use ($procesoID) {
+            $actividades = [];
     
-        try {
-            $registros = self::join('actividades', 'calendarios.id', '=', 'actividades.calendario_id')
-                            ->where('calendarios.proceso_id', $procesoID)
-                            ->select('actividades.id', 'actividades.descripcion', 'actividades.fecha_inicio', 'actividades.fecha_fin')
-                            ->orderBy('actividades.fecha_inicio', 'asc')
+            try {
+                $registros = DB::connection('oracle_academpostulgrado')
+                            ->table('ACADEMPOSTULGRADO.ACTIVIDAD')
+                            ->where('PROC_ID', $procesoID)
+                            ->select('ACTI_ID', 'ACTI_DESCRIPCION', 'ACTI_FECHAINICIO', 'ACTI_FECHAFIN')
+                            ->orderBy('ACTI_FECHAINICIO', 'asc')
                             ->get();
     
-            foreach ($registros as $registro) {
-                $actividad = new Actividad();
-                $actividad->setId($registro->id);
-                $actividad->setDescripcion($registro->descripcion);
-                $actividad->setFechaInicio($registro->fecha_inicio);
-                $actividad->setFechaFin($registro->fecha_fin);
+                foreach ($registros as $registro) {
+                    $actividad = new Actividad();
+                    $actividad->setId($registro->acti_id);
+                    $actividad->setDescripcion($registro->acti_descripcion);
+                    $actividad->setFechaInicio($registro->acti_fechainicio);
+                    $actividad->setFechaFin($registro->acti_fechafin);
     
-                $actividades[] = $actividad;
+                    $actividades[] = $actividad;
+                }
+            } catch (\Exception $e) {
+                Log::error("Error al listar actividades del proceso {$procesoID}: " . $e->getMessage());
             }
-        } catch (\Exception $e) {
-            Log::error("Error al listar actividades del proceso {$procesoID}: " . $e->getMessage());
-        }
     
-        return $actividades;
-    }        
+            return $actividades;
+        });
+    }          
     
     public static function agregarActividad(int $procesoID, Actividad $actividad): bool
     {
         try {
-            $calendario = self::where('proceso_id', $procesoID)->first();
-    
-            if (!$calendario) {
-                Log::warning("No se pudo agregar la actividad: El proceso {$procesoID} no tiene un calendario.");
-                return false;
-            }
-    
-            $resultado = DB::table('actividades')->insert([
-                'calendario_id' => $calendario->id,
-                'descripcion' => $actividad->getDescripcion(),
-                'fecha_inicio' => $actividad->getFechaInicio(),
-                'fecha_fin' => $actividad->getFechaFin(),
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
+            $resultado = DB::connection('oracle_academpostulgrado')
+                ->table('ACADEMPOSTULGRADO.ACTIVIDAD')
+                ->insert([
+                    'ACTI_DESCRIPCION'   => $actividad->getDescripcion(),
+                    'ACTI_FECHAINICIO'   => $actividad->getFechaInicio(),
+                    'ACTI_FECHAFIN'      => $actividad->getFechaFin(),
+                    'PROC_ID'            => $procesoID,
+                    'ACTI_REGISTRADOPOR' => Auth::user()->id,
+                    'ACTI_FECHACAMBIO'   => now(),
+                ]);
     
             return $resultado;
         } catch (\Exception $e) {
@@ -86,17 +86,21 @@ class ActividadDao extends Model implements ActividadRepository
             return false;
         }
     }
-
+    
     public static function eliminarActividad(int $actividadID): bool
     {
         try {
-            $deleted = DB::table('actividades')->where('id', $actividadID)->delete();
-            return $deleted > 0; 
+            $deleted = DB::connection('oracle_academpostulgrado')
+                ->table('ACADEMPOSTULGRADO.ACTIVIDAD')
+                ->where('ACTI_ID', $actividadID)
+                ->delete();
+    
+            return $deleted > 0;
         } catch (\Exception $e) {
             Log::error("Error al eliminar actividad con ID {$actividadID}: " . $e->getMessage());
             return false;
         }
-    }
+    }    
     
     public static function buscarActividadPorId(int $actividadID): Actividad
     {
@@ -124,20 +128,21 @@ class ActividadDao extends Model implements ActividadRepository
     public static function actualizarActividad(Actividad $actividad): bool
     {
         try {            
-            DB::table('actividades')
-                ->where('id', $actividad->getId())
+            DB::connection('oracle_academpostulgrado')
+                ->table('ACADEMPOSTULGRADO.ACTIVIDAD')
+                ->where('ACTI_ID', $actividad->getId())
                 ->update([
-                    'descripcion'  => $actividad->getDescripcion(),
-                    'fecha_inicio' => $actividad->getFechaInicio(),
-                    'fecha_fin'    => $actividad->getFechaFin(),
-                    'updated_at'   => now(),
+                    'ACTI_DESCRIPCION' => $actividad->getDescripcion(),
+                    'ACTI_FECHAINICIO' => $actividad->getFechaInicio(),
+                    'ACTI_FECHAFIN'    => $actividad->getFechaFin(),
+                    'ACTI_FECHACAMBIO' => now(),
                 ]);
-
+    
             return true;
         } catch (\Exception $e) {
             Log::error("Error al actualizar la actividad ID {$actividad->getId()}: " . $e->getMessage());
             return false;
         }
-    }
+    }    
 
 }

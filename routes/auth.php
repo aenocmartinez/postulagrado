@@ -77,6 +77,7 @@ Route::middleware('auth')->group(function () {
     Route::get('procesos/{id}/actividades', [ActividadController::class, 'index'])->name('procesos.actividades');
     Route::post('procesos/{id}/actividades', [ActividadController::class, 'store'])->name('actividades.store');
     Route::delete('procesos/{id}/actividades/{actividad}', [ActividadController::class, 'destroy'])->name('actividades.destroy');
+    Route::post('/procesos/{id}/actividades/masivo', [ActividadController::class, 'storeMasivo'])->name('actividades.store-masivo');
 
     // Seguimientos
     Route::get('seguimientos', [SeguimientoController::class, 'index'])->name('seguimientos.index');

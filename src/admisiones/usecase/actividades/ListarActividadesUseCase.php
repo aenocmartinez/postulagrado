@@ -1,6 +1,6 @@
 <?php
 
-namespace Src\admisiones\usecase\calendarios;
+namespace Src\admisiones\usecase\actividades;
 
 use Src\admisiones\repositories\ProcesoRepository;
 use Src\shared\response\ResponsePostulaGrado;

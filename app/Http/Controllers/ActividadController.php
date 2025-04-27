@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CrearActividad;
 use Illuminate\Http\Request;
-use Src\admisiones\usecase\calendarios\ActualizarActividadUseCase;
-use Src\admisiones\usecase\calendarios\AgregarActividadUseCase;
-use Src\admisiones\usecase\calendarios\ListarActividadesUseCase;
-use Src\admisiones\usecase\calendarios\QuitarActividadUseCase;
+use Src\admisiones\domain\Proceso;
+use Src\admisiones\usecase\actividades\ActualizarActividadUseCase;
+use Src\admisiones\usecase\actividades\AgregarActividadUseCase;
+use Src\admisiones\usecase\actividades\ListarActividadesUseCase;
+use Src\admisiones\usecase\actividades\QuitarActividadUseCase;
+use Src\admisiones\usecase\actividades\AgregarActividadesMasivoUseCase;
 use Src\shared\di\FabricaDeRepositorios;
 use Src\shared\response\ResponsePostulaGrado;
 
@@ -25,7 +27,6 @@ class ActividadController extends Controller
         if ($response->getCode() != 200) {
             return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
         }
-
 
         return view('actividades.index', [
             'proceso' => $response->getData(),
@@ -83,5 +84,20 @@ class ActividadController extends Controller
         
         return redirect()->route('procesos.actividades', $procesoID)->with($response->getCode(), $response->getMessage());
     }
+
+    public function storeMasivo(Request $request, int $procesoID)
+    {
+        $actividades = json_decode($request->input('actividades'), true);
+    
+        $agregarActividadesMasivo = new AgregarActividadesMasivoUseCase(
+            FabricaDeRepositorios::getInstance()->getProcesoRepository()
+        );
+    
+        $response = $agregarActividadesMasivo->ejecutar($procesoID, $actividades);
+    
+        return redirect()->route('procesos.actividades', $procesoID)
+                         ->with($response->getCode(), $response->getMessage());
+    }
+    
     
 }

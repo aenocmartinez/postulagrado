@@ -3,7 +3,6 @@
 namespace Src\admisiones\domain;
 
 use Carbon\Carbon;
-use Src\admisiones\dao\mysql\CalendarioDao;
 use Src\admisiones\repositories\ActividadRepository;
 use Src\admisiones\repositories\NivelEducativoRepository;
 use Src\admisiones\repositories\ProcesoRepository;
@@ -13,10 +12,12 @@ class Proceso
 {    
     private string              $nombre;
     private NivelEducativo      $nivelEducativo;
-    private Calendario          $calendario;
 
     /** @var Documento[] $documentos */
     private $documentos = [];
+
+    /** @var Actividades[] $documentos */
+    private $actividades = [];
     
     public function __construct(
         private ProcesoRepository   $repository,
@@ -61,14 +62,6 @@ class Proceso
         return $this->estado;
     }
 
-    public function setCalendario(Calendario $calendario): void {
-        $this->calendario = $calendario;
-    }
-
-    public function getCalendario(): Calendario {
-        return $this->calendario;
-    }
-
     public function crear(): bool {
         $exito = $this->repository->crearProceso($this);
         if (!$exito) {
@@ -76,11 +69,6 @@ class Proceso
         }
 
         return true;
-
-        // $calendario = new Calendario();
-        // $calendario->setProceso($this);
-
-        // return $this->calendarioRepo->crearCalendario($calendario);
     }
 
     public function eliminar(): bool {
@@ -147,12 +135,10 @@ class Proceso
         return $actividadesClasificadas;
     }
     
-    public function agregarActividad(string $descripcion, $fechaInicio, $fechaFin): bool {
-        $actividad = new Actividad();
-        $actividad->setDescripcion($descripcion);
-        $actividad->setFechaInicio($fechaInicio);
-        $actividad->setFechaFin($fechaFin);
-
+    public function agregarActividad(Actividad $actividad): bool {
+        if ($actividad->existe()) {
+            return $this->actividadRepo->actualizarActividad($actividad);
+        }
         return $this->actividadRepo->agregarActividad($this->id, $actividad);
     }
 
