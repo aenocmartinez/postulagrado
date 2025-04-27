@@ -12,7 +12,7 @@
     <div class="mb-6 flex justify-between">
         <div>
             <h2 class="text-lg font-semibold text-gray-800">Proceso: {{ $proceso->getNombre() }}</h2>
-            <p class="text-sm text-gray-600">Nivel Educativo: <strong>{{ $proceso->getNivelEducativo() }}</strong></p>
+            <p class="text-sm text-gray-600">Nivel Educativo: <strong>{{ $proceso->getNivelEducativo()->getNombre() }}</strong></p>
             <p class="text-sm text-gray-600">Estado: 
                 <span class="text-green-600">{{ $proceso->getEstado() }}</span>
             </p>

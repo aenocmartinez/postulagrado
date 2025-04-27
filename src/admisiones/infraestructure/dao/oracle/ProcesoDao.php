@@ -27,25 +27,29 @@ class ProcesoDao extends Model implements ProcesoRepository
     public static function listarProcesos(): array
     {
         $procesos = [];
-
+    
         try 
         {
-            $registros = self::all();
-
+            $registros = DB::connection('oracle_academpostulgrado')
+                ->table('ACADEMPOSTULGRADO.PROCESO')
+                ->select('PROC_ID', 'PROC_NOMBRE', 'NIED_ID', 'PROC_ESTADO')
+                ->orderBy('PROC_ID')
+                ->get();
+    
             $procesoRepo = FabricaDeRepositorios::getInstance()->getProcesoRepository();
             $calendarioRepo = FabricaDeRepositorios::getInstance()->getCalendarioRepository();
             $nivelEducativoRepo = FabricaDeRepositorios::getInstance()->getNivelEducativoRepository();
-
+    
             foreach ($registros as $registro) {
                 $proceso = new Proceso($procesoRepo, $calendarioRepo, $nivelEducativoRepo);
-
-                $nivelEducativo = $nivelEducativoRepo->BuscarPorID($registro->NIED_ID);
-
-                $proceso->setId($registro->PROC_ID);
-                $proceso->setNombre($registro->PROC_NOMBRE);
+    
+                $nivelEducativo = $nivelEducativoRepo->BuscarPorID($registro->nied_id);
+    
+                $proceso->setId($registro->proc_id);
+                $proceso->setNombre($registro->proc_nombre);
                 $proceso->setNivelEducativo($nivelEducativo);
-                $proceso->setEstado($registro->PROC_ESTADO);
-
+                $proceso->setEstado($registro->proc_estado);
+    
                 $procesos[] = $proceso;
             }
         } 
@@ -53,9 +57,9 @@ class ProcesoDao extends Model implements ProcesoRepository
         {
             Log::error("Error en listarProcesos(): " . $e->getMessage());
         }
-
+    
         return $procesos;
-    }
+    }    
 
     public static function buscarProcesoPorNombreYNivelEducativo(string $nombre, NivelEducativo $nivelEducativo): Proceso
     {
@@ -67,20 +71,18 @@ class ProcesoDao extends Model implements ProcesoRepository
     
         try 
         {
-            $registro = DB::connection('oracle_academpostulgrado')->selectOne("
-                SELECT PROC_ID, PROC_NOMBRE, NIED_ID, PROC_ESTADO FROM ACADEMPOSTULGRADO.PROCESO
-                WHERE PROC_NOMBRE = :nombre AND NIED_ID = :nivel_id
-            ", [
-                'nombre' => $nombre,
-                'nivel_id' => $nivelEducativo->getId(),
-            ]);              
+            $registro = DB::connection('oracle_academpostulgrado')
+                ->table('ACADEMPOSTULGRADO.PROCESO')
+                ->select('PROC_ID', 'PROC_NOMBRE', 'NIED_ID', 'PROC_ESTADO')
+                ->where('PROC_NOMBRE', $nombre)
+                ->where('NIED_ID', $nivelEducativo->getId())
+                ->first();
     
             if ($registro) {
-
-                $proceso->setId($registro->PROC_ID);
-                $proceso->setNombre($registro->PROC_NOMBRE);
+                $proceso->setId($registro->proc_id);
+                $proceso->setNombre($registro->proc_nombre);
                 $proceso->setNivelEducativo($nivelEducativo);
-                $proceso->setEstado($registro->PROC_ESTADO);
+                $proceso->setEstado($registro->proc_estado);
             }
         } 
         catch (Exception $e) 
@@ -89,8 +91,7 @@ class ProcesoDao extends Model implements ProcesoRepository
         }
     
         return $proceso;
-    }
-    
+    }    
 
     public static function buscarProcesoPorId(int $id): Proceso
     {
@@ -99,25 +100,32 @@ class ProcesoDao extends Model implements ProcesoRepository
             FabricaDeRepositorios::getInstance()->getCalendarioRepository(),
             FabricaDeRepositorios::getInstance()->getNivelEducativoRepository(),
         );
-
+    
         try 
         {
-            $registro = self::find($id);
-
+            $registro = DB::connection('oracle_academpostulgrado')
+                ->table('ACADEMPOSTULGRADO.PROCESO')
+                ->select('PROC_ID', 'PROC_NOMBRE', 'NIED_ID', 'PROC_ESTADO')
+                ->where('PROC_ID', $id)
+                ->first();
+    
             if ($registro) {
-                $proceso->setId($registro->PROC_ID);
-                $proceso->setNombre($registro->NOMBRE);
-                $proceso->setNivelEducativo($registro->NIVEL_EDUCATIVO);
-                $proceso->setEstado($registro->ESTADO);
+                $nivelEducativoRepo = FabricaDeRepositorios::getInstance()->getNivelEducativoRepository();
+                $nivelEducativo = $nivelEducativoRepo->BuscarPorID($registro->nied_id);
+    
+                $proceso->setId($registro->proc_id);
+                $proceso->setNombre($registro->proc_nombre);
+                $proceso->setNivelEducativo($nivelEducativo);
+                $proceso->setEstado($registro->proc_estado);
             }
         } 
         catch (Exception $e) 
         {
             Log::error("Error en buscarProcesoPorId({$id}): " . $e->getMessage());
         }
-
+    
         return $proceso;
-    }
+    }    
     
     public function crearProceso(Proceso $proceso): bool
     {
@@ -125,7 +133,7 @@ class ProcesoDao extends Model implements ProcesoRepository
             $nivelEducativoID = $proceso->getNivelEducativo()->getId();
     
             $insertado = DB::connection('oracle_academpostulgrado')
-                ->table('PROCESO')
+                ->table('ACADEMPOSTULGRADO.PROCESO')
                 ->insert([
                     'PROC_NOMBRE'        => $proceso->getNombre(),
                     'NIED_ID'            => $nivelEducativoID,
@@ -139,13 +147,16 @@ class ProcesoDao extends Model implements ProcesoRepository
             return false;
         }
     }
-       
     
     public function eliminarProceso(int $procesoID): bool
     {
         try 
         {
-            $eliminados = self::where('PROC_ID', $procesoID)->delete();
+            $eliminados = DB::connection('oracle_academpostulgrado')
+                ->table('ACADEMPOSTULGRADO.PROCESO')
+                ->where('PROC_ID', $procesoID)
+                ->delete();
+
             return $eliminados > 0;
         } 
         catch (Exception $e) 
@@ -159,18 +170,20 @@ class ProcesoDao extends Model implements ProcesoRepository
     {
         try 
         {
-            $filas = self::where('PROC_ID', $proceso->getId())
+            $filas = DB::connection('oracle_academpostulgrado')
+                ->table('ACADEMPOSTULGRADO.PROCESO')
+                ->where('PROC_ID', $proceso->getId())
                 ->update([
-                    'NOMBRE' => $proceso->getNombre(),
-                    'NIVEL_EDUCATIVO' => $proceso->getNivelEducativo(),
-                    'ESTADO' => $proceso->getEstado(),
+                    'PROC_NOMBRE' => $proceso->getNombre(),
+                    'NIED_ID'     => $proceso->getNivelEducativo()->getId(),
+                    'PROC_ESTADO' => $proceso->getEstado(),
                 ]);
-
+    
             if ($filas === 0) {
                 Log::warning("Intento de actualizar un proceso inexistente: {$proceso->getId()}");
                 return false;
             }
-
+    
             return true;
         } 
         catch (Exception $e) 
@@ -178,7 +191,7 @@ class ProcesoDao extends Model implements ProcesoRepository
             Log::error("Error en actualizarProceso(): " . $e->getMessage());
             return false;
         }
-    }
+    }    
 
     // Están pendientes de migrar
     public static function tieneCalendarioConActividades(int $procesoID): bool

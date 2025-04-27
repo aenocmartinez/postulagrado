@@ -22,26 +22,22 @@ class NivelEducativoDao implements NivelEducativoRepository
         );
     
         try {
-            $registro = DB::connection('oracle_academico')->selectOne(
-                "
-                SELECT NIED_ID, NIED_DESCRIPCION
-                FROM ACADEMICO.NIVELEDUCATIVO
-                WHERE NIED_ID = :id
-                ",
-                ['id' => $nivelEducativoID]
-            );
+            $registro = DB::connection('oracle_academico')
+                ->table('ACADEMICO.NIVELEDUCATIVO')
+                ->select('NIED_ID', 'NIED_DESCRIPCION')
+                ->where('NIED_ID', $nivelEducativoID)
+                ->first();
     
             if ($registro) {
-                $nivelEducativo->setId((int) $registro->NIED_ID);
-                $nivelEducativo->setNombre((string) $registro->NIED_DESCRIPCION);
+                $nivelEducativo->setId((int) $registro->nied_id);
+                $nivelEducativo->setNombre((string) $registro->nied_descripcion);
             }
-    
         } catch (\Exception $e) {
             Log::error("NivelEducativoDao / BuscarPorID: " . $e->getMessage());
         }
     
         return $nivelEducativo;
-    }
+    }    
 
     public function Listar(): array
     {
@@ -51,6 +47,7 @@ class NivelEducativoDao implements NivelEducativoRepository
             try {
                 $registros = DB::connection($this->conexion)
                     ->table($this->tabla)
+                    ->select('NIED_ID', 'NIED_DESCRIPCION')
                     ->orderBy('NIED_DESCRIPCION')
                     ->get();
     
@@ -59,8 +56,8 @@ class NivelEducativoDao implements NivelEducativoRepository
                         FabricaDeRepositorios::getInstance()->getNivelEducativoRepository()
                     );
     
-                    $nivel->setId((int) $registro->NIED_ID);
-                    $nivel->setNombre((string) $registro->NIED_DESCRIPCION);
+                    $nivel->setId((int) $registro->nied_id);
+                    $nivel->setNombre((string) $registro->nied_descripcion);
     
                     $niveles[] = $nivel;
                 }
@@ -72,5 +69,6 @@ class NivelEducativoDao implements NivelEducativoRepository
             return $niveles;
         });
     }
+    
     
 }

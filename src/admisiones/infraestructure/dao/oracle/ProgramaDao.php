@@ -66,58 +66,47 @@ class ProgramaDao implements ProgramaRepository
         );
     
         try {
-            $sql = "
-                SELECT DISTINCT
-                    PROG.PROG_ID,
-                    PROG.PROG_NOMBRE,
-                    PROG.PROG_CODIGOPROGRAMA,
-                    PROG.PROG_CODIGOSNIES,
-                    MODA.MODA_ID,
-                    METO.METO_ID,
-                    NIED.NIED_ID,
-                    JORN.JORN_ID,
-                    UNID.UNID_ID
-                FROM
-                    ACADEMICO.PROGRAMA PROG,
-                    ACADEMICO.UNIDADPROGRAMA UNPR,
-                    ACADEMICO.UNIDAD UNID,
-                    ACADEMICO.METODOLOGIA METO,
-                    ACADEMICO.MODALIDAD MODA,
-                    ACADEMICO.JORNADA JORN,
-                    ACADEMICO.NIVELEDUCATIVO NIED
-                WHERE
-                    PROG.PROG_ID = UNPR.PROG_ID
-                    AND UNID.UNID_ID = UNPR.UNID_ID
-                    AND PROG.JORN_ID = JORN.JORN_ID
-                    AND PROG.MODA_ID = MODA.MODA_ID
-                    AND MODA.NIED_ID = NIED.NIED_ID
-                    AND METO.METO_ID = PROG.METO_ID
-                    AND UNID.UNID_REGIONAL = '1'
-                    AND PROG.PROG_ESTADO = 1
-                    AND NIED.NIED_ID IN (1, 2)
-                    AND PROG.PROG_ID = :id
-            ";
+            $registro = DB::connection('oracle_academico')
+                ->table('ACADEMICO.PROGRAMA AS PROG')
+                ->join('ACADEMICO.UNIDADPROGRAMA AS UNPR', 'PROG.PROG_ID', '=', 'UNPR.PROG_ID')
+                ->join('ACADEMICO.UNIDAD AS UNID', 'UNID.UNID_ID', '=', 'UNPR.UNID_ID')
+                ->join('ACADEMICO.METODOLOGIA AS METO', 'METO.METO_ID', '=', 'PROG.METO_ID')
+                ->join('ACADEMICO.MODALIDAD AS MODA', 'PROG.MODA_ID', '=', 'MODA.MODA_ID')
+                ->join('ACADEMICO.JORNADA AS JORN', 'PROG.JORN_ID', '=', 'JORN.JORN_ID')
+                ->join('ACADEMICO.NIVELEDUCATIVO AS NIED', 'MODA.NIED_ID', '=', 'NIED.NIED_ID')
+                ->select(
+                    'PROG.PROG_ID',
+                    'PROG.PROG_NOMBRE',
+                    'PROG.PROG_CODIGOPROGRAMA',
+                    'PROG.PROG_CODIGOSNIES',
+                    'MODA.MODA_ID',
+                    'METO.METO_ID',
+                    'NIED.NIED_ID',
+                    'JORN.JORN_ID',
+                    'UNID.UNID_ID'
+                )
+                ->where('PROG.PROG_ID', $programaID)
+                ->where('PROG.PROG_ESTADO', 1)
+                ->where('UNID.UNID_REGIONAL', '1')
+                ->whereIn('NIED.NIED_ID', [1, 2])
+                ->first();
     
-            $resultados = DB::connection('oracle_academico')->select($sql, ['id' => $programaID]);
-    
-            if (empty($resultados)) {
+            if (!$registro) {
                 Log::warning("No se encontró el programa con ID {$programaID}");
                 return $programa;
             }
     
-            $registro = $resultados[0];
-    
             // Guardamos IDs para búsquedas adicionales
-            $this->programa_id = $registro->PROG_ID;
-            $this->modalidad_id = $registro->MODA_ID;
-            $this->metodologia_id = $registro->METO_ID;
-            $this->nivel_id = $registro->NIED_ID;
-            $this->jornada_id = $registro->JORN_ID;
+            $this->programa_id = $registro->prog_id;
+            $this->modalidad_id = $registro->moda_id;
+            $this->metodologia_id = $registro->meto_id;
+            $this->nivel_id = $registro->nied_id;
+            $this->jornada_id = $registro->jorn_id;
     
-            $programa->setId($registro->PROG_ID);
-            $programa->setNombre($registro->PROG_NOMBRE);
-            $programa->setCodigo($registro->PROG_CODIGOPROGRAMA);
-            $programa->setSnies($registro->PROG_CODIGOSNIES);
+            $programa->setId($registro->prog_id);
+            $programa->setNombre($registro->prog_nombre);
+            $programa->setCodigo($registro->prog_codigoprograma);
+            $programa->setSnies($registro->prog_codigosnies);
             $programa->setModalidad($this->modalidad());
             $programa->setMetodologia($this->metodologia());
             $programa->setNivelEducativo($this->nivelEducativo());
@@ -129,83 +118,77 @@ class ProgramaDao implements ProgramaRepository
         }
     
         return $programa;
-    }    
+    }      
 
     public function listarProgramas(): array
     {
-        // para 30 minutos cambiar a addMinutes(30)
         return Cache::remember('programas_activos', now()->addHours(6), function () {
             $programas = [];
     
             try {
-                    $sql = "
-                    SELECT DISTINCT
-                        METO.METO_ID                  AS METODOLOGIA_ID,
-                        METO.METO_DESCRIPCION         AS METODOLOGIA,
-                        NIED.NIED_ID                  AS NIVEL_ID,
-                        NIED.NIED_DESCRIPCION         AS NIVEL_EDUCATIVO,
-                        MODA.MODA_ID                  AS MODALIDAD_ID,
-                        UPPER(MODA.MODA_DESCRIPCION)  AS MODALIDAD,
-                        PROG.PROG_ID                  AS ID,
-                        PROG.PROG_CODIGOSNIES         AS SNIES,
-                        PROG.PROG_CODIGOPROGRAMA      AS CODIGO,
-                        PROG.PROG_NOMBRE              AS NOMBRE,
-                        JORN.JORN_ID                  AS JORNADA_ID,
-                        JORN.JORN_DESCRIPCION         AS JORNADA,
-                        UNID.UNID_ID                  AS UNIDAD_ID,
-                        UNID.UNID_NOMBRE              AS UNIDAD_REGIONAL
-                    FROM
-                        ACADEMICO.PROGRAMA PROG
-                        JOIN ACADEMICO.UNIDADPROGRAMA UNPR ON PROG.PROG_ID = UNPR.PROG_ID
-                        JOIN ACADEMICO.UNIDAD UNID ON UNID.UNID_ID = UNPR.UNID_ID
-                        JOIN ACADEMICO.JORNADA JORN ON PROG.JORN_ID = JORN.JORN_ID
-                        JOIN ACADEMICO.MODALIDAD MODA ON PROG.MODA_ID = MODA.MODA_ID
-                        JOIN ACADEMICO.NIVELEDUCATIVO NIED ON MODA.NIED_ID = NIED.NIED_ID
-                        JOIN ACADEMICO.METODOLOGIA METO ON METO.METO_ID = PROG.METO_ID
-                    WHERE
-                        UNID.UNID_REGIONAL = '1'
-                        AND NIED.NIED_ID IN (1, 2)
-                        AND PROG.PROG_ESTADO = 1
-                    ORDER BY
-                        METO.METO_ID,
-                        NIED.NIED_ID,
-                        MODA.MODA_ID,
-                        PROG.PROG_NOMBRE,
-                        UNID.UNID_NOMBRE
-                ";
-
-                $registros = DB::connection('oracle_academico')->select($sql);
+                $registros = DB::connection('oracle_academico')
+                    ->table('ACADEMICO.PROGRAMA AS PROG')
+                    ->join('ACADEMICO.UNIDADPROGRAMA AS UNPR', 'PROG.PROG_ID', '=', 'UNPR.PROG_ID')
+                    ->join('ACADEMICO.UNIDAD AS UNID', 'UNID.UNID_ID', '=', 'UNPR.UNID_ID')
+                    ->join('ACADEMICO.JORNADA AS JORN', 'PROG.JORN_ID', '=', 'JORN.JORN_ID')
+                    ->join('ACADEMICO.MODALIDAD AS MODA', 'PROG.MODA_ID', '=', 'MODA.MODA_ID')
+                    ->join('ACADEMICO.NIVELEDUCATIVO AS NIED', 'MODA.NIED_ID', '=', 'NIED.NIED_ID')
+                    ->join('ACADEMICO.METODOLOGIA AS METO', 'METO.METO_ID', '=', 'PROG.METO_ID')
+                    ->select(
+                        'METO.METO_ID AS metodologia_id',
+                        'METO.METO_DESCRIPCION AS metodologia',
+                        'NIED.NIED_ID AS nivel_id',
+                        'NIED.NIED_DESCRIPCION AS nivel_educativo',
+                        'MODA.MODA_ID AS modalidad_id',
+                        DB::raw('UPPER(MODA.MODA_DESCRIPCION) AS modalidad'),
+                        'PROG.PROG_ID AS id',
+                        'PROG.PROG_CODIGOSNIES AS snies',
+                        'PROG.PROG_CODIGOPROGRAMA AS codigo',
+                        'PROG.PROG_NOMBRE AS nombre',
+                        'JORN.JORN_ID AS jornada_id',
+                        'JORN.JORN_DESCRIPCION AS jornada',
+                        'UNID.UNID_ID AS unidad_id',
+                        'UNID.UNID_NOMBRE AS unidad_regional'
+                    )
+                    ->where('UNID.UNID_REGIONAL', '1')
+                    ->whereIn('NIED.NIED_ID', [1, 2])
+                    ->where('PROG.PROG_ESTADO', 1)
+                    ->orderBy('METO.METO_ID')
+                    ->orderBy('NIED.NIED_ID')
+                    ->orderBy('MODA.MODA_ID')
+                    ->orderBy('PROG.PROG_NOMBRE')
+                    ->orderBy('UNID.UNID_NOMBRE')
+                    ->get();
     
                 foreach ($registros as $registro) {
                     $programa = new Programa(
                         FabricaDeRepositorios::getInstance()->getProgramaRepository()
                     );
     
-                    $programa->setId($registro->ID);
-                    $programa->setNombre($registro->NOMBRE);
-                    $programa->setCodigo($registro->CODIGO);
-                    $programa->setSnies($registro->SNIES);
+                    $programa->setId($registro->id);
+                    $programa->setNombre($registro->nombre);
+                    $programa->setCodigo($registro->codigo);
+                    $programa->setSnies($registro->snies);
     
-                    // Objetos relacionados con inyección
                     $modalidad = new Modalidad(FabricaDeRepositorios::getInstance()->getModalidadRepository());
-                    $modalidad->setId((int) $registro->MODALIDAD_ID);
-                    $modalidad->setNombre((string) $registro->MODALIDAD);
+                    $modalidad->setId((int) $registro->modalidad_id);
+                    $modalidad->setNombre((string) $registro->modalidad);
     
                     $metodologia = new Metodologia(FabricaDeRepositorios::getInstance()->getMetodologiaRepository());
-                    $metodologia->setId((int) $registro->METODOLOGIA_ID);
-                    $metodologia->setNombre((string) $registro->METODOLOGIA);
+                    $metodologia->setId((int) $registro->metodologia_id);
+                    $metodologia->setNombre((string) $registro->metodologia);
     
                     $nivel = new NivelEducativo(FabricaDeRepositorios::getInstance()->getNivelEducativoRepository());
-                    $nivel->setId((int) $registro->NIVEL_ID);
-                    $nivel->setNombre((string) $registro->NIVEL_EDUCATIVO);
+                    $nivel->setId((int) $registro->nivel_id);
+                    $nivel->setNombre((string) $registro->nivel_educativo);
     
                     $jornada = new Jornada(FabricaDeRepositorios::getInstance()->getJornadaRepository());
-                    $jornada->setId((int) $registro->JORNADA_ID);
-                    $jornada->setNombre((string) $registro->JORNADA);
+                    $jornada->setId((int) $registro->jornada_id);
+                    $jornada->setNombre((string) $registro->jornada);
     
                     $unidad = new UnidadRegional(FabricaDeRepositorios::getInstance()->getUnidadRegionalRepository());
-                    $unidad->setId((int) $registro->UNIDAD_ID);
-                    $unidad->setNombre((string) $registro->UNIDAD_REGIONAL);
+                    $unidad->setId((int) $registro->unidad_id);
+                    $unidad->setNombre((string) $registro->unidad_regional);
     
                     $programa->setModalidad($modalidad);
                     $programa->setMetodologia($metodologia);
@@ -215,7 +198,6 @@ class ProgramaDao implements ProgramaRepository
     
                     $programas[] = $programa;
                 }
-    
             } catch (Exception $e) {
                 Log::error("Error al listar programas: " . $e->getMessage());
             }
@@ -223,8 +205,7 @@ class ProgramaDao implements ProgramaRepository
             return $programas;
         });
     }
-    
-
+        
     public function buscarProgramasPorNivelEducativo(string $nombreNivelEducativo): array
     {
         $programas = [];
@@ -236,20 +217,20 @@ class ProgramaDao implements ProgramaRepository
     
         try {
             $registros = DB::connection('oracle_academico')
-                ->table('ACADEMICO.PROGRAMA')
-                ->join('ACADEMICO.MODALIDAD', 'MODALIDAD.MODA_ID', '=', 'PROGRAMA.MODA_ID')
-                ->join('ACADEMICO.NIVELEDUCATIVO', 'NIVELEDUCATIVO.NIED_ID', '=', 'MODALIDAD.NIED_ID')
+                ->table('ACADEMICO.PROGRAMA AS PROG')
+                ->join('ACADEMICO.MODALIDAD AS MODA', 'MODA.MODA_ID', '=', 'PROG.MODA_ID')
+                ->join('ACADEMICO.NIVELEDUCATIVO AS NIED', 'NIED.NIED_ID', '=', 'MODA.NIED_ID')
                 ->select(
-                    'PROGRAMA.PROG_ID AS id',
-                    'PROGRAMA.PROG_NOMBRE AS nombre',
-                    'PROGRAMA.PROG_CODIGOPROGRAMA AS codigo',
-                    'PROGRAMA.PROG_CODIGOSNIES AS snies',
-                    'NIVELEDUCATIVO.NIED_ID AS nivel_id',
-                    'NIVELEDUCATIVO.NIED_DESCRIPCION AS nivel_nombre'
+                    'PROG.PROG_ID AS id',
+                    'PROG.PROG_NOMBRE AS nombre',
+                    'PROG.PROG_CODIGOPROGRAMA AS codigo',
+                    'PROG.PROG_CODIGOSNIES AS snies',
+                    'NIED.NIED_ID AS nivel_id',
+                    'NIED.NIED_DESCRIPCION AS nivel_nombre'
                 )
-                ->where('NIVELEDUCATIVO.NIED_ID', $nivelEducativoID)
-                ->where('PROGRAMA.PROG_ESTADO', 1)
-                ->orderBy('PROGRAMA.PROG_NOMBRE')
+                ->where('NIED.NIED_ID', $nivelEducativoID)
+                ->where('PROG.PROG_ESTADO', 1)
+                ->orderBy('PROG.PROG_NOMBRE')
                 ->get();
     
             foreach ($registros as $registro) {
@@ -277,5 +258,6 @@ class ProgramaDao implements ProgramaRepository
         }
     
         return $programas;
-    }    
+    }
+      
 }

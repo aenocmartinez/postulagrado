@@ -18,7 +18,7 @@
                     @continue
                 @endif
                 <option value="{{ route('seguimientos.show', ['id' => $proceso->getId()]) }}">
-                    {{ $proceso->getNombre() . " - " . $proceso->getNivelEducativo() }}
+                    {{ $proceso->getNombre() . " - " . $proceso->getNivelEducativo()->getNombre() }}
                 </option>
             @endforeach
         </select>

@@ -10,54 +10,57 @@ use Src\shared\di\FabricaDeRepositorios;
 
 class ModalidadDao implements ModalidadRepository
 {
+
     public function BuscarPorID(int $modalidadID): Modalidad
     {
         $modalidad = new Modalidad(
             FabricaDeRepositorios::getInstance()->getModalidadRepository()
         );
-    
+
         try {
-            $sql = '
-                SELECT MODA_ID, MODA_DESCRIPCION FROM ACADEMICO.MODALIDAD WHERE MODA_ID = :id
-            ';
-            
-            $registro = DB::connection('oracle_academico')->selectOne($sql, ['id' => $modalidadID]);
-    
+            $registro = DB::connection('oracle_academico')
+                ->table('ACADEMICO.MODALIDAD')
+                ->select('MODA_ID', 'MODA_DESCRIPCION')
+                ->where('MODA_ID', $modalidadID)
+                ->first();
+
             if ($registro) {
-                $modalidad->setId((int) $registro->MODA_ID);
-                $modalidad->setNombre((string) $registro->MODA_DESCRIPCION);
+                $modalidad->setId((int) $registro->moda_id);
+                $modalidad->setNombre((string) $registro->moda_descripcion);
             }
-    
+
         } catch (\Exception $e) {
             Log::error("ModalidadDao / BuscarPorID: " . $e->getMessage());
         }
-    
+
         return $modalidad;
     }
-    
 
-    public function Listar(): array {
+    public function Listar(): array
+    {
         $modalidades = [];
-
+    
         try {
             $registros = DB::connection('oracle_academico')
                 ->table('ACADEMICO.MODALIDAD')
+                ->select('MODA_ID', 'MODA_DESCRIPCION')
+                ->orderBy('MODA_ID') // Opcional: para listar ordenadamente
                 ->get();
-
+    
             foreach ($registros as $registro) {
                 $modalidad = new Modalidad(
                     FabricaDeRepositorios::getInstance()->getModalidadRepository()
                 );
-
-                $modalidad->setId((int) $registro->MODA_ID);
-                $modalidad->setNombre((string) $registro->MODA_DESCRIPCION);
-
+    
+                $modalidad->setId((int) $registro->moda_id);
+                $modalidad->setNombre((string) $registro->moda_descripcion);
+    
                 $modalidades[] = $modalidad;
             }
         } catch (\Exception $e) {
             Log::error("ModalidadDao / Listar(): " . $e->getMessage());
         }
-
+    
         return $modalidades;
-    }
+    }    
 }

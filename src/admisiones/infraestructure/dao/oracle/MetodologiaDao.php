@@ -17,49 +17,48 @@ class MetodologiaDao implements MetodologiaRepository
         );
     
         try {
-            $registro = DB::connection('oracle_academico')->selectOne(
-                "
-                SELECT METO_ID, METO_DESCRIPCION
-                FROM ACADEMICO.METODOLOGIA
-                WHERE METO_ID = :id
-                ",
-                ['id' => $metodologiaID]
-            );
+            $registro = DB::connection('oracle_academico')
+                ->table('ACADEMICO.METODOLOGIA')
+                ->select('METO_ID', 'METO_DESCRIPCION')
+                ->where('METO_ID', $metodologiaID)
+                ->first();
     
             if ($registro) {
-                $metodologia->setId((int) $registro->METO_ID);
-                $metodologia->setNombre((string) $registro->METO_DESCRIPCION);
+                $metodologia->setId((int) $registro->meto_id);
+                $metodologia->setNombre((string) $registro->meto_descripcion);                
             }
         } catch (\Exception $e) {
             Log::error("MetodologiaDao / BuscarPorID: " . $e->getMessage());
         }
     
         return $metodologia;
-    }
-    
+    }    
 
-    public function Listar(): array {
+    public function Listar(): array
+    {
         $metodologias = [];
-
+    
         try {
             $registros = DB::connection('oracle_academico')
                 ->table('ACADEMICO.METODOLOGIA')
+                ->select('METO_ID', 'METO_DESCRIPCION')
+                ->orderBy('METO_ID') // Opcional, por si quieres ordenarlo
                 ->get();
-
+    
             foreach ($registros as $registro) {
                 $metodologia = new Metodologia(
                     FabricaDeRepositorios::getInstance()->getMetodologiaRepository()
                 );
-
+    
                 $metodologia->setId((int) $registro->METO_ID);
                 $metodologia->setNombre((string) $registro->METO_DESCRIPCION);
-
+    
                 $metodologias[] = $metodologia;
             }
         } catch (\Exception $e) {
             Log::error("MetodologiaDao / Listar(): " . $e->getMessage());
         }
-
+    
         return $metodologias;
-    }
+    }    
 }

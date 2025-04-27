@@ -17,20 +17,17 @@ class UnidadRegionalDao implements UnidadRegionalRepository {
         );
     
         try {
-            $registro = DB::connection('oracle_academico')->selectOne(
-                "
-                SELECT UNID.UNID_ID, UNID.UNID_NOMBRE
-                FROM ACADEMICO.UNIDADPROGRAMA UNPR
-                JOIN ACADEMICO.UNIDAD UNID ON UNID.UNID_ID = UNPR.UNID_ID
-                WHERE UNPR.PROG_ID = :id
-                  AND UNID.UNID_REGIONAL = '1'
-                ",
-                ['id' => $programaID]
-            );
+            $registro = DB::connection('oracle_academico')
+                ->table('ACADEMICO.UNIDADPROGRAMA AS UNPR')
+                ->join('ACADEMICO.UNIDAD AS UNID', 'UNID.UNID_ID', '=', 'UNPR.UNID_ID')
+                ->select('UNID.UNID_ID', 'UNID.UNID_NOMBRE')
+                ->where('UNPR.PROG_ID', $programaID)
+                ->where('UNID.UNID_REGIONAL', '1')
+                ->first();
     
             if ($registro) {
-                $unidadRegional->setId((int) $registro->UNID_ID);
-                $unidadRegional->setNombre((string) $registro->UNID_NOMBRE);
+                $unidadRegional->setId((int) $registro->unid_id);
+                $unidadRegional->setNombre((string) $registro->unid_nombre);
             }
     
         } catch (\Exception $e) {
@@ -38,33 +35,36 @@ class UnidadRegionalDao implements UnidadRegionalRepository {
         }
     
         return $unidadRegional;
-    }
-    
+    }       
 
-    public function Listar(): array {
+    public function Listar(): array
+    {
         $unidadesRegionales = [];
-
+    
         try {
             $registros = DB::connection('oracle_academico')
                 ->table('ACADEMICO.UNIDAD')
+                ->select('UNID_ID', 'UNID_NOMBRE')
                 ->where('UNID_REGIONAL', '1')
+                ->orderBy('UNID_NOMBRE') // Opcional: para listar ordenadamente por nombre
                 ->get();
-
-            foreach($registros as $registro) {
+    
+            foreach ($registros as $registro) {
                 $unidadRegional = new UnidadRegional(
                     FabricaDeRepositorios::getInstance()->getUnidadRegionalRepository()
                 );
-
-                $unidadRegional->setId((int) $registro->UNID_ID);
-                $unidadRegional->setNombre((string) $registro->UNID_NOMBRE);
-
+    
+                $unidadRegional->setId((int) $registro->unid_id);
+                $unidadRegional->setNombre((string) $registro->unid_nombre);
+    
                 $unidadesRegionales[] = $unidadRegional;
             }
-
-        } catch(\Exception $e) {
+    
+        } catch (\Exception $e) {
             Log::error("UnidadRegionalDao / Listar(): " . $e->getMessage());
         }
-
+    
         return $unidadesRegionales;
     }
+    
 } 
