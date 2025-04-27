@@ -24,10 +24,10 @@ class AgregarActividadesMasivoUseCase
             return new ResponsePostulaGrado(404, "Proceso no encontrado.");
         }
     
-        if (empty($actividades)) 
-        {
-            return new ResponsePostulaGrado(400, "No se recibieron actividades para guardar.");
-        }
+        // if (empty($actividades)) 
+        // {
+        //     return new ResponsePostulaGrado(400, "No se recibieron actividades para guardar.");
+        // }
       
         $idsExistentes = array_map(function($actividad) {
             return $actividad->getId();

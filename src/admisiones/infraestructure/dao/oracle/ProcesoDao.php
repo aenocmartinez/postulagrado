@@ -207,19 +207,20 @@ class ProcesoDao extends Model implements ProcesoRepository
     }    
 
     // Están pendientes de migrar
-    public static function tieneCalendarioConActividades(int $procesoID): bool
+    public static function tieneActividades(int $procesoID): bool
     {
         try {
-            return self::join('calendarios', 'procesos.id', '=', 'calendarios.proceso_id')
-                ->join('actividades', 'calendarios.id', '=', 'actividades.calendario_id')
-                ->where('procesos.id', $procesoID)
+            return DB::connection('oracle_academpostulgrado')
+                ->table('ACADEMPOSTULGRADO.ACTIVIDAD')
+                ->where('PROC_ID', $procesoID)
                 ->exists();
-
-        } catch (Exception $e) {
-            Log::error("Error al verificar si el proceso ID {$procesoID} tiene calendario con actividades: " . $e->getMessage());
+    
+        } catch (\Exception $e) {
+            Log::error("Error al verificar si el proceso ID {$procesoID} tiene actividades: " . $e->getMessage());
             return false;
         }
-    }   
+    }
+    
     
     public function agregarPrograma(int $procesoID, int $programaID): bool {
         try {

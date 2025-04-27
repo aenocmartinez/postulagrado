@@ -22,10 +22,10 @@ class EliminarProcesoUseCase
             return new ResponsePostulaGrado(404, "Proceso no encontrado");
         }
 
-        $tieneCalendarioConActividades = $this->procesoRepo->tieneCalendarioConActividades($proceso->getId());
-        if ($tieneCalendarioConActividades) 
+        $tieneActividades = $this->procesoRepo->tieneActividades($proceso->getId());
+        if ($tieneActividades) 
         {
-            return new ResponsePostulaGrado(409, "No es posible eliminar el proceso, ya que está vinculado a un calendario.");
+            return new ResponsePostulaGrado(409, "No es posible eliminar el proceso, ya que tiene actividades relacionadas.");
         }
 
         $exito = $proceso->eliminar();
