@@ -6,6 +6,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 use Illuminate\Http\Request;
+use Src\admisiones\usecase\notificaciones\BuscarNotificacionUseCase;
 use Src\admisiones\usecase\notificaciones\ListarNotificacionesUseCase;
 use Src\shared\di\FabricaDeRepositorios;
 
@@ -51,8 +52,21 @@ class NotificacionController extends Controller
 
     public function show($id)
     {
-        // Lógica para mostrar una notificación específica
-        return response()->json(['message' => 'Mostrando notificación', 'id' => $id]);
+        
+        $buscarNotificacion = new BuscarNotificacionUseCase(
+            FabricaDeRepositorios::getInstance()->getNotifacionRepository()
+        );
+        
+        $response = $buscarNotificacion->ejecutar($id);
+        $notificacion = $response->getData();
+
+        if ($response->getCode() !== 200) {
+            return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
+        }
+    
+        return view('notificaciones.show', [
+            'notificacion' => $notificacion,
+        ]);
     }
 
 }

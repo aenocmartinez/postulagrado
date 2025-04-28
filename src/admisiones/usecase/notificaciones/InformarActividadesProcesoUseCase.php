@@ -3,10 +3,10 @@
 namespace Src\Admisiones\UseCase\Notificaciones;
 
 use Src\Shared\Notifications\NotificacionDTO;
-use Src\Admisiones\Repositories\ProgramaContactoRepository;
 use Src\Shared\Notifications\GestorNotificaciones;
 use Src\Shared\DI\FabricaDeRepositorios;
 use Carbon\Carbon;
+use Src\admisiones\domain\Notificacion;
 use Src\admisiones\domain\Proceso;
 
 class InformarActividadesProcesoUseCase
@@ -29,30 +29,45 @@ class InformarActividadesProcesoUseCase
      */
     public function ejecutar(Proceso $proceso, bool $hayCambioCronograma): bool
     {
+        $copiaMensaje = "";
         $contactos = $this->contactoRepo->listar();
 
         // Crear asunto
         $asunto = $this->crearAsunto($proceso, $hayCambioCronograma);
-
-        // Preparar destinatarios y nombres
-        $destinatarios = [];
-        $nombresDestinatarios = [];
         
         foreach ($contactos as $contacto) {
-            // Crear el mensaje para cada destinatario
+
             $mensaje = $this->crearMensaje($proceso, $hayCambioCronograma, $contacto);
 
-            // Crear el DTO con los datos del mensaje personalizado para cada destinatario
+            if (strlen($copiaMensaje) == 0) {
+                $copiaMensaje = $mensaje;
+            }
+
             $notificacionDTO = new NotificacionDTO(
                 $asunto,
                 $mensaje,
-                [$contacto->getEmail()],  // Enviar solo a un destinatario
-                ['mailtrap'] // Canal de notificación
+                [$contacto->getEmail()],  
+                ['mailtrap'] 
             );
 
-            // Enviar la notificación
             $this->gestorNotificaciones->enviarNotificacion($notificacionDTO);
         }
+
+        $copiaDestinatarios = implode(', ', array_map(function ($contacto) {
+            return $contacto->getEmail();
+        }, $contactos));
+        
+
+        // Crea la notificación
+        $notificacion = new Notificacion(FabricaDeRepositorios::getInstance()->getNotifacionRepository());
+        $notificacion->setAsunto($asunto);
+        $notificacion->setMensaje($copiaMensaje);
+        $notificacion->setCanal("Correo electrónico");
+        $notificacion->setDestinatarios($copiaDestinatarios);
+        $notificacion->setFechaCreacion(now());
+
+        $notificacion->crear();
+        
 
         return true;
     }
@@ -85,15 +100,12 @@ class InformarActividadesProcesoUseCase
     {
         $actividades = $proceso->getActividades(); 
 
-        // Obtener el nombre del programa del contacto
         $nombrePrograma = $contacto->getPrograma()->getNombre();
 
-        // Generamos el encabezado con el saludo genérico y personalizamos con el nombre del contacto
         $mensaje = $hayCambioCronograma
             ? "Estimado(a) " . $contacto->getNombre() . " del programa {$nombrePrograma},<br><br>A continuación se brinda la información actualizada sobre el cronograma de actividades del proceso de grado:<br><br>"
             : "Estimado(a) " . $contacto->getNombre() . " del programa {$nombrePrograma},<br><br>A continuación se presenta el cronograma de actividades del proceso de grado:<br><br>";
 
-        // Mensaje HTML con la tabla de actividades
         $mensajeHTML = "<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; width: 100%;'>
                         <tr style='background-color: #f2f2f2;'>
                             <th style='padding: 8px;'>Descripción</th>
@@ -102,7 +114,7 @@ class InformarActividadesProcesoUseCase
                         </tr>";
 
         foreach ($actividades as $actividad) {
-            // Formateamos las fechas para que solo aparezca la fecha (sin hora)
+
             $fechaInicio = Carbon::parse($actividad->getFechaInicio())->format('Y-m-d');
             $fechaFin = Carbon::parse($actividad->getFechaFin())->format('Y-m-d');
             
@@ -115,7 +127,6 @@ class InformarActividadesProcesoUseCase
 
         $mensajeHTML .= "</table>";
 
-        // Agregar la firma institucional al final
         $mensaje .= $mensajeHTML . "<br><br>Atentamente,<br><br><strong>Área de Admisiones</strong><br><strong>Universidad Colegio Mayor de Cundinamarca</strong>";
 
         return $mensaje;

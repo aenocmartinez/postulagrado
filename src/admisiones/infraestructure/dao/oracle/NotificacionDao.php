@@ -23,29 +23,32 @@ class NotificacionDao extends Model implements NotificacionRepository
 
     public function buscarPorID(int $id): Notificacion
     {
-        $notificacion = new Notificacion($this);
-
-        try {
-            $registro = DB::connection('oracle_academpostulgrado')
-                ->table('ACADEMPOSTULGRADO.NOTIFICACION')
-                ->select('NOTI_ID', 'NOTI_FECHA', 'NOTI_ASUNTO', 'NOTI_CANAL', 'NOTI_MENSAJE', 'NOTI_DESTINATARIOS')
-                ->where('NOTI_ID', $id)
-                ->first();
-
-            if ($registro) {
-                $notificacion->setId($registro->noti_id);
-                $notificacion->setFechaCreacion($registro->noti_fecha);
-                $notificacion->setAsunto($registro->noti_asunto);
-                $notificacion->setCanal($registro->noti_canal);
-                $notificacion->setMensaje($registro->noti_mensaje);
-                $notificacion->setDestinatarios($registro->noti_destinatarios);
+        return Cache::remember('notificacion_' . $id, now()->addHours(4), function () use ($id) {
+            $notificacion = new Notificacion($this);
+    
+            try {
+                $registro = DB::connection('oracle_academpostulgrado')
+                    ->table('ACADEMPOSTULGRADO.NOTIFICACION')
+                    ->select('NOTI_ID', 'NOTI_FECHA', 'NOTI_ASUNTO', 'NOTI_CANAL', 'NOTI_MENSAJE', 'NOTI_DESTINATARIOS')
+                    ->where('NOTI_ID', $id)
+                    ->first();
+    
+                if ($registro) {
+                    $notificacion->setId($registro->noti_id);
+                    $notificacion->setFechaCreacion($registro->noti_fecha);
+                    $notificacion->setAsunto($registro->noti_asunto);
+                    $notificacion->setCanal($registro->noti_canal);
+                    $notificacion->setMensaje($registro->noti_mensaje);
+                    $notificacion->setDestinatarios($registro->noti_destinatarios);
+                }
+            } catch (\Exception $e) {
+                Log::error("Error en buscarPorID({$id}): " . $e->getMessage());
             }
-        } catch (\Exception $e) {
-            Log::error("Error en buscarPorID({$id}): " . $e->getMessage());
-        }
-
-        return $notificacion;
+    
+            return $notificacion;
+        });
     }
+    
 
     public function listar(): array
     {
