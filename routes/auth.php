@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\ProcesoController;
 use App\Http\Controllers\ProgramaContactoController;
 use App\Http\Controllers\SeguimientoController;
@@ -92,5 +93,11 @@ Route::middleware('auth')->group(function () {
     Route::post('contactos', [ProgramaContactoController::class, 'store'])->name('contactos.store');
     Route::put('contactos/{id}', [ProgramaContactoController::class, 'update'])->name('contactos.update');
     
+    
+    // Notificaciones
+    Route::get('/notificaciones', [NotificacionController::class, 'index'])->name('notificaciones.index');
+    Route::get('/notificaciones/create', [NotificacionController::class, 'create'])->name('notificaciones.create');
+    Route::post('/notificaciones', [NotificacionController::class, 'store'])->name('notificaciones.store');
+    Route::get('/notificaciones/{id}', [NotificacionController::class, 'show'])->name('notificaciones.show');
 
 });

@@ -7,6 +7,7 @@ use Src\admisiones\infraestructure\dao\oracle\JornadaDao;
 use Src\admisiones\infraestructure\dao\oracle\MetodologiaDao;
 use Src\admisiones\infraestructure\dao\oracle\ModalidadDao;
 use Src\admisiones\infraestructure\dao\oracle\NivelEducativoDao;
+use Src\admisiones\infraestructure\dao\oracle\NotificacionDao;
 use Src\admisiones\infraestructure\dao\oracle\ProcesoDao;
 use Src\admisiones\infraestructure\dao\oracle\ProgramaContactoDao;
 use Src\admisiones\infraestructure\dao\oracle\ProgramaDao;
@@ -16,6 +17,7 @@ use Src\admisiones\repositories\JornadaRepository;
 use Src\admisiones\repositories\MetodologiaRepository;
 use Src\admisiones\repositories\ModalidadRepository;
 use Src\admisiones\repositories\NivelEducativoRepository;
+use Src\admisiones\repositories\NotificacionRepository;
 use Src\admisiones\repositories\ProcesoRepository;
 use Src\admisiones\repositories\ProgramaContactoRepository;
 use Src\admisiones\repositories\ProgramaRepository;
@@ -34,6 +36,7 @@ class FabricaDeRepositorios
     private UnidadRegionalRepository $unidadRegionalRepo;
     private ProgramaRepository $programaRepo;
     private ProgramaContactoRepository $programaContactoRepo;
+    private NotificacionRepository $notificacionRepo;
 
     public function __construct()
     {
@@ -46,6 +49,7 @@ class FabricaDeRepositorios
         $this->unidadRegionalRepo = new UnidadRegionalDao();
         $this->programaRepo = new ProgramaDao();
         $this->programaContactoRepo = new ProgramaContactoDao();
+        $this->notificacionRepo = new NotificacionDao();
     }
 
     public static function getInstance(): FabricaDeRepositorios 
@@ -94,5 +98,9 @@ class FabricaDeRepositorios
 
     public function getProgramaContactoRepository(): ProgramaContactoRepository {
         return $this->programaContactoRepo;
+    }
+
+    public function getNotifacionRepository(): NotificacionRepository {
+        return $this->notificacionRepo;
     }
 }
