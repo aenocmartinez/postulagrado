@@ -3,18 +3,20 @@
 namespace Src\admisiones\domain;
 
 use Carbon\Carbon;
+use Src\admisiones\dto\proceso\ProcesoDTO;
 use Src\admisiones\repositories\ActividadRepository;
 use Src\admisiones\repositories\NivelEducativoRepository;
+use Src\admisiones\repositories\ProcesoDocumentoRepository;
 use Src\admisiones\repositories\ProcesoRepository;
+use Src\shared\di\FabricaDeRepositorios;
 use Src\shared\formato\FormatoFecha;
 
 class Proceso 
 {    
     private string              $nombre;
     private NivelEducativo      $nivelEducativo;
+    private ProcesoDocumentoRepository $documentoRepo;
 
-    /** @var Documento[] $documentos */
-    private $documentos = [];
 
     /** @var Actividades[] $documentos */
     private $actividades = [];
@@ -27,7 +29,23 @@ class Proceso
         private string $estado = "ABIERTO"
     ) {
 
-        
+        $this->documentoRepo = FabricaDeRepositorios::getInstance()->getProcesoDocumentoRepository();
+    }
+
+    public function setRepository(ProcesoRepository $repository): void {
+        $this->repository = $repository;
+    }
+
+    public function setActividadRepo(ActividadRepository $actividadRepo): void {
+        $this->actividadRepo = $actividadRepo;
+    }
+
+    public function setNivelRepo(NivelEducativoRepository $nivelRepo): void {
+        $this->nivelRepo = $nivelRepo;
+    }
+
+    public function setDocumentoRepo(ProcesoDocumentoRepository $documentoRepo): void {
+        $this->documentoRepo = $documentoRepo;
     }
 
     public function setId(int $id): void {
@@ -173,4 +191,29 @@ class Proceso
     public function getPrograma(int $programaID): ProgramaProceso {
         return $this->repository->buscarProgramaPorProceso($this->id, $programaID);
     } 
+
+    public function agregarDocumento(ProcesoDocumento $documento): bool {
+        return $this->documentoRepo->crear($documento);
+    }
+
+    public function quitarDocumento(ProcesoDocumento $documento): bool {
+        return $this->documentoRepo->eliminar($documento->getId());
+    }
+
+    public function getDocumentos(): array {
+        return $this->documentoRepo->listarDocumentosPorProceso($this->id);
+    }
+
+    public function getDocumento(int $documentoID): ProcesoDocumento {
+        return $this->documentoRepo->buscarPorID($documentoID);
+    }
+
+    public function toDTO(): ProcesoDTO {
+        return new ProcesoDTO(
+            $this->id,
+            $this->nombre,
+            $this->nivelEducativo,
+            $this->estado
+        );
+    }
 }

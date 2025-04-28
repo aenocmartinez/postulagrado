@@ -45,6 +45,7 @@ class ProcesoDao extends Model implements ProcesoRepository
 
                 foreach ($registros as $registro) {
                     $proceso = new Proceso($procesoRepo, $calendarioRepo, $nivelEducativoRepo);
+                    $proceso->setDocumentoRepo(FabricaDeRepositorios::getInstance()->getProcesoDocumentoRepository());
 
                     $nivelEducativo = $nivelEducativoRepo->BuscarPorID($registro->nied_id);
 
@@ -87,6 +88,7 @@ class ProcesoDao extends Model implements ProcesoRepository
                 $proceso->setNombre($registro->proc_nombre);
                 $proceso->setNivelEducativo($nivelEducativo);
                 $proceso->setEstado($registro->proc_estado);
+                $proceso->setDocumentoRepo(FabricaDeRepositorios::getInstance()->getProcesoDocumentoRepository());
             }
         } 
         catch (Exception $e) 
@@ -105,6 +107,8 @@ class ProcesoDao extends Model implements ProcesoRepository
                 FabricaDeRepositorios::getInstance()->getActividadRepository(),
                 FabricaDeRepositorios::getInstance()->getNivelEducativoRepository(),
             );
+
+            $proceso->setDocumentoRepo(FabricaDeRepositorios::getInstance()->getProcesoDocumentoRepository());
     
             try 
             {

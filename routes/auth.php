@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActividadController;
+use App\Http\Controllers\ProcesoDocumentoController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
@@ -100,5 +101,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/notificaciones', [NotificacionController::class, 'store'])->name('notificaciones.store');
     Route::get('/notificaciones/{id}', [NotificacionController::class, 'show'])->name('notificaciones.show');    
     Route::patch('/notificaciones/{id}/anular', [NotificacionController::class, 'anular'])->name('notificaciones.anular');
+
+    // Documentos de Proceso
+    Route::get('/proceso/{proceso}/documentos', [ProcesoDocumentoController::class, 'index'])->name('proceso_documentos.index');
+    Route::post('/proceso/documentos', [ProcesoDocumentoController::class, 'store'])->name('proceso_documentos.store');
+    Route::get('/proceso/documentos/{documento}', [ProcesoDocumentoController::class, 'show'])->name('proceso_documentos.show');
+    Route::delete('/proceso/{proceso}/documentos/{documento}', [ProcesoDocumentoController::class, 'destroy'])->name('proceso_documentos.destroy');
+    Route::get('/procesos/{proceso}/documentos/create', [ProcesoDocumentoController::class, 'create'])->name('proceso_documentos.create');
+    
 
 });

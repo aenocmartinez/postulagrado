@@ -79,6 +79,13 @@
                                        class="hover:text-orange-400 transition">
                                         Actividades
                                     </a>
+
+                                    <!-- Botón Gestionar Documentos -->
+                                    <a href="{{ route('proceso_documentos.index', $proceso->getId()) }}" 
+                                    class="hover:text-indigo-600 transition">
+                                        Archivos
+                                    </a>
+
                                 </div>
                             </td>
                         </tr>
