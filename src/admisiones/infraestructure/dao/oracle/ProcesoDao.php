@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Src\admisiones\domain\NivelEducativo;
+use Src\admisiones\domain\Notificacion;
 use Src\admisiones\domain\Proceso;
 use Src\admisiones\domain\Programa;
 use Src\admisiones\domain\ProgramaProceso;
@@ -363,5 +364,36 @@ class ProcesoDao extends Model implements ProcesoRepository
         });
     }
       
+    public function listarNotificacionesEnviadas(int $procesoID): array
+    {
+        return Cache::remember('notificaciones_listado', now()->addHours(4), function () {
+            $notificaciones = [];
+
+            try {
+                $registros = DB::connection('oracle_academpostulgrado')
+                    ->table('ACADEMPOSTULGRADO.NOTIFICACION')
+                    ->select('NOTI_ID', 'NOTI_FECHA', 'NOTI_ASUNTO', 'NOTI_CANAL', 'NOTI_MENSAJE', 'NOTI_DESTINATARIOS', 'NOTI_ESTADO')
+                    ->orderBy('NOTI_FECHA', 'desc')
+                    ->get();
+
+                foreach ($registros as $registro) {
+                    $notificacion = new Notificacion(FabricaDeRepositorios::getInstance()->getNotifacionRepository());
+                    $notificacion->setId($registro->noti_id);
+                    $notificacion->setFechaCreacion($registro->noti_fecha);
+                    $notificacion->setAsunto($registro->noti_asunto);
+                    $notificacion->setCanal($registro->noti_canal);
+                    $notificacion->setMensaje($registro->noti_mensaje);
+                    $notificacion->setDestinatarios($registro->noti_destinatarios);
+                    $notificacion->setEstado($registro->noti_estado);
+
+                    $notificaciones[] = $notificacion;
+                }
+            } catch (\Exception $e) {
+                Log::error("Error en listar notificaciones: " . $e->getMessage());
+            }
+
+            return $notificaciones;
+        });        
+    }
     
 }

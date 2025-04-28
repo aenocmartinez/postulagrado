@@ -217,31 +217,66 @@
     <h3 class="text-md font-semibold text-gray-700 mt-6 mb-3">Notificaciones Enviadas</h3>
     <div class="overflow-x-auto">
         <table class="w-full border-collapse rounded-lg overflow-hidden text-sm">
-            <thead>
-                <tr class="bg-gray-200 text-gray-700 text-left">
-                    <th class="px-4 py-2 font-medium">Notificación</th>
-                    <th class="px-4 py-2 font-medium">Destinatario</th>
-                    <th class="px-4 py-2 font-medium">Fecha de Envío</th>
-                    <th class="px-4 py-2 font-medium">Estado</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach([['Validación de documentos', 'Ana Gómez', '2024-02-10', false], ['Firma de resolución', 'Carlos Rodríguez', '2024-02-12', true]] as [$mensaje, $usuario, $fecha, $leido])
-                <tr class="border-b border-gray-300 bg-white hover:bg-gray-100 transition">
-                    <td class="px-4 py-2 text-gray-900">{{ $mensaje }}</td>
-                    <td class="px-4 py-2 text-gray-900">{{ $usuario }}</td>
-                    <td class="px-4 py-2 text-gray-900">{{ $fecha }}</td>
-                    <td class="px-4 py-2 text-center">
-                        <span class="px-2 py-1 rounded text-xs {{ $leido ? 'bg-green-500 text-white' : 'bg-red-500 text-white' }}">
-                            {{ $leido ? 'Leído' : 'Pendiente' }}
-                        </span>
+        <thead>
+            <tr class="bg-gray-200 text-gray-700 text-left">
+                <th class="px-4 py-2 font-medium">Notificación</th>
+                <th class="px-4 py-2 font-medium">Destinatarios</th>
+                <th class="px-4 py-2 font-medium">Fecha de Envío</th>
+                <th class="px-4 py-2 font-medium">Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($proceso->getNotificacionesEnviadas() as $notificacion)
+                @if(strtoupper($notificacion->getEstado()) === 'ENVIADA')
+                    <tr class="border-b border-gray-300 bg-white hover:bg-gray-100 transition">
+                        <td class="px-4 py-2 text-gray-900">{{ $notificacion->getAsunto() }}</td>
+
+                        <td class="px-4 py-2 text-gray-900 text-center">
+                            @php
+                                $destinatarios = array_map('trim', explode(',', $notificacion->getDestinatarios()));
+                                $cantidadDestinatarios = count($destinatarios);
+                            @endphp
+                            <a href="javascript:void(0);" 
+                            onclick="mostrarDestinatarios({{ json_encode($destinatarios) }})" 
+                            class="text-blue-600 hover:underline">
+                                {{ $cantidadDestinatarios }} destinatarios
+                            </a>
+                        </td>
+
+                        <td class="px-4 py-2 text-gray-900">
+                            {{ \Carbon\Carbon::parse($notificacion->getFechaCreacion())->format('d/m/Y') }}
+                        </td>
+
+                        <td class="px-4 py-2 text-center">
+                            <span class="px-2 py-1 rounded text-xs bg-green-500 text-white">
+                                Enviada
+                            </span>
+                        </td>
+                    </tr>
+                @endif
+            @empty
+                <tr>
+                    <td colspan="4" class="text-center py-4 text-gray-500">
+                        No se encontraron notificaciones enviadas.
                     </td>
                 </tr>
-                @endforeach
-            </tbody>
+            @endforelse
+        </tbody>
+
         </table>
     </div>
 
+</div>
+
+<!-- Modal Destinatarios -->
+<div id="modal-destinatarios" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+        <h3 class="text-lg font-semibold mb-4">Destinatarios</h3>
+        <ul id="lista-destinatarios" class="list-disc pl-6 space-y-2 text-gray-700"></ul>
+        <div class="flex justify-end mt-4">
+            <button onclick="cerrarModal()" class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900">Cerrar</button>
+        </div>
+    </div>
 </div>
 
 @endsection
@@ -474,5 +509,27 @@
 
 </script>
 
+<script>
+function mostrarDestinatarios(destinatarios) {
+    const modal = document.getElementById('modal-destinatarios');
+    const lista = document.getElementById('lista-destinatarios');
+
+    lista.innerHTML = '';
+    destinatarios.forEach(function(correo) {
+        const li = document.createElement('li');
+        li.textContent = correo;
+        lista.appendChild(li);
+    });
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function cerrarModal() {
+    const modal = document.getElementById('modal-destinatarios');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+</script>
 @endsection
 
