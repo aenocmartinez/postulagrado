@@ -85,7 +85,7 @@
             @csrf
             <input type="hidden" name="actividades" id="actividades-json">
             <button type="submit" class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition">
-                Guardar cambios
+                Guardar cambios y notificar
             </button>
         </form>
     </div>

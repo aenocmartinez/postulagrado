@@ -28,6 +28,15 @@
             </select>
         </div>
 
+        <!-- Fecha de Envío -->
+        <div class="mb-6">
+            <label for="fecha_envio" class="block text-sm font-medium text-gray-700 mb-2">Fecha de Envío</label>
+            <input type="date" name="fecha_envio" id="fecha_envio"
+                class="border border-gray-300 px-3 py-2 rounded-md text-sm w-full focus:ring focus:ring-gray-400 outline-none">
+            <small class="text-gray-500 mt-1 block">Si no seleccionas una fecha, la notificación se enviará inmediatamente.</small>
+        </div>
+
+
         <!-- Destinatarios -->
         <div class="mb-8">
             <label for="destinatarios" class="block text-sm font-medium text-gray-700 mb-2">Destinatarios</label>

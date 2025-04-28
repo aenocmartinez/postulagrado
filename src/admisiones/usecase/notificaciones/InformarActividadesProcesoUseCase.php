@@ -63,6 +63,7 @@ class InformarActividadesProcesoUseCase
         $notificacion->setAsunto($asunto);
         $notificacion->setMensaje($copiaMensaje);
         $notificacion->setCanal("Correo electrónico");
+        $notificacion->setEstado("ENVIADA");
         $notificacion->setDestinatarios($copiaDestinatarios);
         $notificacion->setFechaCreacion(now());
 

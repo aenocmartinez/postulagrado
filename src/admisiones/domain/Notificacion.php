@@ -12,6 +12,7 @@ class Notificacion
     private string $fechaCreacion;
     private string $canal;
     private string $destinatarios;
+    private string $estado;
     private NotificacionRepository $notificacionRepo;
 
     public function __construct(NotificacionRepository $notificacionRepo)
@@ -22,6 +23,7 @@ class Notificacion
         $this->fechaCreacion = '';
         $this->canal = '';
         $this->destinatarios = '';
+        $this->estado = '';
         $this->notificacionRepo = $notificacionRepo;
     }
 
@@ -55,6 +57,11 @@ class Notificacion
         return $this->destinatarios;
     }
 
+    public function getEstado(): string
+    {
+        return $this->estado;
+    }
+
     public function setId(int $id): void
     {
         $this->id = $id;
@@ -83,6 +90,11 @@ class Notificacion
     public function setDestinatarios(string $destinatarios): void
     {
         $this->destinatarios = $destinatarios;
+    }
+
+    public function setEstado(string $estado): void
+    {
+        $this->estado = $estado;
     }
 
     public function listar(): array

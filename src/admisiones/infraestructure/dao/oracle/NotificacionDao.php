@@ -19,7 +19,7 @@ class NotificacionDao extends Model implements NotificacionRepository
     public $incrementing = false;
     public $timestamps = false;
 
-    protected $fillable = ['NOTI_FECHA', 'NOTI_ASUNTO', 'NOTI_CANAL', 'NOTI_MENSAJE', 'NOTI_DESTINATARIOS'];
+    protected $fillable = ['NOTI_FECHA', 'NOTI_ASUNTO', 'NOTI_CANAL', 'NOTI_MENSAJE', 'NOTI_DESTINATARIOS', 'NOTI_ESTADO'];
 
     public function buscarPorID(int $id): Notificacion
     {
@@ -29,7 +29,7 @@ class NotificacionDao extends Model implements NotificacionRepository
             try {
                 $registro = DB::connection('oracle_academpostulgrado')
                     ->table('ACADEMPOSTULGRADO.NOTIFICACION')
-                    ->select('NOTI_ID', 'NOTI_FECHA', 'NOTI_ASUNTO', 'NOTI_CANAL', 'NOTI_MENSAJE', 'NOTI_DESTINATARIOS')
+                    ->select('NOTI_ID', 'NOTI_FECHA', 'NOTI_ASUNTO', 'NOTI_CANAL', 'NOTI_MENSAJE', 'NOTI_DESTINATARIOS', 'NOTI_ESTADO')
                     ->where('NOTI_ID', $id)
                     ->first();
     
@@ -40,6 +40,7 @@ class NotificacionDao extends Model implements NotificacionRepository
                     $notificacion->setCanal($registro->noti_canal);
                     $notificacion->setMensaje($registro->noti_mensaje);
                     $notificacion->setDestinatarios($registro->noti_destinatarios);
+                    $notificacion->setEstado($registro->noti_estado);
                 }
             } catch (\Exception $e) {
                 Log::error("Error en buscarPorID({$id}): " . $e->getMessage());
@@ -58,7 +59,7 @@ class NotificacionDao extends Model implements NotificacionRepository
             try {
                 $registros = DB::connection('oracle_academpostulgrado')
                     ->table('ACADEMPOSTULGRADO.NOTIFICACION')
-                    ->select('NOTI_ID', 'NOTI_FECHA', 'NOTI_ASUNTO', 'NOTI_CANAL', 'NOTI_MENSAJE', 'NOTI_DESTINATARIOS')
+                    ->select('NOTI_ID', 'NOTI_FECHA', 'NOTI_ASUNTO', 'NOTI_CANAL', 'NOTI_MENSAJE', 'NOTI_DESTINATARIOS', 'NOTI_ESTADO')
                     ->orderBy('NOTI_FECHA', 'desc')
                     ->get();
 
@@ -70,6 +71,7 @@ class NotificacionDao extends Model implements NotificacionRepository
                     $notificacion->setCanal($registro->noti_canal);
                     $notificacion->setMensaje($registro->noti_mensaje);
                     $notificacion->setDestinatarios($registro->noti_destinatarios);
+                    $notificacion->setEstado($registro->noti_estado);
 
                     $notificaciones[] = $notificacion;
                 }
@@ -97,6 +99,7 @@ class NotificacionDao extends Model implements NotificacionRepository
                     'NOTI_CANAL'         => $notificacion->getCanal(),
                     'NOTI_MENSAJE'       => $notificacion->getMensaje(),
                     'NOTI_DESTINATARIOS' => $notificacion->getDestinatarios(),
+                    'NOTI_ESTADO'        => $notificacion->getEstado(),
                     'NOTI_REGISTRADOPOR' => Auth::user()->id ?? 'system',
                     'NOTI_FECHACAMBIO'   => now(),
                 ]);

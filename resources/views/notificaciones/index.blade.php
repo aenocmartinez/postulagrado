@@ -39,18 +39,35 @@
         <table class="w-full border-collapse rounded-lg overflow-hidden text-sm">
             <thead>
                 <tr class="bg-[#F2F2F5] text-gray-700 text-left">
-                    <th class="px-4 py-2 font-medium w-[30%]">Asunto</th>
-                    <th class="px-4 py-2 font-medium w-[30%]">Canal</th>
-                    <th class="px-4 py-2 font-medium w-[30%]">Fecha de Envío</th>
-                    <th class="px-4 py-2 font-medium text-center w-[10%]">Acciones</th>
+                    <th class="px-4 py-2 font-medium w-[25%]">Asunto</th>
+                    <th class="px-4 py-2 font-medium w-[20%]">Canal</th>
+                    <th class="px-4 py-2 font-medium w-[20%]">Fecha de Envío</th>
+                    <th class="px-4 py-2 font-medium w-[20%]">Estado</th>
+                    <th class="px-4 py-2 font-medium text-center w-[15%]">Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($notificaciones as $notificacion)
                     <tr class="border-b border-gray-300 bg-white hover:bg-gray-100 transition">
                         <td class="px-4 py-2 text-gray-900 break-words">{{ $notificacion->getAsunto() }}</td>
-                        <td class="px-4 py-2 text-gray-900 break-words">{{ ucfirst($notificacion->getCanal()) }}</td>
-                        <td class="px-4 py-2 text-gray-900 break-words">{{ \Carbon\Carbon::parse($notificacion->getFechaCreacion())->format('d/m/Y') }}</td>
+                        <td class="px-4 py-2 text-gray-900 break-words">{{ $notificacion->getCanal() }}</td>
+                        <td class="px-4 py-2 text-gray-900 break-words">
+                            {{ \Carbon\Carbon::parse($notificacion->getFechaCreacion())->format('d/m/Y') }}
+                        </td>
+                        <td class="px-4 py-2 text-gray-900 break-words">
+                            @php
+                                $estado = strtoupper($notificacion->getEstado() ?? '');
+                                $clase = match($estado) {
+                                    'PROGRAMADA' => 'text-yellow-500',
+                                    'ENVIADA' => 'text-green-600',
+                                    'ANULADA' => 'text-red-600',
+                                    default => 'text-gray-600',
+                                };
+                            @endphp
+                            <span class="font-semibold {{ $clase }}">
+                                {{ $estado !== '' ? $estado : '-' }}
+                            </span>
+                        </td>
                         <td class="px-4 py-2 text-center">
                             <button class="menu-btn text-gray-600 hover:text-gray-800"
                                     data-id="{{ $notificacion->getId() }}">
@@ -60,7 +77,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="text-center py-4 text-gray-500">
+                        <td colspan="5" class="text-center py-4 text-gray-500">
                             No se encontraron notificaciones.
                         </td>
                     </tr>
@@ -89,8 +106,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     const actionMenu = document.getElementById("action-menu");
     const viewLink = document.getElementById("view-link");
-    const editLink = document.getElementById("edit-link");
-    const deleteBtn = document.getElementById("delete-btn");
 
     document.querySelectorAll(".menu-btn").forEach(button => {
         button.addEventListener("click", function (event) {
@@ -109,30 +124,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.addEventListener("click", function () {
         actionMenu.classList.add("hidden");
-    });
-
-    deleteBtn.addEventListener("click", function () {
-        let url = deleteBtn.dataset.url;
-
-        Swal.fire({
-            title: "¿Estás seguro?",
-            text: "Esta acción no se puede deshacer.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#6b7280",
-            confirmButtonText: "Sí, eliminar",
-            cancelButtonText: "Cancelar"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                let form = document.createElement("form");
-                form.action = url;
-                form.method = "POST";
-                form.innerHTML = `@csrf @method('DELETE')`;
-                document.body.appendChild(form);
-                form.submit();
-            }
-        });
     });
 });
 </script>

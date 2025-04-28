@@ -10,6 +10,7 @@ class NotificacionDTO
     private string $fechaCreacion;
     private string $canal;
     private string $destinatarios;
+    private string $estado;
 
     public function __construct()
     {
@@ -19,6 +20,7 @@ class NotificacionDTO
         $this->fechaCreacion = '';
         $this->canal = '';
         $this->destinatarios = '';
+        $this->estado = 'PROGRAMADA';
     }
 
     public function getId(): int
@@ -34,6 +36,16 @@ class NotificacionDTO
     public function getAsunto(): string
     {
         return $this->asunto;
+    }
+
+    public function getEstado(): string
+    {
+        return $this->estado;
+    }
+    
+    public function setEstado(string $estado): void
+    {
+        $this->estado = $estado;
     }
 
     public function setAsunto(string $asunto): void
