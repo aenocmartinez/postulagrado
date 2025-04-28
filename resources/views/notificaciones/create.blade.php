@@ -24,7 +24,7 @@
             <label for="canal" class="block text-sm font-medium text-gray-700 mb-2">Canal de Envío</label>
             <select name="canal" id="canal"
                 class="border border-gray-300 px-3 py-2 rounded-md text-sm w-full focus:ring focus:ring-gray-400 outline-none" required>
-                <option value="correo" selected>Correo Electrónico</option>
+                <option value="Correo electrónico" selected>Correo Electrónico</option>
             </select>
         </div>
 
@@ -55,8 +55,8 @@
         <div class="mb-8 mt-4">
             <label for="mensaje" class="block text-sm font-medium text-gray-700 mb-2">Mensaje</label>
             <textarea name="mensaje" id="mensaje"
-                class="border border-gray-300 rounded-md text-sm w-full focus:ring focus:ring-gray-400 outline-none"
-                rows="10" required></textarea>
+                    class="border border-gray-300 rounded-md text-sm w-full focus:ring focus:ring-gray-400 outline-none"
+                    rows="10"></textarea>
         </div>
 
         <!-- Botón Guardar -->
@@ -83,6 +83,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    let editorInstance;
 
     // Inicializar Tom Select
     const select = new TomSelect('#destinatarios', {
@@ -94,7 +95,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 const control = this;
                 control.clear(); // Borrar 'todos'
 
-                // Capturar TODOS los valores (menos __todos__)
                 const allValues = Array.from(document.querySelectorAll('#destinatarios option'))
                     .filter(opt => opt.value !== '__todos__')
                     .map(opt => opt.value);
@@ -107,21 +107,44 @@ document.addEventListener('DOMContentLoaded', function () {
         searchField: ['text'],
     });
 
-
     // Inicializar CKEditor
-    ClassicEditor.create(document.querySelector('#mensaje'), {
-        toolbar: {
-            items: [
-                'bold', 'italic', 'underline', '|',
-                'bulletedList', 'numberedList', '|',
-                'link', 'blockQuote', '|',
-                'undo', 'redo'
-            ]
+    ClassicEditor
+        .create(document.querySelector('#mensaje'), {
+            toolbar: {
+                items: [
+                    'bold', 'italic', 'underline', '|',
+                    'bulletedList', 'numberedList', '|',
+                    'link', 'blockQuote', '|',
+                    'undo', 'redo'
+                ]
+            }
+        })
+        .then(editor => {
+            editorInstance = editor;
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+    // Capturar el submit del formulario
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function (e) {
+        if (editorInstance) {
+            const contenido = editorInstance.getData().trim();
+            document.querySelector('#mensaje').value = contenido;
+
+            if (contenido === '') {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Mensaje vacío',
+                    text: 'Debes escribir un mensaje antes de enviar.',
+                });
+            }
         }
-    }).catch(error => {
-        console.error(error);
     });
 });
 </script>
+
 
 @endsection

@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\GuardarNotificacion;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 use Illuminate\Http\Request;
+use Src\admisiones\dto\notificacion\NotificacionDTO;
 use Src\admisiones\usecase\notificaciones\BuscarNotificacionUseCase;
+use Src\admisiones\usecase\notificaciones\CrearNotificacionUseCase;
 use Src\admisiones\usecase\notificaciones\ListarNotificacionesUseCase;
 use Src\admisiones\usecase\programaContacto\ListarContactosUseCase;
 use Src\shared\di\FabricaDeRepositorios;
@@ -58,10 +61,26 @@ class NotificacionController extends Controller
         ]);
     }
     
-    public function store(Request $request)
+    public function store(GuardarNotificacion $request)
     {
-        // Lógica para crear una nueva notificación
-        return response()->json(['message' => 'Creando notificación']);
+        $crearNotificacion = new CrearNotificacionUseCase(
+            FabricaDeRepositorios::getInstance()->getNotifacionRepository()
+        );
+    
+        $notificacionDTO = new NotificacionDTO();
+        $notificacionDTO->setAsunto($request->input('asunto'));
+        $notificacionDTO->setMensaje($request->input('mensaje'));
+        $notificacionDTO->setFechaCreacion($request->input('fecha_envio'));
+        $notificacionDTO->setCanal($request->input('canal'));
+        $notificacionDTO->setDestinatarios(implode(',', $request->input('destinatarios')));
+    
+        $response = $crearNotificacion->ejecutar($notificacionDTO);
+    
+        if ($response->getCode() !== 201) {
+            return redirect()->back()->with('error', $response->getMessage());
+        }
+    
+        return redirect()->route('notificaciones.index')->with('success', $response->getMessage());
     }
 
     public function show($id)
