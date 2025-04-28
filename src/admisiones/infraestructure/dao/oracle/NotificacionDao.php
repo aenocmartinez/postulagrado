@@ -114,4 +114,32 @@ class NotificacionDao extends Model implements NotificacionRepository
             return false;
         }
     }
+
+    public function actualizar(Notificacion $notificacion): bool
+    {
+        try {
+            DB::connection('oracle_academpostulgrado')
+                ->table('ACADEMPOSTULGRADO.NOTIFICACION')
+                ->where('NOTI_ID', $notificacion->getId())
+                ->update([
+                    'NOTI_FECHA'         => $notificacion->getFechaCreacion(),
+                    'NOTI_ASUNTO'        => $notificacion->getAsunto(),
+                    'NOTI_CANAL'         => $notificacion->getCanal(),
+                    'NOTI_MENSAJE'       => $notificacion->getMensaje(),
+                    'NOTI_DESTINATARIOS' => $notificacion->getDestinatarios(),
+                    'NOTI_ESTADO'        => $notificacion->getEstado(),
+                    'NOTI_FECHACAMBIO'   => now(),
+                    'NOTI_REGISTRADOPOR' => Auth::user()->id ?? 'system',
+                ]);
+    
+            Cache::forget('notificaciones_listado');
+            Cache::forget('notificacion_' . $notificacion->getId());
+    
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Error en actualizar notificación ID {$notificacion->getId()}: " . $e->getMessage());
+            return false;
+        }
+    }
+    
 }

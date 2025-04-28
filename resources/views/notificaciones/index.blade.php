@@ -25,7 +25,6 @@
                 </button>
             </form>
 
-            <!-- Botón Nueva Notificación -->
             <a href="{{ route('notificaciones.create') }}" 
                class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition">
                 + Nueva Notificación
@@ -48,6 +47,15 @@
             </thead>
             <tbody>
                 @forelse($notificaciones as $notificacion)
+                    @php
+                        $estado = strtoupper($notificacion->getEstado() ?? '');
+                        $clase = match($estado) {
+                            'PROGRAMADA' => 'text-yellow-500',
+                            'ENVIADA' => 'text-green-600',
+                            'ANULADA' => 'text-red-600',
+                            default => 'text-gray-600',
+                        };
+                    @endphp
                     <tr class="border-b border-gray-300 bg-white hover:bg-gray-100 transition">
                         <td class="px-4 py-2 text-gray-900 break-words">{{ $notificacion->getAsunto() }}</td>
                         <td class="px-4 py-2 text-gray-900 break-words">{{ $notificacion->getCanal() }}</td>
@@ -55,22 +63,14 @@
                             {{ \Carbon\Carbon::parse($notificacion->getFechaCreacion())->format('d/m/Y') }}
                         </td>
                         <td class="px-4 py-2 text-gray-900 break-words">
-                            @php
-                                $estado = strtoupper($notificacion->getEstado() ?? '');
-                                $clase = match($estado) {
-                                    'PROGRAMADA' => 'text-yellow-500',
-                                    'ENVIADA' => 'text-green-600',
-                                    'ANULADA' => 'text-red-600',
-                                    default => 'text-gray-600',
-                                };
-                            @endphp
                             <span class="font-semibold {{ $clase }}">
                                 {{ $estado !== '' ? $estado : '-' }}
                             </span>
                         </td>
                         <td class="px-4 py-2 text-center">
                             <button class="menu-btn text-gray-600 hover:text-gray-800"
-                                    data-id="{{ $notificacion->getId() }}">
+                                    data-id="{{ $notificacion->getId() }}"
+                                    data-estado="{{ $estado }}">
                                 <i class="fas fa-ellipsis-v"></i>
                             </button>
                         </td>
@@ -95,7 +95,14 @@
 
 <!-- Menú flotante de acciones -->
 <div id="action-menu" class="hidden fixed bg-white shadow-lg rounded-md w-32 border border-gray-200 z-50">
-    <a id="view-link" href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Ver</a>
+    <a id="view-link" href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Ver más</a>
+    <form id="anular-form" method="POST" action="#" class="block">
+        @csrf
+        @method('PATCH')
+        <button type="submit" id="anular-btn" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100">
+            Anular
+        </button>
+    </form>
 </div>
 
 @endsection
@@ -106,6 +113,8 @@
 document.addEventListener("DOMContentLoaded", function () {
     const actionMenu = document.getElementById("action-menu");
     const viewLink = document.getElementById("view-link");
+    const anularForm = document.getElementById("anular-form");
+    const anularBtn = document.getElementById("anular-btn");
 
     document.querySelectorAll(".menu-btn").forEach(button => {
         button.addEventListener("click", function (event) {
@@ -113,12 +122,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
             let rect = button.getBoundingClientRect();
             let notificacionId = button.dataset.id;
+            let estado = button.dataset.estado;
 
             actionMenu.style.top = `${rect.bottom + window.scrollY}px`;
             actionMenu.style.left = `${rect.left}px`;
             actionMenu.classList.remove("hidden");
 
             viewLink.href = `{{ route('notificaciones.show', ':id') }}`.replace(':id', notificacionId);
+            
+            if (estado === "PROGRAMADA") {
+                anularForm.action = `{{ route('notificaciones.anular', ':id') }}`.replace(':id', notificacionId);
+                anularForm.classList.remove('hidden');
+            } else {
+                anularForm.classList.add('hidden');
+            }
         });
     });
 

@@ -107,6 +107,11 @@ class Notificacion
         return $this->notificacionRepo->crear($this);
     }
 
+    public function actualizar(): bool
+    {
+        return $this->notificacionRepo->actualizar($this);
+    }
+
     public function existe(): bool
     {
         return $this->id > 0;

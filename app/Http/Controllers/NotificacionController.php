@@ -6,8 +6,8 @@ use App\Http\Requests\GuardarNotificacion;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
-use Illuminate\Http\Request;
 use Src\admisiones\dto\notificacion\NotificacionDTO;
+use Src\admisiones\usecase\notificaciones\AnularNotificacionUseCase;
 use Src\admisiones\usecase\notificaciones\BuscarNotificacionUseCase;
 use Src\admisiones\usecase\notificaciones\CrearNotificacionUseCase;
 use Src\admisiones\usecase\notificaciones\ListarNotificacionesUseCase;
@@ -85,7 +85,6 @@ class NotificacionController extends Controller
 
     public function show($id)
     {
-        
         $buscarNotificacion = new BuscarNotificacionUseCase(
             FabricaDeRepositorios::getInstance()->getNotifacionRepository()
         );
@@ -94,12 +93,30 @@ class NotificacionController extends Controller
         $notificacion = $response->getData();
 
         if ($response->getCode() !== 200) {
-            return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
+            return redirect()->route('notificaciones.index')->with($response->getCode(), $response->getMessage());
         }
     
         return view('notificaciones.show', [
             'notificacion' => $notificacion,
         ]);
     }
+
+    public function anular($id)
+    {
+        
+        $anularNotificacion = new AnularNotificacionUseCase(
+            FabricaDeRepositorios::getInstance()->getNotifacionRepository()
+        );
+    
+        $response = $anularNotificacion->ejecutar((int) $id);
+    
+        if ($response->getCode() !== 200) 
+        {
+            return redirect()->route('notificaciones.index')->with($response->getCode(), $response->getMessage());
+        }
+    
+        return redirect()->route('notificaciones.index')->with($response->getCode(), $response->getMessage());
+    }
+    
 
 }
