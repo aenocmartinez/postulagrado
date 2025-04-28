@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 use Src\admisiones\usecase\notificaciones\BuscarNotificacionUseCase;
 use Src\admisiones\usecase\notificaciones\ListarNotificacionesUseCase;
+use Src\admisiones\usecase\programaContacto\ListarContactosUseCase;
 use Src\shared\di\FabricaDeRepositorios;
 
 class NotificacionController extends Controller
@@ -42,8 +43,21 @@ class NotificacionController extends Controller
             'notificaciones' => $paginated,
         ]);
     }
-    
 
+    public function create()
+    {
+        $listarContactos = new ListarContactosUseCase(
+            FabricaDeRepositorios::getInstance()->getProgramaContactoRepository()
+        );
+        $response = $listarContactos->ejecutar();
+        $contactos = $response->getData();
+
+
+        return view('notificaciones.create', [
+            'contactos' => $contactos,
+        ]);
+    }
+    
     public function store(Request $request)
     {
         // Lógica para crear una nueva notificación
