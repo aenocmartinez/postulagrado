@@ -19,6 +19,8 @@ class AgregarActividadesMasivoUseCase
 
     public function ejecutar(int $procesoID, array $actividades): ResponsePostulaGrado
     {
+        $cambioContenidoActividad = false;
+
         $proceso = $this->procesoRepo->buscarProcesoPorId($procesoID);
         if (!$proceso->existe()) {
             return new ResponsePostulaGrado(404, "Proceso no encontrado.");
@@ -44,7 +46,9 @@ class AgregarActividadesMasivoUseCase
             $actividad->setDescripcion($item['descripcion']);
             $actividad->setFechaInicio($item['fecha_inicio']);
             $actividad->setFechaFin($item['fecha_fin']);
-    
+
+            $cambioContenidoActividad = $actividad->existe();
+      
             $exito = $proceso->agregarActividad($actividad);
     
             if (!$exito) {
@@ -52,12 +56,13 @@ class AgregarActividadesMasivoUseCase
             }
         }
 
-
-        $notificarCronograma = new InformarActividadesProcesoUseCase();        
-        $notificarCronograma->ejecutar($proceso, false); 
-
         Cache::forget('actividades_listado_proceso_' . $procesoID);
         Cache::forget('proceso_'.$procesoID);
+
+        $huboCambioEnElCronograma = sizeof($idsEliminados) > 0 || $cambioContenidoActividad;
+
+        $notificarCronograma = new InformarActividadesProcesoUseCase();        
+        $notificarCronograma->ejecutar($proceso, $huboCambioEnElCronograma); 
     
         return new ResponsePostulaGrado(201, "La información se ha guardado con éxito.");
     }

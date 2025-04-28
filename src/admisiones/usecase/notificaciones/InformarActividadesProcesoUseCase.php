@@ -85,10 +85,13 @@ class InformarActividadesProcesoUseCase
     {
         $actividades = $proceso->getActividades(); 
 
+        // Obtener el nombre del programa del contacto
+        $nombrePrograma = $contacto->getPrograma()->getNombre();
+
         // Generamos el encabezado con el saludo genérico y personalizamos con el nombre del contacto
         $mensaje = $hayCambioCronograma
-            ? "Estimado(a) " . $contacto->getNombre() . ",<br><br>A continuación se brinda la información actualizada sobre el cronograma de actividades del proceso de grado:<br><br>"
-            : "Estimado(a) " . $contacto->getNombre() . ",<br><br>A continuación se presenta el cronograma de actividades del proceso de grado:<br><br>";
+            ? "Estimado(a) " . $contacto->getNombre() . " del programa {$nombrePrograma},<br><br>A continuación se brinda la información actualizada sobre el cronograma de actividades del proceso de grado:<br><br>"
+            : "Estimado(a) " . $contacto->getNombre() . " del programa {$nombrePrograma},<br><br>A continuación se presenta el cronograma de actividades del proceso de grado:<br><br>";
 
         // Mensaje HTML con la tabla de actividades
         $mensajeHTML = "<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; width: 100%;'>
