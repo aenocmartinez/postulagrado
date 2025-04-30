@@ -23,7 +23,6 @@ class CrearNotificacionUseCase
 
     public function ejecutar(NotificacionDTO $notificacionDTO): ResponsePostulaGrado
     {
-
         $proceso = $this->procesoRepo->buscarProcesoPorId($notificacionDTO->getProcesoId());
         if (!$proceso->existe()) {
             return new ResponsePostulaGrado(404, 'El proceso no existe.');
@@ -40,6 +39,7 @@ class CrearNotificacionUseCase
         $notificacion->setDestinatarios($notificacionDTO->getDestinatarios());
         $notificacion->setEstado('PROGRAMADA');
         $notificacion->setProceso($proceso);
+        
         if (Carbon::parse($notificacion->getFechaCreacion())->isToday()) {
             $notificacion->setEstado('ENVIADA');
             $enviarNotifiacionHoy = true;
@@ -55,7 +55,7 @@ class CrearNotificacionUseCase
 
         if ($enviarNotifiacionHoy) 
         {
-            (new EnviarNotificacionUseCase())->ejecutar($notificacion);
+            (new EnviarNotificacionUseCase())->ejecutar($notificacion   );
         }
 
         return new ResponsePostulaGrado(201, 'La notificación se ha creado exitosamente.');

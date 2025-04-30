@@ -142,7 +142,7 @@
                 <td class="px-4 py-2 text-gray-900 relative group">
                     <span class="cursor-pointer tooltip" 
                         data-info="Unidad Regional: {{ $programaProceso->getPrograma()->getUnidadRegional()->getNombre() }}">
-                        {{ $programaProceso->getPrograma()->getNombre() }}
+                        {{ $programaProceso->getPrograma()->getNombre() . " - " . $programaProceso->getPrograma()->getCodigo() }}
                     </span>
                 </td>
 
@@ -227,6 +227,17 @@
         </thead>
         <tbody>
             @forelse($proceso->getNotificaciones() as $notificacion)
+
+                @php
+                    $estado = \Src\shared\formato\FormatoString::capital($notificacion->getEstado());
+                    $clase = match($notificacion->getEstado()) {
+                        'PROGRAMADA' => 'bg-yellow-500',
+                        'ENVIADA' => 'bg-green-500',
+                        'ANULADA' => 'bg-red-500',
+                        default => 'bg-gray-500',
+                    };
+                @endphp
+
                 @if(!$notificacion->estadoAnulada())
                     <tr class="border-b border-gray-300 bg-white hover:bg-gray-100 transition">
                         <td class="px-4 py-2 text-gray-900">{{ $notificacion->getAsunto() }}</td>
@@ -248,7 +259,7 @@
                         </td>
 
                         <td class="px-4 py-2 text-center">
-                            <span class="px-2 py-1 rounded text-xs bg-green-500 text-white">
+                            <span class="px-2 py-1 rounded text-xs {{ $clase }} text-white">
                                 {{ \Src\shared\formato\FormatoString::capital($notificacion->getEstado()) }}
                             </span>
                         </td>

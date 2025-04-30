@@ -27,8 +27,8 @@
     <div class="mt-2 text-gray-700">
         <div class="grid grid-cols-3 gap-1 font-semibold bg-gray-200 p-2 rounded-md">
             <span>Área</span>
-            <span class="text-orange-500 text-center">Pendientes</span>
-            <span class="text-red-500 text-center">Rechazados</span>
+            <span class="text-orange-500 text-center">PENDTES</span>
+            <span class="text-red-500 text-center">RECHZDS</span>
         </div>
 
         <ul class="mt-2 space-y-2">
