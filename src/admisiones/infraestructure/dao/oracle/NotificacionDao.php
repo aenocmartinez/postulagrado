@@ -118,6 +118,8 @@ class NotificacionDao extends Model implements NotificacionRepository
             $notificacion->setId($nuevoID);
 
             Cache::forget('notificaciones_listado');
+            Cache::forget('notificacion_' . $notificacion->getId());
+            Cache::forget("notificaciones_listado_{$notificacion->getId()}");            
 
             return true;
         } catch (\Exception $e) {
@@ -146,6 +148,8 @@ class NotificacionDao extends Model implements NotificacionRepository
     
             Cache::forget('notificaciones_listado');
             Cache::forget('notificacion_' . $notificacion->getId());
+            Cache::forget("notificaciones_listado_{$notificacion->getId()}");
+
     
             return true;
         } catch (\Exception $e) {

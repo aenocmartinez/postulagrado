@@ -356,18 +356,21 @@ class ProcesoDao extends Model implements ProcesoRepository
         });
     }
       
-    public function listarNotificacionesEnviadas(int $procesoID): array
+    public function listarNotificaciones(int $procesoID): array
     {
-        return Cache::remember('notificaciones_listado', now()->addHours(4), function () {
+        return Cache::remember("notificaciones_listado_{$procesoID}", now()->addHours(4), function () use ($procesoID) {
             $notificaciones = [];
-
+    
             try {
+                $procesoDao = FabricaDeRepositorios::getInstance()->getProcesoRepository();
+    
                 $registros = DB::connection('oracle_academpostulgrado')
                     ->table('ACADEMPOSTULGRADO.NOTIFICACION')
-                    ->select('NOTI_ID', 'NOTI_FECHA', 'NOTI_ASUNTO', 'NOTI_CANAL', 'NOTI_MENSAJE', 'NOTI_DESTINATARIOS', 'NOTI_ESTADO')
+                    ->select('NOTI_ID', 'NOTI_FECHA', 'NOTI_ASUNTO', 'NOTI_CANAL', 'NOTI_MENSAJE', 'NOTI_DESTINATARIOS', 'NOTI_ESTADO', 'PROC_ID')
+                    ->where('PROC_ID', $procesoID)
                     ->orderBy('NOTI_FECHA', 'desc')
                     ->get();
-
+    
                 foreach ($registros as $registro) {
                     $notificacion = new Notificacion();
                     $notificacion->setId($registro->noti_id);
@@ -377,15 +380,19 @@ class ProcesoDao extends Model implements ProcesoRepository
                     $notificacion->setMensaje($registro->noti_mensaje);
                     $notificacion->setDestinatarios($registro->noti_destinatarios);
                     $notificacion->setEstado($registro->noti_estado);
-
+    
+                    $proceso = $procesoDao->buscarProcesoPorId($registro->proc_id);
+                    $notificacion->setProceso($proceso);
+    
                     $notificaciones[] = $notificacion;
                 }
             } catch (\Exception $e) {
                 Log::error("Error en listar notificaciones: " . $e->getMessage());
             }
-
+    
             return $notificaciones;
-        });        
+        });
     }
+    
     
 }

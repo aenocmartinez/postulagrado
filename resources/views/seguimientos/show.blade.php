@@ -226,8 +226,8 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($proceso->getNotificacionesEnviadas() as $notificacion)
-                @if(strtoupper($notificacion->getEstado()) === 'ENVIADA')
+            @forelse($proceso->getNotificaciones() as $notificacion)
+                @if(!$notificacion->estadoAnulada())
                     <tr class="border-b border-gray-300 bg-white hover:bg-gray-100 transition">
                         <td class="px-4 py-2 text-gray-900">{{ $notificacion->getAsunto() }}</td>
 
@@ -249,7 +249,7 @@
 
                         <td class="px-4 py-2 text-center">
                             <span class="px-2 py-1 rounded text-xs bg-green-500 text-white">
-                                Enviada
+                                {{ \Src\shared\formato\FormatoString::capital($notificacion->getEstado()) }}
                             </span>
                         </td>
                     </tr>

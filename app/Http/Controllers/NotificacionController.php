@@ -11,6 +11,8 @@ use Src\admisiones\usecase\notificaciones\AnularNotificacionUseCase;
 use Src\admisiones\usecase\notificaciones\BuscarNotificacionUseCase;
 use Src\admisiones\usecase\notificaciones\CrearNotificacionUseCase;
 use Src\admisiones\usecase\notificaciones\ListarNotificacionesUseCase;
+use Src\admisiones\usecase\procesos\BuscarProcesoUseCase;
+use Src\admisiones\usecase\procesos\ListarProcesosUseCase;
 use Src\admisiones\usecase\programaContacto\ListarContactosUseCase;
 use Src\shared\di\FabricaDeRepositorios;
 
@@ -19,33 +21,37 @@ class NotificacionController extends Controller
     
     public function index()
     {
-        $listarNotificaciones = new ListarNotificacionesUseCase(
-            FabricaDeRepositorios::getInstance()->getNotificacionRepository()
+        $listarProcesos = new ListarProcesosUseCase(
+            FabricaDeRepositorios::getInstance()->getProcesoRepository(),
         );
-    
-        $response = $listarNotificaciones->ejecutar();
-        $notificacionesArray = $response->getData();
-    
-        // Paginamos manualmente
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $perPage = 10; // Número de registros por página (puedes ajustar)
-        $collection = collect($notificacionesArray);
-        $currentPageItems = $collection->slice(($currentPage - 1) * $perPage, $perPage)->values();
-        $paginated = new LengthAwarePaginator(
-            $currentPageItems,
-            $collection->count(),
-            $perPage,
-            $currentPage,
-            [
-                'path' => LengthAwarePaginator::resolveCurrentPath(),
-                'query' => request()->query(),
-            ]
-        );
+
+        $response = $listarProcesos->ejecutar();
     
         return view('notificaciones.index', [
-            'notificaciones' => $paginated,
+            'procesos' => $response->getData(),
         ]);
     }
+
+    public function indexPorProceso($procesoID)
+    {
+        $buscarProceso = new BuscarProcesoUseCase(
+            FabricaDeRepositorios::getInstance()->getProcesoRepository()
+        );
+    
+        $response = $buscarProceso->ejecutar($procesoID);
+
+        /** @var \Src\admisiones\domain\Proceso $proceso */
+        $proceso = $response->getData();
+        
+        if (!$proceso->existe()) {
+            dd("Entra a aqui");
+            return redirect()->route('notificaciones.index')->with($response->getCode(), $response->getMessage());
+        }
+    
+        return view('notificaciones.index_por_proceso', [
+            'proceso' => $proceso,
+        ]);
+    }    
 
     public function create()
     {

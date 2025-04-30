@@ -110,6 +110,11 @@ class Notificacion
         $this->proceso = $proceso;
     }
 
+    public function estadoAnulada(): bool
+    {
+        return $this->estado === 'ANULADA';
+    }
+
     public function listar(): array
     {
         return $this->notificacionRepo->listar();

@@ -215,8 +215,8 @@ class Proceso
         return $this->documentoRepo->buscarPorID($documentoID);
     }
 
-    public function getNotificacionesEnviadas(): array {
-        return $this->repository->listarNotificacionesEnviadas($this->id);
+    public function getNotificaciones(): array {
+        return $this->repository->listarNotificaciones($this->id);
     }
 
     public function toDTO(): ProcesoDTO {

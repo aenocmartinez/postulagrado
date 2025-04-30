@@ -101,6 +101,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/notificaciones', [NotificacionController::class, 'store'])->name('notificaciones.store');
     Route::get('/notificaciones/{id}', [NotificacionController::class, 'show'])->name('notificaciones.show');    
     Route::patch('/notificaciones/{id}/anular', [NotificacionController::class, 'anular'])->name('notificaciones.anular');
+    Route::get('notificaciones/proceso/{id}', [NotificacionController::class, 'indexPorProceso'])->name('notificaciones.por_proceso');
+
 
     // Documentos de Proceso
     Route::get('/proceso/{proceso}/documentos', [ProcesoDocumentoController::class, 'index'])->name('proceso_documentos.index');
