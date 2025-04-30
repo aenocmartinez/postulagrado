@@ -45,7 +45,7 @@ class ProcesoDao extends Model implements ProcesoRepository
                 $nivelEducativoRepo = FabricaDeRepositorios::getInstance()->getNivelEducativoRepository();
 
                 foreach ($registros as $registro) {
-                    $proceso = new Proceso($procesoRepo, $calendarioRepo, $nivelEducativoRepo);
+                    $proceso = new Proceso();
                     $proceso->setDocumentoRepo(FabricaDeRepositorios::getInstance()->getProcesoDocumentoRepository());
 
                     $nivelEducativo = $nivelEducativoRepo->BuscarPorID($registro->nied_id);
@@ -69,11 +69,7 @@ class ProcesoDao extends Model implements ProcesoRepository
 
     public static function buscarProcesoPorNombreYNivelEducativo(string $nombre, NivelEducativo $nivelEducativo): Proceso
     {
-        $proceso = new Proceso(
-            FabricaDeRepositorios::getInstance()->getProcesoRepository(),
-            FabricaDeRepositorios::getInstance()->getActividadRepository(),
-            FabricaDeRepositorios::getInstance()->getNivelEducativoRepository(),
-        );
+        $proceso = new Proceso();
     
         try 
         {
@@ -103,11 +99,7 @@ class ProcesoDao extends Model implements ProcesoRepository
     public static function buscarProcesoPorId(int $id): Proceso
     {
         return Cache::remember('proceso_' . $id, now()->addHours(4), function () use ($id) {
-            $proceso = new Proceso(
-                FabricaDeRepositorios::getInstance()->getProcesoRepository(),
-                FabricaDeRepositorios::getInstance()->getActividadRepository(),
-                FabricaDeRepositorios::getInstance()->getNivelEducativoRepository(),
-            );
+            $proceso = new Proceso();
 
             $proceso->setDocumentoRepo(FabricaDeRepositorios::getInstance()->getProcesoDocumentoRepository());
     
@@ -377,7 +369,7 @@ class ProcesoDao extends Model implements ProcesoRepository
                     ->get();
 
                 foreach ($registros as $registro) {
-                    $notificacion = new Notificacion(FabricaDeRepositorios::getInstance()->getNotifacionRepository());
+                    $notificacion = new Notificacion();
                     $notificacion->setId($registro->noti_id);
                     $notificacion->setFechaCreacion($registro->noti_fecha);
                     $notificacion->setAsunto($registro->noti_asunto);

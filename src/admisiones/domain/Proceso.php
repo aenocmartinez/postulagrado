@@ -14,6 +14,9 @@ use Src\shared\formato\FormatoFecha;
 class Proceso 
 {    
     private string              $nombre;
+    private ProcesoRepository   $repository;
+    private ActividadRepository $actividadRepo;
+    private NivelEducativoRepository $nivelRepo;
     private NivelEducativo      $nivelEducativo;
     private ProcesoDocumentoRepository $documentoRepo;
 
@@ -22,14 +25,14 @@ class Proceso
     private $actividades = [];
     
     public function __construct(
-        private ProcesoRepository   $repository,
-        private ActividadRepository $actividadRepo,
-        private NivelEducativoRepository $nivelRepo,
         private int $id = 0, 
         private string $estado = "ABIERTO"
     ) {
 
         $this->documentoRepo = FabricaDeRepositorios::getInstance()->getProcesoDocumentoRepository();
+        $this->nivelRepo = FabricaDeRepositorios::getInstance()->getNivelEducativoRepository();
+        $this->actividadRepo = FabricaDeRepositorios::getInstance()->getActividadRepository();
+        $this->repository = FabricaDeRepositorios::getInstance()->getProcesoRepository();
     }
 
     public function setRepository(ProcesoRepository $repository): void {
@@ -41,6 +44,10 @@ class Proceso
     }
 
     public function setNivelRepo(NivelEducativoRepository $nivelRepo): void {
+        $this->nivelRepo = $nivelRepo;
+    }
+
+    public function setNivelEducativoRepo(NivelEducativoRepository $nivelRepo): void {
         $this->nivelRepo = $nivelRepo;
     }
 

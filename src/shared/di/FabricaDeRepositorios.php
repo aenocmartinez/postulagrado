@@ -104,7 +104,7 @@ class FabricaDeRepositorios
         return $this->programaContactoRepo;
     }
 
-    public function getNotifacionRepository(): NotificacionRepository {
+    public function getNotificacionRepository(): NotificacionRepository {
         return $this->notificacionRepo;
     }
 

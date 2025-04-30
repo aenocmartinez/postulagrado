@@ -16,11 +16,7 @@ class ProcesoDocumento
     public function __construct(ProcesoDocumentoRepository $repository)
     {
         $this->id = 0;
-        $this->proceso = new Proceso(
-            FabricaDeRepositorios::getInstance()->getProcesoRepository(),
-            FabricaDeRepositorios::getInstance()->getActividadRepository(),
-            FabricaDeRepositorios::getInstance()->getNivelEducativoRepository()
-        );
+        $this->proceso = new Proceso();
 
         $this->nombre = '';
         $this->ruta = '';

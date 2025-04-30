@@ -3,6 +3,7 @@
 namespace Src\admisiones\domain;
 
 use Src\admisiones\repositories\NotificacionRepository;
+use Src\shared\di\FabricaDeRepositorios;
 
 class Notificacion
 {
@@ -13,9 +14,10 @@ class Notificacion
     private string $canal;
     private string $destinatarios;
     private string $estado;
+    private Proceso $proceso;
     private NotificacionRepository $notificacionRepo;
 
-    public function __construct(NotificacionRepository $notificacionRepo)
+    public function __construct()
     {
         $this->id = 0;
         $this->asunto = '';
@@ -24,7 +26,8 @@ class Notificacion
         $this->canal = '';
         $this->destinatarios = '';
         $this->estado = '';
-        $this->notificacionRepo = $notificacionRepo;
+        $this->proceso = new Proceso();
+        $this->notificacionRepo = FabricaDeRepositorios::getInstance()->getNotificacionRepository();
     }
 
     public function getId(): int
@@ -62,6 +65,11 @@ class Notificacion
         return $this->estado;
     }
 
+    public function getProceso(): Proceso
+    {
+        return $this->proceso;
+    }
+
     public function setId(int $id): void
     {
         $this->id = $id;
@@ -95,6 +103,11 @@ class Notificacion
     public function setEstado(string $estado): void
     {
         $this->estado = $estado;
+    }
+
+    public function setProceso(Proceso $proceso): void
+    {
+        $this->proceso = $proceso;
     }
 
     public function listar(): array
