@@ -20,7 +20,7 @@ class NotificacionController extends Controller
     public function index()
     {
         $listarNotificaciones = new ListarNotificacionesUseCase(
-            FabricaDeRepositorios::getInstance()->getNotifacionRepository()
+            FabricaDeRepositorios::getInstance()->getNotificacionRepository()
         );
     
         $response = $listarNotificaciones->ejecutar();
@@ -64,7 +64,7 @@ class NotificacionController extends Controller
     public function store(GuardarNotificacion $request)
     {
         $crearNotificacion = new CrearNotificacionUseCase(
-            FabricaDeRepositorios::getInstance()->getNotifacionRepository()
+            FabricaDeRepositorios::getInstance()->getNotificacionRepository()
         );
     
         $notificacionDTO = new NotificacionDTO();
@@ -86,7 +86,7 @@ class NotificacionController extends Controller
     public function show($id)
     {
         $buscarNotificacion = new BuscarNotificacionUseCase(
-            FabricaDeRepositorios::getInstance()->getNotifacionRepository()
+            FabricaDeRepositorios::getInstance()->getNotificacionRepository()
         );
         
         $response = $buscarNotificacion->ejecutar($id);
@@ -105,7 +105,7 @@ class NotificacionController extends Controller
     {
         
         $anularNotificacion = new AnularNotificacionUseCase(
-            FabricaDeRepositorios::getInstance()->getNotifacionRepository()
+            FabricaDeRepositorios::getInstance()->getNotificacionRepository()
         );
     
         $response = $anularNotificacion->ejecutar((int) $id);

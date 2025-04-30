@@ -48,8 +48,8 @@
             <tbody>
                 @forelse($notificaciones as $notificacion)
                     @php
-                        $estado = strtoupper($notificacion->getEstado() ?? '');
-                        $clase = match($estado) {
+                        $estado = \Src\shared\formato\FormatoString::capital($notificacion->getEstado());
+                        $clase = match($notificacion->getEstado()) {
                             'PROGRAMADA' => 'text-yellow-500',
                             'ENVIADA' => 'text-green-600',
                             'ANULADA' => 'text-red-600',

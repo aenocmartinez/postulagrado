@@ -59,12 +59,13 @@ class InformarActividadesProcesoUseCase
         
 
         // Crea la notificación
-        $notificacion = new Notificacion(FabricaDeRepositorios::getInstance()->getNotifacionRepository());
+        $notificacion = new Notificacion();
         $notificacion->setAsunto($asunto);
         $notificacion->setMensaje($copiaMensaje);
         $notificacion->setCanal("Correo electrónico");
         $notificacion->setEstado("ENVIADA");
         $notificacion->setDestinatarios($copiaDestinatarios);
+        $notificacion->setProceso($proceso);
         $notificacion->setFechaCreacion(now());
 
         $notificacion->crear();
