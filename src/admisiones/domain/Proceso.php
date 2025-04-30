@@ -43,9 +43,9 @@ class Proceso
         $this->actividadRepo = $actividadRepo;
     }
 
-    public function setNivelRepo(NivelEducativoRepository $nivelRepo): void {
-        $this->nivelRepo = $nivelRepo;
-    }
+    // public function setNivelRepo(NivelEducativoRepository $nivelRepo): void {
+    //     $this->nivelRepo = $nivelRepo;
+    // }
 
     public function setNivelEducativoRepo(NivelEducativoRepository $nivelRepo): void {
         $this->nivelRepo = $nivelRepo;
