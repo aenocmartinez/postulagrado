@@ -11,6 +11,7 @@ class NotificacionDTO
     private string $canal;
     private string $destinatarios;
     private string $estado;
+    private int $procesoId;
 
     public function __construct()
     {
@@ -20,6 +21,7 @@ class NotificacionDTO
         $this->fechaCreacion = '';
         $this->canal = '';
         $this->destinatarios = '';
+        $this->procesoId = 0;
         $this->estado = 'PROGRAMADA';
     }
 
@@ -41,6 +43,11 @@ class NotificacionDTO
     public function getEstado(): string
     {
         return $this->estado;
+    }
+
+    public function getProcesoId(): int
+    {
+        return $this->procesoId;
     }
     
     public function setEstado(string $estado): void
@@ -91,5 +98,10 @@ class NotificacionDTO
     public function setDestinatarios(string $destinatarios): void
     {
         $this->destinatarios = $destinatarios;
+    }
+
+    public function setProcesoId(int $procesoId): void
+    {
+        $this->procesoId = $procesoId;
     }
 }

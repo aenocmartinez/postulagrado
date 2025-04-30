@@ -10,6 +10,7 @@
 
     <form action="{{ route('notificaciones.store') }}" method="POST">
         @csrf
+        <input type="hidden" name="proceso_id" value="{{ $proceso->getId() }}">
 
         <!-- Asunto -->
         <div class="mb-6">

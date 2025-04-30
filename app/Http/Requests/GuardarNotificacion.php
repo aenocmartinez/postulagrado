@@ -27,6 +27,7 @@ class GuardarNotificacion extends FormRequest
             'destinatarios' => 'required|array|min:1',
             'fecha_envio'   => 'required|date',
             'canal'         => 'required|string|max:50',
+            'proceso_id'    => 'required|integer',
         ];
     }
 

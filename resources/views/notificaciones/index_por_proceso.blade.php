@@ -14,7 +14,7 @@
             {{ $proceso->getNombre() }}
         </h2>
 
-        <a href="{{ route('notificaciones.create', ['proceso_id' => $proceso->getId()]) }}" 
+        <a href="{{ route('notificaciones.create', ['id' => $proceso->getId()]) }}" 
            class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition">
             + Nueva Notificación
         </a>

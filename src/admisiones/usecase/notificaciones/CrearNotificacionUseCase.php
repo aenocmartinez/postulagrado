@@ -6,36 +6,47 @@ use Carbon\Carbon;
 use Src\admisiones\domain\Notificacion;
 use Src\admisiones\dto\notificacion\NotificacionDTO;
 use Src\admisiones\repositories\NotificacionRepository;
+use Src\admisiones\repositories\ProcesoRepository;
+use Src\shared\di\FabricaDeRepositorios;
 use Src\shared\response\ResponsePostulaGrado;
 
 class CrearNotificacionUseCase
 {
     private NotificacionRepository $notificacionRepo;
+    private ProcesoRepository $procesoRepo;
 
-    public function __construct(NotificacionRepository $notificacionRepo)
+    public function __construct(NotificacionRepository $notificacionRepo, ProcesoRepository $procesoRepo)
     {
         $this->notificacionRepo = $notificacionRepo;
+        $this->procesoRepo = $procesoRepo;
     }
 
     public function ejecutar(NotificacionDTO $notificacionDTO): ResponsePostulaGrado
     {
+
+        $proceso = $this->procesoRepo->buscarProcesoPorId($notificacionDTO->getProcesoId());
+        if (!$proceso->existe()) {
+            return new ResponsePostulaGrado(404, 'El proceso no existe.');
+        }
+
         $enviarNotifiacionHoy = false;
 
-        $notifacion = new Notificacion($this->notificacionRepo);
-        $notifacion->setId($notificacionDTO->getId());
-        $notifacion->setAsunto($notificacionDTO->getAsunto());
-        $notifacion->setMensaje($notificacionDTO->getMensaje());
-        $notifacion->setFechaCreacion($notificacionDTO->getFechaCreacion());
-        $notifacion->setCanal($notificacionDTO->getCanal());
-        $notifacion->setDestinatarios($notificacionDTO->getDestinatarios());
-        $notifacion->setEstado('PROGRAMADA');
-        if (Carbon::parse($notifacion->getFechaCreacion())->isToday()) {
-            $notifacion->setEstado('ENVIADA');
+        $notificacion = new Notificacion($this->notificacionRepo);
+        $notificacion->setId($notificacionDTO->getId());
+        $notificacion->setAsunto($notificacionDTO->getAsunto());
+        $notificacion->setMensaje($notificacionDTO->getMensaje());
+        $notificacion->setFechaCreacion($notificacionDTO->getFechaCreacion());
+        $notificacion->setCanal($notificacionDTO->getCanal());
+        $notificacion->setDestinatarios($notificacionDTO->getDestinatarios());
+        $notificacion->setEstado('PROGRAMADA');
+        $notificacion->setProceso($proceso);
+        if (Carbon::parse($notificacion->getFechaCreacion())->isToday()) {
+            $notificacion->setEstado('ENVIADA');
             $enviarNotifiacionHoy = true;
         }
                 
 
-        $resultado = $notifacion->crear();
+        $resultado = $notificacion->crear();
         if (!$resultado) 
         {
             return new ResponsePostulaGrado(500, 'Se ha producido un error al crear la notificación.');
@@ -44,7 +55,7 @@ class CrearNotificacionUseCase
 
         if ($enviarNotifiacionHoy) 
         {
-            (new EnviarNotificacionUseCase())->ejecutar($notifacion);
+            (new EnviarNotificacionUseCase())->ejecutar($notificacion);
         }
 
         return new ResponsePostulaGrado(201, 'La notificación se ha creado exitosamente.');

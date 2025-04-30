@@ -97,7 +97,7 @@ Route::middleware('auth')->group(function () {
     
     // Notificaciones
     Route::get('/notificaciones', [NotificacionController::class, 'index'])->name('notificaciones.index');
-    Route::get('/notificaciones/create', [NotificacionController::class, 'create'])->name('notificaciones.create');
+    Route::get('notificaciones/proceso/{id}/crear', [NotificacionController::class, 'create'])->name('notificaciones.create');
     Route::post('/notificaciones', [NotificacionController::class, 'store'])->name('notificaciones.store');
     Route::get('/notificaciones/{id}', [NotificacionController::class, 'show'])->name('notificaciones.show');    
     Route::patch('/notificaciones/{id}/anular', [NotificacionController::class, 'anular'])->name('notificaciones.anular');
