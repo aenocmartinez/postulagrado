@@ -111,6 +111,11 @@ class Programa
         $this->unidadRegional = $unidadRegional;
     }
 
+    public function getEstudiantesCandidatosAGradoPorPeriodo(int $periodoAnio, int $periodoNumero): array
+    {
+        return $this->programaRepo->listarEstudiantesCandidatosAGrado($this->codigo, $periodoAnio, $periodoNumero);
+    }
+
     public function existe(): bool {
         return $this->id > 0;
     }

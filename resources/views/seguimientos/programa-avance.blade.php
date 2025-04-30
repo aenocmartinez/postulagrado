@@ -11,10 +11,14 @@
         </span>
     </p>
 
+    @php
+        $estudiantesCanditados = $programaProceso->getEstuadiantesCandidatosAGradoPorPeriodo(2024, 2);
+    @endphp
+
     <div class="grid grid-cols-2 gap-4 mt-4 text-sm">
         <div class="bg-gray-100 p-4 rounded-lg">
             <h4 class="text-gray-700 font-semibold text-center">Candidatos a Grado</h4>
-            <p class="text-blue-900 text-xl font-bold text-center">0</p>
+            <p class="text-blue-900 text-xl font-bold text-center">{{ count($estudiantesCanditados) }}</p>
         </div>
 
         <div class="bg-gray-100 p-4 rounded-lg">

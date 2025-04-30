@@ -18,4 +18,5 @@ interface ProgramaRepository {
     public function buscarProgramasPorNivelEducativo(int $nivelEducativoID): array;
     public function buscarPorID(int $programaID): Programa;
     public function listarProgramas(): array;
+    public function listarEstudiantesCandidatosAGrado(int $codigoPrograma, int $periodoAnio, int $periodoNumero): array;
 }
