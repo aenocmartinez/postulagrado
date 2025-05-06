@@ -13,6 +13,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\ProcesoController;
+use App\Http\Controllers\ProgramaAcademicoController;
 use App\Http\Controllers\ProgramaContactoController;
 use App\Http\Controllers\SeguimientoController;
 use Illuminate\Support\Facades\Route;
@@ -111,5 +112,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/proceso/{proceso}/documentos/{documento}', [ProcesoDocumentoController::class, 'destroy'])->name('proceso_documentos.destroy');
     Route::get('/procesos/{proceso}/documentos/create', [ProcesoDocumentoController::class, 'create'])->name('proceso_documentos.create');
     
+
+    // Programa Académico
+    Route::get('/procesos/programa_academico', [ProgramaAcademicoController::class, 'index'])->name('programa_academico.index');
 
 });

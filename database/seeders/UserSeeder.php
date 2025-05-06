@@ -19,8 +19,19 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Abimelec Enoc Martinez Robles',
                 'email' => 'abimelec.martinez@unicolmayor.edu.co',
-                'password' => Hash::make('Abim3l3cEM.5'), // Hashea la contraseña
-            ]
+                'password' => Hash::make('Abim3l3cEM.5'), 
+            ]         
         );
+
+        User::updateOrCreate(
+            ['email' => 'lrmolina@unicolmayor.edu.co'], // Evita duplicados
+            [
+                'name' => 'Luisa Raquel Molina Quintero',
+                'email' => 'lrmolina@unicolmayor.edu.co',
+                'role' => 'ProgramaAcademico',
+                'prog_id' => 3717,
+                'password' => Hash::make('Programa+2024'), 
+            ]            
+        );        
     }
 }

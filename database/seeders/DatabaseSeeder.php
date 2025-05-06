@@ -15,12 +15,12 @@ class DatabaseSeeder extends Seeder
         $this->call(
             [
                 UserSeeder::class,
-                MetodologiaSeeder::class,
-                ModalidadSeeder::class, 
-                NivelEducativoSeeder::class, 
-                JornadaSeeder::class,
-                UnidadRegionalSeeder::class,  
-                ProgramaSeeder::class,  
+                // MetodologiaSeeder::class,
+                // ModalidadSeeder::class, 
+                // NivelEducativoSeeder::class, 
+                // JornadaSeeder::class,
+                // UnidadRegionalSeeder::class,  
+                // ProgramaSeeder::class,  
                 // ProgramaContactosSeeder::class,        
             ]
         );

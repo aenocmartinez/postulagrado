@@ -29,6 +29,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'prog_id',
     ];
 
     /**
@@ -68,6 +69,10 @@ class User extends Authenticatable
     public function pantallaDeInicio(): string {
         if ($this->role == "Admin") {
             return "procesos.index";
+        }
+
+        if ($this->role == "ProgramaAcademico") {
+            return 'programa_academico.index';
         }
 
         return "dashboard";
