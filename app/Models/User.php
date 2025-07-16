@@ -7,6 +7,8 @@ use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Src\admisiones\domain\Programa;
+use Src\shared\di\FabricaDeRepositorios;
 
 /**
  * Class User
@@ -72,9 +74,21 @@ class User extends Authenticatable
         }
 
         if ($this->role == "ProgramaAcademico") {
-            return 'programa_academico.index';
+            return 'programa_academico.dashboard';
         }
 
         return "dashboard";
+    }
+
+
+    /**
+     * Programa académico asignado al usuario.
+     * @return Programa
+     */
+    public function programaAcademico(): Programa
+    {
+        $programaRepo = FabricaDeRepositorios::getInstance()->getProgramaRepository();
+
+        return $programaRepo->buscarPorID($this->prog_id);
     }
 }

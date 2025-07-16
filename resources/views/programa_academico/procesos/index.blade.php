@@ -1,8 +1,8 @@
 @extends('layouts.programa_academico')
 
-@section('title', 'Dashboard')
+@section('title', 'Seguimiento del Programa')
 
-@section('header', 'Dashboard')
+@section('header', 'Seguimiento del Proceso por Programa')
 
 @section('content')
 
@@ -10,17 +10,120 @@
 
     <!-- 📌 Información del Programa -->
     <div class="mb-6">
-        <h2 class="text-xl font-semibold text-blue-900">{{ auth()->user()->programaAcademico()->getNombre() }}</h2>
-        <p class="text-sm text-gray-600">Unidad Regional: <strong>{{ auth()->user()->programaAcademico()->getUnidadRegional()->getNombre() }}</strong></p>
-        <p class="text-sm text-gray-600">Código SNIES: <strong>{{ auth()->user()->programaAcademico()->getSnies() }}</strong></p>
+        <h2 class="text-xl font-semibold text-blue-900">Tecnología en Gestión Ambiental</h2>
+        <p class="text-sm text-gray-600">Unidad Regional: <strong>Facultad de Ciencias Ambientales</strong></p>
+        <p class="text-sm text-gray-600">Código SNIES: <strong>56789</strong></p>
+        <p class="text-sm text-gray-600">Estado del Proceso: <span class="text-green-600">Activo</span></p>
     </div>
 
+    <!-- 📊 Avance del Programa -->
+    <h3 class="text-md font-semibold text-gray-700 mb-2">Avance del Proceso</h3>
+    <div class="w-full bg-gray-300 rounded h-4 mb-1">
+        <div class="h-4 bg-blue-600 rounded" style="width: 63%"></div>
+    </div>
+    <p class="text-xs text-gray-500 text-right">63% completado</p>
 
+    <hr class="my-8 border-t border-gray-300">
+
+    <!-- 🗓️ Actividades del Proceso -->
+    <h3 class="text-md font-semibold text-gray-700 mb-2">Actividades del Proceso</h3>
+
+    <div class="flex items-center gap-4 text-xs text-gray-500 mb-4">
+        <span><span class="inline-block w-3 h-3 bg-green-300 rounded-full mr-1"></span> En Curso</span>
+        <span><span class="inline-block w-3 h-3 bg-gray-300 rounded-full mr-1"></span> Finalizadas</span>
+        <span><span class="inline-block w-3 h-3 bg-yellow-300 rounded-full mr-1"></span> Programadas</span>
+        <span><span class="inline-block w-3 h-3 bg-orange-300 rounded-full mr-1"></span> Próximas</span>
+    </div>
+
+    <p class="text-sm text-gray-500 mb-2">
+        Se han registrado <strong>4 actividades</strong> en este proceso (1 en curso, 1 finalizada, 1 programada, 1 próxima).
+    </p>
+
+    <div class="grid grid-cols-2 gap-6 text-sm mb-6">
+        <div class="bg-green-100 p-4 rounded-lg">
+            <h4 class="font-semibold mb-2 text-green-700">🔹 En Curso</h4>
+            <ul class="list-disc pl-4 text-xs">
+                <li>Recepción de Documentos (01/04/2024 al 15/04/2024)</li>
+            </ul>
+        </div>
+        <div class="bg-gray-100 p-4 rounded-lg">
+            <h4 class="font-semibold mb-2 text-gray-800">🔹 Finalizadas</h4>
+            <ul class="list-disc pl-4 text-xs">
+                <li>Convocatoria a Postulación (01/03/2024 al 20/03/2024)</li>
+            </ul>
+        </div>
+        <div class="bg-yellow-100 p-4 rounded-lg">
+            <h4 class="font-semibold mb-2 text-yellow-700">🔹 Programadas</h4>
+            <ul class="list-disc pl-4 text-xs">
+                <li>Revisión Académica (20/05/2024 al 30/05/2024)</li>
+            </ul>
+        </div>
+        <div class="bg-orange-100 p-4 rounded-lg">
+            <h4 class="font-semibold mb-2 text-orange-700">🔹 Próximas a Iniciar</h4>
+            <ul class="list-disc pl-4 text-xs">
+                <li>Verificación de Paz y Salvo (01/06/2024 al 10/06/2024)</li>
+            </ul>
+        </div>
+    </div>
+
+    <hr class="my-8 border-t border-gray-300">
+
+    <!-- 👥 Gestión de Estudiantes -->
+    <h3 class="text-md font-semibold text-gray-700 mb-2">Estudiantes Candidatos a Grado</h3>
+    <div class="border border-gray-300 p-6 rounded-md bg-gray-50 text-center mb-6">
+        <p class="text-sm text-gray-600 mb-3">Actualmente no hay estudiantes registrados como candidatos a grado en este programa.</p>
+        <a href="#"
+            onclick="abrirModalGestionEstudiantes()"
+            class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 transition"
+            aria-label="Registrar estudiantes candidatos a grado">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Gestionar Estudiantes
+        </a>
+
+    </div>
+
+    <hr class="my-8 border-t border-gray-300">
+
+<!-- 🧾 Estado por Área -->
+<h3 class="text-md font-semibold text-gray-700 mt-6 mb-3">Estado de Paz y Salvo</h3>
+<div class="grid grid-cols-2 gap-6">
+    @php
+        $pazYSalvo = [
+            'Financiera' => ['total' => 100, 'pendientes' => 10],
+            'Admisiones' => ['total' => 100, 'pendientes' => 5],
+            'Biblioteca' => ['total' => 100, 'pendientes' => 23],
+            'Recursos educativos' => ['total' => 100, 'pendientes' => 15],
+            'Centro de idiomas' => ['total' => 100, 'pendientes' => 30],
+        ];
+    @endphp
+
+    @foreach ($pazYSalvo as $area => $datos)
+        @php
+            $porcentaje = (1 - $datos['pendientes'] / $datos['total']) * 100;
+        @endphp
+        <div class="bg-gray-200 p-4 rounded-lg">
+            <h4 class="text-sm font-semibold text-gray-800 mb-2">🏛️ {{ $area }}</h4>
+            <p class="text-xs text-gray-600">Total de Estudiantes: <strong>{{ $datos['total'] }}</strong></p>
+            <p class="text-xs text-gray-600">Pendientes: <strong class="text-red-600">{{ $datos['pendientes'] }}</strong></p>
+            <div class="w-full bg-gray-300 rounded mt-2">
+                <div class="h-2 bg-blue-500 rounded" style="width: {{ $porcentaje }}%"></div>
+            </div>
+            <p class="text-xs text-right text-gray-500 mt-1">{{ number_format($porcentaje, 1) }}% en paz y salvo</p>
+        </div>
+    @endforeach
+</div>
+
+
+
+    <hr class="my-8 border-t border-gray-300">
     
     <!-- 📩 Notificaciones -->
     @section('notificaciones')
     <div class="bg-white shadow-md rounded-lg p-4 border border-gray-200 text-sm h-[400px] overflow-y-auto">
-        <h3 class="text-gray-800 text-sm font-semibold mb-3">Últimas notificaciones</h3>
+        <h3 class="text-gray-800 text-sm font-semibold mb-3">Notificaciones del programa</h3>
 
         {{-- Recientes --}}
         <div class="mb-5">
@@ -94,6 +197,8 @@
 
 </div>
 
+
+    @include('programa_academico.dashboard.estudiantes')
 
 @endsection
 

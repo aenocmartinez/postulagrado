@@ -114,6 +114,6 @@ Route::middleware('auth')->group(function () {
     
 
     // Programa Académico
-    Route::get('/procesos/programa_academico', [ProgramaAcademicoController::class, 'index'])->name('programa_academico.index');
+    Route::get('/programa_academico/dashboard', [ProgramaAcademicoController::class, 'index'])->name('programa_academico.dashboard');
 
 });
