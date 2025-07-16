@@ -57,7 +57,7 @@
                             </ul>
                         </li> -->
                         <li>
-                            <a href="{{ route('procesos.index') }}" 
+                            <a href="{{ route('programa_academico.procesos.index') }}" 
                                 class="{{ request()->routeIs('procesos.*') ? 'active' : '' }}"
                                 onclick="closeSidebarAfterClick()">
                                 Procesos

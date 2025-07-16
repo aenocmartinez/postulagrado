@@ -20,4 +20,25 @@ class FormatoFecha
             return null;
         }
     }    
+
+    public static function formatearFechaLarga(?string $fecha): ?string {
+        $carbon = self::ConvertirStringAObjetoCarbon($fecha);
+
+        if (!$carbon) {
+            return null;
+        }
+        $carbon->locale('es');
+
+        return $carbon->translatedFormat('d \d\e F \d\e Y');
+    }    
+
+    public static function formatearFechaCorta(?string $fecha): ?string {
+        $carbon = self::ConvertirStringAObjetoCarbon($fecha);
+
+        if (!$carbon) {
+            return null;
+        }
+
+        return $carbon->format('d/m/Y');
+    }    
 }
