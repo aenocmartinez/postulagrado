@@ -148,7 +148,7 @@ class NotificacionDao extends Model implements NotificacionRepository
     
             Cache::forget('notificaciones_listado');
             Cache::forget('notificacion_' . $notificacion->getId());
-            Cache::forget("notificaciones_listado_{$notificacion->getProceso()->getId()}");
+            Cache::forget("notificaciones_listado_".$notificacion->getProceso()->getId());
     
             return true;
         } catch (\Exception $e) {

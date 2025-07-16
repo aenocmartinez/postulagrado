@@ -78,7 +78,10 @@
 <!-- Menú flotante de acciones -->
 <div id="action-menu" class="hidden fixed bg-white shadow-lg rounded-md w-32 border border-gray-200 z-50">
     <a id="view-link" href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Ver más</a>
-    <form id="anular-form" method="POST" action="#" class="block">
+    
+    <a id="edit-link" href="#" class="block px-4 py-2 text-sm text-blue-600 hover:bg-blue-100 hidden">Editar</a>
+
+    <form id="anular-form" method="POST" action="#" class="block hidden">
         @csrf
         @method('PATCH')
         <button type="submit" id="anular-btn" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100">
@@ -86,6 +89,7 @@
         </button>
     </form>
 </div>
+
 
 @endsection
 
@@ -95,6 +99,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     const actionMenu = document.getElementById("action-menu");
     const viewLink = document.getElementById("view-link");
+    const editLink = document.getElementById("edit-link");
     const anularForm = document.getElementById("anular-form");
 
     document.querySelectorAll(".menu-btn").forEach(button => {
@@ -110,11 +115,14 @@ document.addEventListener("DOMContentLoaded", function () {
             actionMenu.classList.remove("hidden");
 
             viewLink.href = `{{ route('notificaciones.show', ':id') }}`.replace(':id', notificacionId);
-            
-            if (estado === "PROGRAMADA") {
+            editLink.href = `{{ route('notificaciones.edit', ':id') }}`.replace(':id', notificacionId);
+
+            if (estado === "Programada") {
+                editLink.classList.remove('hidden');
                 anularForm.action = `{{ route('notificaciones.anular', ':id') }}`.replace(':id', notificacionId);
                 anularForm.classList.remove('hidden');
             } else {
+                editLink.classList.add('hidden');
                 anularForm.classList.add('hidden');
             }
         });
@@ -126,3 +134,4 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 @endsection
+

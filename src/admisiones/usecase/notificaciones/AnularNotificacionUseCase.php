@@ -34,6 +34,6 @@ class AnularNotificacionUseCase
             return new ResponsePostulaGrado(500, 'Se ha producido un error al anular la notificación.');
         }
 
-        return new ResponsePostulaGrado(200, 'La notificación se ha anulado exitosamente.');
+        return new ResponsePostulaGrado(200, 'La notificación se ha anulado exitosamente.', $notificacion);
     }
 }

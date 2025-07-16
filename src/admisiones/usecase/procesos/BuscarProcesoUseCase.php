@@ -16,6 +16,7 @@ class BuscarProcesoUseCase
 
     public function ejecutar(int $procesoID): ResponsePostulaGrado
     {
+        /** @var \Src\admisiones\domain\Proceso $proceso */
         $proceso = $this->procesoRepo->buscarProcesoPorId($procesoID);
         if (!$proceso->existe()) 
         {

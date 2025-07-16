@@ -38,9 +38,9 @@
     </div>
 
     <div class="mt-6 flex justify-end">
-        <a href="{{ route('notificaciones.index') }}" 
+        <a href="{{ route('notificaciones.por_proceso', $notificacion->getProceso()->getId()) }}" 
            class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition">
-            Volver al Listado
+            Volver
         </a>
     </div>
 
