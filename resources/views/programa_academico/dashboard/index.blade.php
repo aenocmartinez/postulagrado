@@ -1,4 +1,4 @@
-@extends('layouts.programa_academico')
+@extends('layouts.programa_academico_sin_notificacion')
 
 @section('title', 'Dashboard')
 
@@ -14,83 +14,6 @@
         <p class="text-sm text-gray-600">Unidad Regional: <strong>{{ auth()->user()->programaAcademico()->getUnidadRegional()->getNombre() }}</strong></p>
         <p class="text-sm text-gray-600">Código SNIES: <strong>{{ auth()->user()->programaAcademico()->getSnies() }}</strong></p>
     </div>
-
-
-    
-    <!-- 📩 Notificaciones -->
-    @section('notificaciones')
-    <div class="bg-white shadow-md rounded-lg p-4 border border-gray-200 text-sm h-[400px] overflow-y-auto">
-        <h3 class="text-gray-800 text-sm font-semibold mb-3">Últimas notificaciones</h3>
-
-        {{-- Recientes --}}
-        <div class="mb-5">
-            <h4 class="text-[12px] font-semibold text-blue-800 mb-2 border-b pb-1 text-right">Recientes</h4>
-            <ul id="lista-no-leidas" class="space-y-3 text-xs text-gray-800">
-                <li class="flex justify-between items-center border-b pb-2 cursor-pointer"
-                    onclick="mostrarContenido(this)" data-titulo="Inicio del proceso de postulación"
-                    data-mensaje="Estimado estudiante,<br><br>Nos complace informarte que se ha dado inicio al proceso de postulación para grado. A continuación encontrarás toda la información necesaria:<br><br>1. Ingresa al sistema PostulaGrado con tu usuario institucional.<br>2. Verifica que tus datos personales estén correctos.<br>3. Adjunta los documentos requeridos:<br>&nbsp;&nbsp;&nbsp;&nbsp;- Paz y salvo de Biblioteca<br>&nbsp;&nbsp;&nbsp;&nbsp;- Paz y salvo Financiero<br>&nbsp;&nbsp;&nbsp;&nbsp;- Formulario diligenciado<br>4. Una vez finalices el proceso, recibirás una confirmación por correo electrónico.<br><br>Recuerda que tienes plazo hasta el <strong>30 de abril de 2024</strong> para completar tu postulación.<br><br>Cualquier duda, no dudes en escribirnos a admisiones@unicolmayor.edu.co.<br><br>Atentamente,<br>Oficina de Admisiones y Registro Académico.">
-                    <div>
-                        <p class="font-medium">Inicio del proceso de postulación</p>
-                        <p class="text-[11px] text-gray-500">12/03/2024</p>
-                    </div>
-                    <button title="Marcar como vista"
-                            onclick="marcarComoLeida(event, this)"
-                            class="text-blue-600 hover:text-green-600 transition">
-                        <i class="fas fa-check-double text-sm"></i>
-                    </button>
-                </li>
-
-                <li class="flex justify-between items-center border-b pb-2 cursor-pointer"
-                    onclick="mostrarContenido(this)" data-titulo="Actualización del cronograma de actividades del proceso de grado: Proceso de grado 2025-1"
-                    data-mensaje="Este es el contenido nuevo para la notificación de actualización de requisitos. Asegúrate de revisar los documentos necesarios para la postulación.<br><br>Recuerda que tienes plazo hasta el <strong>30 de abril de 2024</strong> para completar tu postulación.<br><br>Cualquier duda, no dudes en escribirnos a">
-                    <div>
-                        <p class="font-medium">Actualización del cronograma de actividades del proceso de grado: Proceso de grado 2025-1</p>
-                        <p class="text-[11px] text-gray-500">12/03/2024</p>
-                    </div>
-                    <button title="Marcar como vista"
-                            onclick="marcarComoLeida(event, this)"
-                            class="text-blue-600 hover:text-green-600 transition">
-                        <i class="fas fa-check-double text-sm"></i>
-                    </button>
-                </li>                
-            </ul>
-            <p id="sin-recientes" class="text-xs text-gray-500 hidden">No hay notificaciones recientes para mostrar.</p>
-        </div>
-
-        {{-- Revisadas o Vistas --}}
-        <div>
-            <h4 class="text-[12px] font-semibold text-blue-800 mb-2 border-b pb-1 text-right">Notificaciones revisadas</h4>
-            <ul id="lista-leidas" class="space-y-3 text-xs text-gray-700">
-                <li class="flex justify-between items-center border-b pb-2 cursor-pointer"
-                    onclick="mostrarContenido(this)" data-titulo="Recordatorio de requisitos"
-                    data-mensaje="Este es un recordatorio para enviar los documentos requeridos antes del 25 de abril.<br><br>Incluye:<br>- Formato de solicitud<br>- Comprobante de pago<br>- Paz y salvo académico<br><br>No olvides revisar tu correo institucional para mayor información.">
-                    <div>
-                        <p class="text-gray-700">Recordatorio de requisitos</p>
-                        <p class="text-[11px] text-gray-500">05/04/2024</p>
-                    </div>
-                    <i class="fas fa-check-double text-sm text-gray-400"></i>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-    {{-- Modal --}}
-    <div id="modal-notificacion" class="fixed inset-0 bg-black bg-opacity-30 hidden justify-center items-center z-50">
-        <div id="modal-contenedor"
-            class="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg border relative max-h-[80vh] overflow-y-auto transition-all duration-300">
-            <button onclick="cerrarModal()" class="absolute top-3 right-3 text-gray-500 hover:text-red-600 transition text-lg">
-                <i class="fas fa-times"></i>
-            </button>
-            <h4 id="modal-titulo" class="text-lg font-semibold mb-3 text-gray-800 pr-6"></h4>
-            <p id="modal-mensaje" class="text-sm text-gray-700 leading-relaxed mb-4 text-justify"></p>
-
-            <div class="flex justify-between text-xs text-blue-600 mt-2">
-                <button onclick="navegarNotificacion(-1)" class="hover:underline">← Anterior</button>
-                <button onclick="navegarNotificacion(1)" class="hover:underline">Siguiente →</button>
-            </div>
-        </div>
-    </div>
-    @endsection
 
 </div>
 

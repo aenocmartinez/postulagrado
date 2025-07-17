@@ -138,16 +138,16 @@
             </header>
 
             <!-- Sección de Contenido y Notificaciones -->
-            <div class="grid grid-cols-4 gap-4 mb-4 flex-1">
+            <div class="mb-4 flex-1">
                 <!-- Contenido (75%) -->
-                <div class="col-span-3 bg-white shadow-md rounded-lg p-6 border border-gray-200">
+                <div class="col-span-3 bg-white">
                     @yield('content') 
                 </div>
                 
                 <!-- Notificaciones más compactas con altura fija -->
-                <div id="seccion-notificaciones">
+                <!-- <div id="seccion-notificaciones">
                     @yield('notificaciones')
-                </div>
+                </div> -->
 
             </div>
 
