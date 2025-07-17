@@ -58,14 +58,14 @@
                         </li> -->
                         <li>
                             <a href="{{ route('programa_academico.dashboard') }}" 
-                                class="{{ request()->routeIs('procesos.*') ? 'active' : '' }}"
+                                class="{{ request()->routeIs('programa_academico.dashboard') ? 'active' : '' }}"
                                 onclick="closeSidebarAfterClick()">
                                 Dashboard
                             </a>
                         </li>                        
                         <li>
                             <a href="{{ route('programa_academico.procesos.index') }}" 
-                                class="{{ request()->routeIs('procesos.*') ? 'active' : '' }}"
+                                class="{{ request()->routeIs('programa_academico.procesos.*') ? 'active' : '' }}"
                                 onclick="closeSidebarAfterClick()">
                                 Procesos
                             </a>
