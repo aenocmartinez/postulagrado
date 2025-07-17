@@ -157,28 +157,73 @@
         document.getElementById('modal-gestion-estudiantes').classList.remove('flex');
     }
 
-    function cargarListadoEstudiantes() {
+    function cargarListadoEstudiantes() 
+    {
         const tabla = document.getElementById('tabla-estudiantes');
         const mensaje = document.getElementById('mensaje-sin-estudiantes');
         const loader = document.getElementById('loader-estudiantes');
+        const filtro = document.getElementById("filtro-estudiantes");
 
         // Oculta todo
         tabla.classList.add('hidden');
         mensaje.classList.add('hidden');
         loader.classList.remove('hidden');
 
-        // Simula carga (puedes reemplazar con llamada AJAX real)
-        setTimeout(() => {
-            loader.classList.add('hidden');
+        // Obtener parámetros seleccionados
+        const anio = document.getElementById('anio').value;
+        const periodo = document.getElementById('periodo').value;
+        const codigoPrograma = 74; // Puedes hacerlo dinámico si lo deseas
+        
+        fetch(`/programa_academico/estudiantes-candidatos/${codigoPrograma}/${anio}/${periodo}`)
+            .then(response => response.json())
+            .then(data => {
+                loader.classList.add('hidden');
 
-            const tieneResultados = Math.random() > 0.3; // Simulación
+                const estudiantes = data.data || [];
 
-            if (tieneResultados) {
-                tabla.classList.remove('hidden');
-            } else {
+                if (estudiantes.length > 0) {
+                    console.log(estudiantes);
+                    const tbody = document.querySelector("#tabla-estudiantes tbody");
+                    tbody.innerHTML = ''; // Limpia filas anteriores
+
+                    estudiantes.forEach(est => {
+                        const fila = document.createElement('tr');
+                        fila.className = 'bg-white hover:bg-blue-50 transition';
+
+                        fila.innerHTML = `
+                            <td class="px-4 py-2">${est.pensum || ''}</td>
+                            <td class="px-4 py-2">${est.codigo || ''}</td>
+                            <td class="px-4 py-2">${est.documento || ''}</td>
+                            <td class="px-4 py-2">${est.nombre || ''}</td>
+                            <td class="px-4 py-2">${est.ubicacionSemestre || ''}</td>
+                            <td class="px-4 py-2"><span class="inline-block px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">${est.situacion || ''}</span></td>
+                            <td class="px-2 py-2 text-center">${est.numeroCreditosPendientes ?? '-'}</td>
+                            <td class="px-4 py-2 text-center">
+                                <div class="flex items-center justify-center gap-3 text-xs">
+                                    <button class="text-blue-600 hover:text-blue-800 flex items-center gap-1">
+                                        <i class="fas fa-eye"></i> Ver
+                                    </button>
+                                    <button class="text-red-500 hover:text-red-700 flex items-center gap-1">
+                                        <i class="fas fa-trash-alt"></i> Quitar
+                                    </button>
+                                </div>
+                            </td>
+                        `;
+
+                        tbody.appendChild(fila);
+                    });
+
+                    tabla.classList.remove('hidden');
+                } else {
+                    mensaje.classList.remove('hidden');
+                }
+            })
+            .catch(error => {
+                console.error('Error al cargar estudiantes:', error);
+                loader.classList.add('hidden');
                 mensaje.classList.remove('hidden');
-            }
-        }, 1500);
+            });
+
     }
 
     function filtrarEstudiantes() {

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Src\admisiones\usecase\notificaciones\ListarNotificacionesPorUsuarioUseCase;
 use Src\admisiones\usecase\procesos\BuscarProcesoUseCase;
 use Src\admisiones\usecase\procesos\ListarProcesosUseCase;
+use Src\admisiones\usecase\programas\BuscarEstudiantesCandidatosGradoUseCase;
 use Src\shared\di\FabricaDeRepositorios;
 
 class ProgramaAcademicoController extends Controller
@@ -63,4 +64,25 @@ class ProgramaAcademicoController extends Controller
             'notificaciones' => $listaNotificacionesResponse->getData(),        
         ]);
     }    
+
+    public function buscarEstudiantesCandidatosAGrado(int $codigoPrograma, int $anio, int $periodo)
+    {
+    
+        $buscarCantidatosGrado = new BuscarEstudiantesCandidatosGradoUseCase(
+            FabricaDeRepositorios::getInstance()->getProgramaRepository(),
+        );
+
+        $response = $buscarCantidatosGrado->ejecutar(
+            Auth::user()->programaAcademico()->getCodigo(), 
+            $anio, 
+            $periodo);
+            
+
+        return response()->json([
+                'code' => $response->getCode(),
+                'message' => $response->getMessage(),
+                'data' => $response->getData()
+            ], $response->getCode());
+
+    }
 }
