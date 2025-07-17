@@ -93,10 +93,14 @@ class ProgramaAcademicoController extends Controller
             'estudiantes'   => ['required', 'array', 'min:1'],
             'estudiantes.*' => ['required', 'string', 'max:20'],
             'proc_id'      => ['required', 'integer'],
+            'anio'      => ['required', 'integer'],
+            'periodo'      => ['required', 'integer'],
         ]);
 
-        $estudiantes = $validated['estudiantes'];
+        $estudiantes   = $validated['estudiantes'];
         $procesoID     = $validated['proc_id'];
+        $anio          = $validated['anio'];
+        $periodo       = $validated['periodo'];
 
 
         $asociarCandidatos = new AsociarCandidatosAProcesoGradoUseCase(
@@ -105,7 +109,7 @@ class ProgramaAcademicoController extends Controller
         );
 
 
-        $response = $asociarCandidatos->ejecutar($procesoID, $estudiantes);
+        $response = $asociarCandidatos->ejecutar($procesoID, $estudiantes, $anio, $periodo);
         
         return response()->json([
             'code' => $response->getCode(),

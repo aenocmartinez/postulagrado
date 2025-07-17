@@ -133,7 +133,9 @@
     <div class="border border-gray-300 p-6 rounded-md bg-gray-50 text-center mb-6">
 
         @if (auth()->user()->programaAcademico()->tieneCandidatosAsocidos($proceso->getId()))
-            Tiene candidatos ya asociados
+            
+            Tiene estudiantes asociados en el proceso
+
         @else
             <p class="text-sm text-gray-600 mb-3">Actualmente no hay estudiantes registrados como candidatos a grado en este programa.</p>
             <a href="#"

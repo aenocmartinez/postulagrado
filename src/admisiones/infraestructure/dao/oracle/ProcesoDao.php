@@ -394,7 +394,7 @@ class ProcesoDao extends Model implements ProcesoRepository
         });
     }
 
-    public function agregarCandidatoAProceso(int $programaProcesoID, int $codigoEstudiante): bool 
+    public function agregarCandidatoAProceso(int $programaProcesoID, int $codigoEstudiante, int $anio, int $periodo): bool 
     {
         try {
             
@@ -410,6 +410,8 @@ class ProcesoDao extends Model implements ProcesoRepository
                 'ESTU_CODIGO'        => (string) $codigoEstudiante,
                 'PPES_REGISTRADOPOR' => $usuario,
                 'PPES_FECHACAMBIO'   => now(),
+                'PPES_ANO'           => $anio,
+                'PPES_PERIODO'       => $periodo,
             ]);
 
             return true;
@@ -418,5 +420,13 @@ class ProcesoDao extends Model implements ProcesoRepository
             return false;
         }
     }
+
+    public function listarCandidatosPorProcesoYPrograma(int $procesoId, int $programaID): array
+    {
+
+
+        return [];
+    }
+
 
 }

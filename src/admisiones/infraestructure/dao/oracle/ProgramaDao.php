@@ -389,6 +389,8 @@ class ProgramaDao implements ProgramaRepository
                 $estudiante->setNumeroCreditosElectivos($fila->area_comple_pens);
                 $estudiante->setNumeroCreditosAprobadosElectivos($fila->creditos_aprob_electiva_comple);
                 $estudiante->setNumeroCreditosPendientesElectivos($fila->creditos_pend_electiva_comple);
+                $estudiante->setAnio($anio);
+                $estudiante->setPeriodo($periodo);
 
                 $estudiantes[] = $estudiante;
             }

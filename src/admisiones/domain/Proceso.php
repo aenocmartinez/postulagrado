@@ -219,6 +219,10 @@ class Proceso
         return $this->repository->listarNotificaciones($this->id);
     }
 
+    public function getEstudiantesAsociados(int $programaID): array {
+        return $this->repository->listarCandidatosPorProcesoYPrograma($this->id, $programaID);
+    }
+
     public function toDTO(): ProcesoDTO {
         return new ProcesoDTO(
             $this->id,

@@ -15,7 +15,7 @@ class AsociarCandidatosAProcesoGradoUseCase
         private ProcesoRepository $procesoRepo,
     ) {}
     
-    public function ejecutar(int $procesoID, $estudiantes=[]): ResponsePostulaGrado 
+    public function ejecutar(int $procesoID, $estudiantes=[], int $anio, int $periodo): ResponsePostulaGrado 
     {
 
         $programa = Auth::user()->programaAcademico();
@@ -28,7 +28,7 @@ class AsociarCandidatosAProcesoGradoUseCase
         
         foreach($estudiantes as $codigoEstudiante) {
 
-            $exito = $this->procesoRepo->agregarCandidatoAProceso($programaProceso->getId(), $codigoEstudiante);
+            $exito = $this->procesoRepo->agregarCandidatoAProceso($programaProceso->getId(), $codigoEstudiante, $anio, $periodo);
 
             if (!$exito) {
                 Log::info("Este codigo de estudiante no encontrado: ", $codigoEstudiante);

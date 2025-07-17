@@ -23,6 +23,8 @@ class Estudiante
     private ?int $numeroCreditosElectivos;
     private ?int $numeroCreditosAprobadosElectivos;
     private ?int $numeroCreditosPendientesElectivos;
+    private ?int $anio;
+    private ?int $periodo;
 
 
     public function __construct() {
@@ -45,6 +47,8 @@ class Estudiante
         $this->numeroCreditosElectivos = 0;
         $this->numeroCreditosAprobadosElectivos = 0;
         $this->numeroCreditosPendientesElectivos = 0;
+        $this->anio = 0;
+        $this->periodo = 0;
     }   
 
 
@@ -312,6 +316,30 @@ class Estudiante
 
         $this->numeroCreditosPendientesElectivos = $numeroCreditosPendientesElectivos;
     }
+
+    public function setAnio(?int $anio=0) {
+        if (!is_null($anio)) {
+            $this->anio = $anio;
+        }
+
+        $this->anio = $anio;
+    }
+
+    public function getAnio(): ?int{
+        return $this->anio;
+    }    
+
+    public function setPeriodo(?int $periodo=0) {
+        if (!is_null($periodo)) {
+            $this->periodo = $periodo;
+        }
+
+        $this->periodo;
+    }
+
+    public function getPeriodo(): ?int{
+        return $this->periodo;
+    }        
 
     public function existe(): bool
     {

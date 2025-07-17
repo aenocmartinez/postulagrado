@@ -243,6 +243,9 @@
             return;
         }
 
+        const anio = document.getElementById('anio').value;
+        const periodo = document.getElementById('periodo').value;
+
         Swal.fire({
             title: 'Guardando...',
             text: 'Por favor espera un momento.',
@@ -260,7 +263,9 @@
             },
             body: JSON.stringify({
                 estudiantes: seleccionados,
-                proc_id: PROCESO_ID 
+                proc_id: PROCESO_ID,
+                anio: anio,
+                periodo: periodo                
             })
         })
         .then(async response => {
