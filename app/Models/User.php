@@ -82,7 +82,8 @@ class User extends Authenticatable
 
 
     /**
-     * Programa académico asignado al usuario.
+     * Retorna el programa académico asignado al usuario.
+     *
      * @return Programa
      */
     public function programaAcademico(): Programa

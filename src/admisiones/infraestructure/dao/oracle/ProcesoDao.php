@@ -393,6 +393,30 @@ class ProcesoDao extends Model implements ProcesoRepository
             return $notificaciones;
         });
     }
-    
-    
+
+    public function agregarCandidatoAProceso(int $programaProcesoID, int $codigoEstudiante): bool 
+    {
+        try {
+            
+            $nuevoID = DB::connection('oracle_academpostulgrado')
+                ->selectOne('SELECT ACADEMPOSTULGRADO.S_PPROG_ESTUD_ID.NEXTVAL AS id FROM DUAL')->id;
+
+            
+            $usuario = Auth::check() ? Auth::user()->id : 'sistema';
+
+            DB::connection('oracle_academpostulgrado')->table('PROCESO_PROGRAMA_ESTUDIANTES')->insert([
+                'PPES_ID'            => $nuevoID,
+                'PROGR_ID'           => $programaProcesoID,
+                'ESTU_CODIGO'        => (string) $codigoEstudiante,
+                'PPES_REGISTRADOPOR' => $usuario,
+                'PPES_FECHACAMBIO'   => now(),
+            ]);
+
+            return true;
+        } catch (\Throwable $e) {
+            logger()->error('Error en agregarCandidatoAProceso: ' . $e->getMessage());
+            return false;
+        }
+    }
+
 }

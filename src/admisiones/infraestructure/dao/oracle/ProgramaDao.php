@@ -261,231 +261,6 @@ class ProgramaDao implements ProgramaRepository
         });
     }    
 
-    // public function listarEstudiantesCandidatosAGrado(int $codigoPrograma, int $periodoAnio, int $periodoNumero): array {
-
-    //     $cacheKey = "estudiantes_candidatos_{$codigoPrograma}_{$periodoAnio}_{$periodoNumero}";
-
-    //     return Cache::remember($cacheKey, now()->addHours(4), function () use ($codigoPrograma, $periodoAnio, $periodoNumero) {
-
-    //         $estudiantes = [];
-        
-    //         try {
-    //             $sql = <<<SQL
-    //                 SELECT DISTINCT
-    //                 PROG.PROG_NOMBRE AS programa_academico,
-    //                 CLAVE2.PENSUMNOMBRE AS pensum_estud,
-    //                 ESTP.ESTP_CODIGOMATRICULA AS codigo_est,
-    //                 PEGE.PEGE_DOCUMENTOIDENTIDAD AS documento,
-    //                 PENG.PENG_PRIMERAPELLIDO ||' '|| PENG.PENG_SEGUNDOAPELLIDO ||' '||PENG.PENG_PRIMERNOMBRE ||' '|| PENG.PENG_SEGUNDONOMBRE AS nombres,
-    //                 ESTP.ESTP_PERIODOACADEMICO AS ubicacion_semestral,
-    //                 CATE.CATE_DESCRIPCION AS categoria,
-    //                 SITE.SITE_DESCRIPCION AS situacion,
-    //                 CLAVE2.TOTALCREDITOSPENSUM AS total_creditos_pensum,
-    //                 (CLAVE2.TOTALCREDITOSPENSUM - ESTP.ESTP_CREDITOSAPROBADOS) AS cred_pendientes,
-    //                 CLAVE2.PONDERACIONBASICA AS area_basica_pensum,
-    //                 CLAVE2.CLAVE2PONDERA AS cred_aprob_area_basica,
-    //                 (CLAVE2.PONDERACIONBASICA - CLAVE2.CLAVE2PONDERA ) AS cr_pendientes_area_basica,
-    //                 CLAVE5.AREAPROFUNDIZACIONPROGRAMA AS total_cred_profund_pens,
-    //                 CLAVE1.CLAVE1PONDERA AS cred_aprob_profundizacion,
-    //                 (CLAVE5.AREAPROFUNDIZACIONPROGRAMA-CLAVE1.CLAVE1PONDERA) AS cr_pend_profundizacion,
-    //                 CLAVE4.AREACOMPLEMENTARIAPROGRAMA AS area_comple_pens,
-    //                 CLAVE3.CLAVE3PONDERA AS cred_aprob_electiva_comple,
-    //                 (CLAVE4.AREACOMPLEMENTARIAPROGRAMA-CLAVE3.CLAVE3PONDERA) AS cr_pend_electiva_comple
-                        
-    //                 FROM
-    //                     ACADEMICO.ESTUDIANTEPENSUM ESTP,
-    //                     ACADEMICO.PROGRAMA PROG,
-    //                     ACADEMICO.UNIDADPROGRAMA UNPR,
-    //                     GENERAL.PERSONAGENERAL PEGE,
-    //                     ACADEMICO.PERIODOUNIVERSIDAD PEUN,
-    //                     GENERAL.PERSONANATURALGENERAL PENG,
-    //                     ACADEMICO.CATEGORIA CATE,
-    //                     ACADEMICO.SITUACIONESTUDIANTE SITE,
-    //                     (
-    //                         SELECT
-    //                                 ESTP.ESTP_ID,
-    //                             SUM(REAC.REAC_PONDERACIONACADEMICA) AS CLAVE1PONDERA
-    //                                 FROM
-    //                             ACADEMICO.ESTUDIANTEPENSUM ESTP,
-    //                             ACADEMICO.REGISTROACADEMICO REAC
-    //                         WHERE
-    //                             ESTP.ESTP_ID=REAC.ESTP_ID
-    //                         AND REAC.REAC_APROBADO=1
-    //                         AND REAC.REAC_CUENTAPROMEDIO=1
-    //                         AND (
-                                
-    //                             REAC.MATE_CODIGOMATERIA LIKE '%15'
-    //                             OR  REAC.MATE_CODIGOMATERIA LIKE '%16'
-    //                             OR  REAC.MATE_CODIGOMATERIA LIKE '%17'
-    //                             OR  REAC.MATE_CODIGOMATERIA LIKE '%18'
-    //                             OR  REAC.MATE_CODIGOMATERIA LIKE '%19'
-    //                             OR  REAC.MATE_CODIGOMATERIA LIKE '%20')
-                        
-    //                         GROUP BY 
-    //                                 ESTP.ESTP_ID) CLAVE1, 
-    //                     (
-    //                         SELECT
-    //                                 ESTP.ESTP_ID,
-    //                             SUM(REAC.REAC_PONDERACIONACADEMICA) AS CLAVE3PONDERA
-    //                                 FROM
-    //                             ACADEMICO.ESTUDIANTEPENSUM ESTP,
-    //                             ACADEMICO.REGISTROACADEMICO REAC
-    //                         WHERE
-    //                             ESTP.ESTP_ID=REAC.ESTP_ID
-    //                         AND REAC.REAC_APROBADO=1
-    //                         AND REAC.REAC_CUENTAPROMEDIO=1
-    //                         AND REAC.MATE_CODIGOMATERIA LIKE '%14'           
-    //                         GROUP BY 
-    //                                 ESTP.ESTP_ID) CLAVE3, 
-    //                     (
-    //                         SELECT DISTINCT
-    //                             ESTP.ESTP_ID,
-    //                             PENS.PENS_TOTALCREDITOS              AS TOTALCREDITOSPENSUM,
-    //                             SUM (MATE.MATE_PONDERACIONACADEMICA) AS CLAVE2PONDERA,
-    //                             PENS.PENS_PONMINMATNOR AS PONDERACIONBASICA,
-    //                             PENS.PENS_DESCRIPCION AS PENSUMNOMBRE
-    //                         FROM
-    //                             ACADEMICO.ESTUDIANTEPENSUM ESTP,
-    //                             ACADEMICO.PENSUM PENS,
-    //                             ACADEMICO.PENSUMMATERIA PEMA,
-    //                             ACADEMICO.MATERIA MATE,
-    //                             ACADEMICO.REGISTROACADEMICO REAC
-    //                         WHERE
-    //                             ESTP.PENS_ID=PENS.PENS_ID
-    //                         AND REAC.ESTP_ID=ESTP.ESTP_ID
-    //                         AND MATE.MATE_CODIGOMATERIA=PEMA.MATE_CODIGOMATERIA
-    //                         AND MATE.MATE_CODIGOMATERIA=REAC.MATE_CODIGOMATERIA
-    //                         AND PENS.PENS_ID=PEMA.PENS_ID
-    //                         AND PEMA.CICU_ID=4 
-    //                         AND REAC.REAC_APROBADO=1
-    //                         AND PENS.TIPA_ID=2
-    //                     AND (ESTP.ESTP_PERIODOACADEMICO=PENS.PENS_NUMPERIODOS-1)
-    //                         GROUP BY
-    //                             ESTP.ESTP_ID,
-    //                             PENS.PENS_TOTALCREDITOS,
-    //                             PENS.PENS_PONMINMATNOR,
-    //                             PENS.PENS_DESCRIPCION
-    //                     UNION
-    //                             SELECT DISTINCT
-    //                             ESTP.ESTP_ID,
-    //                             PENS.PENS_TOTALCREDITOS              AS TOTALCREDITOSPENSUM,
-    //                             SUM (MATE.MATE_PONDERACIONACADEMICA) AS CLAVE2PONDERA,
-    //                             PENS.PENS_PONMINMATNOR AS PONDERACIONBASICA,
-    //                             PENS.PENS_DESCRIPCION AS PENSUMNOMBRE
-    //                         FROM
-    //                             ACADEMICO.ESTUDIANTEPENSUM ESTP,
-    //                             ACADEMICO.PENSUM PENS,
-    //                             ACADEMICO.PENSUMMATERIA PEMA,
-    //                             ACADEMICO.MATERIA MATE,
-    //                             ACADEMICO.REGISTROACADEMICO REAC
-    //                         WHERE
-    //                             ESTP.PENS_ID=PENS.PENS_ID
-    //                         AND REAC.ESTP_ID=ESTP.ESTP_ID
-    //                         AND MATE.MATE_CODIGOMATERIA=PEMA.MATE_CODIGOMATERIA
-    //                         AND MATE.MATE_CODIGOMATERIA=REAC.MATE_CODIGOMATERIA
-    //                         AND PENS.PENS_ID=PEMA.PENS_ID
-    //                         AND PEMA.CICU_ID=4 
-    //                         AND REAC.REAC_APROBADO=1
-    //                         AND PENS.TIPA_ID=2
-    //                     AND (ESTP.ESTP_PERIODOACADEMICO=PENS.PENS_NUMPERIODOS)
-    //                         GROUP BY
-    //                             ESTP.ESTP_ID,
-    //                             PENS.PENS_TOTALCREDITOS,
-    //                             PENS.PENS_PONMINMATNOR,
-    //                             PENS.PENS_DESCRIPCION
-                                        
-                                        
-    //                             ) CLAVE2,
-    //                 (SELECT DISTINCT ESTP.ESTP_ID,SUM(MATE.MATE_PONDERACIONACADEMICA) AREACOMPLEMENTARIAPROGRAMA
-    //                 FROM 
-    //                 ACADEMICO.PENSUMMATERIA PEMA,
-    //                 ACADEMICO.CAMPOFORMACION CAFO,
-    //                 ACADEMICO.MATERIA MATE, 
-    //                 ACADEMICO.PENSUM PENS,
-    //                 ACADEMICO.ESTUDIANTEPENSUM ESTP
-    //                 WHERE 
-    //                 PEMA.CAFO_ID =CAFO.CAFO_ID
-    //                 AND PEMA.PENS_ID=PENS.PENS_ID
-    //                 AND ESTP.PENS_ID=PENS.PENS_ID
-    //                 AND MATE.MATE_CODIGOMATERIA=PEMA.MATE_CODIGOMATERIA
-    //                 AND PEMA.CAFO_ID=22 
-    //                 GROUP BY
-    //                 ESTP.ESTP_ID) CLAVE4,
-                    
-    //                 (SELECT DISTINCT ESTP.ESTP_ID,SUM(MATE.MATE_PONDERACIONACADEMICA) AREAPROFUNDIZACIONPROGRAMA
-    //                 FROM 
-    //                 ACADEMICO.PENSUMMATERIA PEMA,
-    //                 ACADEMICO.CAMPOFORMACION CAFO,
-    //                 ACADEMICO.MATERIA MATE, 
-    //                 ACADEMICO.PENSUM PENS,
-    //                 ACADEMICO.ESTUDIANTEPENSUM ESTP
-    //                 WHERE 
-    //                 PEMA.CAFO_ID =CAFO.CAFO_ID
-    //                 AND PEMA.PENS_ID=PENS.PENS_ID
-    //                 AND ESTP.PENS_ID=PENS.PENS_ID
-    //                 AND MATE.MATE_CODIGOMATERIA=PEMA.MATE_CODIGOMATERIA
-    //                 AND PEMA.CAFO_ID=21
-    //                 GROUP BY
-    //                 ESTP.ESTP_ID) CLAVE5
-                    
-                    
-    //                 WHERE
-    //                 ESTP.ESTP_ID=CLAVE1.ESTP_ID (+)
-    //                 AND ESTP.ESTP_ID (+)=CLAVE2.ESTP_ID
-    //                 AND ESTP.ESTP_ID=CLAVE3.ESTP_ID (+)
-    //                 AND ESTP.ESTP_ID=CLAVE4.ESTP_ID (+)
-    //                 AND ESTP.ESTP_ID=CLAVE5.ESTP_ID (+)
-    //                 AND ESTP.UNPR_ID=UNPR.UNPR_ID
-    //                 AND PROG.PROG_ID=UNPR.PROG_ID
-    //                 AND PROG.PROG_CODIGOPROGRAMA = :codigoPrograma
-    //                 AND PEGE.PEGE_ID=PENG.PEGE_ID
-    //                 AND PEGE.PEGE_ID=ESTP.PEGE_ID
-    //                 AND ESTP.CATE_ID=CATE.CATE_ID
-    //                 AND ESTP.SITE_ID=SITE.SITE_ID
-    //                 AND ESTP.PEUN_ID=PEUN.PEUN_ID
-    //                 AND PEUN.PEUN_ANO = :anio
-    //                 AND PEUN.PEUN_PERIODO = :periodo
-    //                 AND PEUN.TPPA_ID=1
-    //                 ORDER BY
-    //                     6 DESC, 5 DESC, 4 DESC  
-    //             SQL;
-        
-    //             $registros = DB::connection('oracle_academico')->select($sql, [
-    //                 'codigoPrograma' => $codigoPrograma,
-    //                 'anio' => $periodoAnio,
-    //                 'periodo' => $periodoNumero
-    //             ]);
-        
-    //             foreach ($registros as $r) {
-    //                 $e = new Estudiante();
-    //                 $e->setPensum($r->pensum_estud ?? '');
-    //                 $e->setCodigo($r->codigo_est);
-    //                 $e->setDocumento($r->documento);
-    //                 $e->setNombre($r->nombres);
-    //                 $e->setUbicacionSemestre($r->ubicacion_semestral);
-    //                 $e->setCategoria($r->categoria);
-    //                 $e->setSituacion($r->situacion);
-    //                 $e->setTotalCreditosPensum((int) $r->total_creditos_pensum);
-    //                 $e->setNumeroCreditosPendientes((int) $r->cred_pendientes);
-    //                 $e->setNumeroCreditosAreaBasica((int) $r->area_basica_pensum);
-    //                 $e->setNumeroCreditosAprobadosAreaBasica((int) $r->cred_aprob_area_basica);
-    //                 $e->setNumeroCreditosPendientesAreaBasica((int) $r->cr_pendientes_area_basica);
-    //                 $e->setNumeroCreditosAreaProfundizacion((int) $r->total_cred_profund_pens);
-    //                 $e->setNumeroCreditosAprobadosAreaProfundizacion((int) $r->cred_aprob_profundizacion);
-    //                 $e->setNumeroCreditosPendientesAreaProfundizacion((int) $r->cr_pend_profundizacion);
-    //                 $e->setNumeroCreditosElectivos((int) $r->area_comple_pens);
-    //                 $e->setNumeroCreditosAprobadosElectivos((int) $r->cred_aprob_electiva_comple);
-    //                 $e->setNumeroCreditosPendientesElectivos((int) $r->cr_pend_electiva_comple);
-    //                 $estudiantes[] = $e;
-    //             }
-    //         } catch (\Exception $e) {
-    //             Log::error("Error al listar estudiantes candidatos a grado: " . $e->getMessage());
-    //         }
-        
-    //         return $estudiantes;
-    //     });
-    // }    
-
     public function buscarEstudiantesCandidatosAGrado(int $codigoPrograma, int $anio, int $periodo): array
     {
         try {
@@ -625,5 +400,20 @@ class ProgramaDao implements ProgramaRepository
         }
     }
 
+    public function tieneCandidatosAsociados(int $procesoID, int $programaID): bool
+    {
+        $resultado = DB::connection('oracle_academpostulgrado')->selectOne(
+            "SELECT DISTINCT 'T' AS tiene 
+            FROM ACADEMPOSTULGRADO.PROCESO_PROGRAMA_ESTUDIANTES ppe
+            INNER JOIN ACADEMPOSTULGRADO.PROCESO_PROGRAMA pp ON pp.PROGR_ID = ppe.PROGR_ID
+            WHERE pp.PROC_ID = :proceso_id AND pp.PROG_ID = :programa_id",
+            [
+                'proceso_id' => $procesoID,
+                'programa_id' => $programaID
+            ]
+        );
+
+        return $resultado !== null;
+    }
 
 }

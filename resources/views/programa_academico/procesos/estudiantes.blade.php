@@ -55,15 +55,15 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="flex items-center gap-2">
                             <i class="fas fa-graduation-cap text-blue-600"></i>
-                            <p><strong>Programa:</strong> Tecnología en Gestión Ambiental</p>
+                            <p><strong>Programa:</strong> {{ auth()->user()->programaAcademico()->getNombre() }}</p>
                         </div>
                         <div class="flex items-center gap-2">
                             <i class="fas fa-layer-group text-blue-600"></i>
-                            <p><strong>Créditos del Pensum:</strong> 120</p>
+                            <p><strong>Créditos del Pensum:</strong> <span id="creditos-pensum">120</span></p>
                         </div>
                         <div class="flex items-center gap-2">
                             <i class="fas fa-users text-blue-600"></i>
-                            <p><strong>Estudiantes encontrados:</strong> 15</p>
+                            <p><strong>Estudiantes encontrados:</strong> <span id="estudiantes-encontrados">0</span></p>
                         </div>
                     </div>
                 </div>
@@ -95,42 +95,20 @@
                                 <th class="px-4 py-3">Ubicación</th>
                                 <th class="px-4 py-3">Situación</th>
                                 <th class="px-2 py-3 whitespace-nowrap text-center">Créditos<br>Pend.</th>
-                                <th class="px-4 py-3 text-center">Acciones</th>
+                                <th class="px-4 py-3 text-center">Seleccionar</th>
                             </tr>
                         </thead>
                         <tbody class="text-gray-800">
-                            @for ($i = 1; $i <= 15; $i++)
-                                <tr class="{{ $i % 2 === 0 ? 'bg-gray-50' : 'bg-white' }} hover:bg-blue-50 transition">
-                                    <td class="px-4 py-2">{{ rand(2018, 2020) }}</td>
-                                    <td class="px-4 py-2">2025{{ str_pad($i, 4, '0', STR_PAD_LEFT) }}</td>
-                                    <td class="px-4 py-2">{{ 1000000000 + rand(10000000, 99999999) }}</td>
-                                    <td class="px-4 py-2">Estudiante {{ $i }}</td>
-                                    <td class="px-4 py-2">{{ rand(5, 8) }}° semestre</td>
-                                    <td class="px-4 py-2">
-                                        @php
-                                            $estado = ['Activa', 'Inactiva', 'Pendiente'][rand(0, 2)];
-                                        @endphp
-                                        <span class="inline-block px-2 py-1 rounded-full text-xs 
-                                            {{ $estado === 'Activa' ? 'bg-green-100 text-green-700' : ($estado === 'Inactiva' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700') }}">
-                                            {{ $estado }}
-                                        </span>
-                                    </td>
-                                    @php $pend = rand(0, 20); @endphp
-                                    <td class="px-2 py-2 text-center">{{ $pend }}</td>
-                                    <td class="px-4 py-2 text-center">
-                                        <div class="flex items-center justify-center gap-3 text-xs">
-                                            <button class="text-blue-600 hover:text-blue-800 flex items-center gap-1">
-                                                <i class="fas fa-eye"></i> Ver
-                                            </button>
-                                            <button class="text-red-500 hover:text-red-700 flex items-center gap-1">
-                                                <i class="fas fa-trash-alt"></i> Quitar
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endfor
+
                         </tbody>
                     </table>
+
+                    <div class="mt-4 flex justify-end">
+                        <button onclick="guardarSeleccionados()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm mb-2">
+                            Guardar seleccionados
+                        </button>
+                    </div>
+
                 </div>
 
             <!-- </div> -->
@@ -145,7 +123,19 @@
     </div>
 </div>
 
+<style>
+    .swal2-container {
+        z-index: 10050 !important; /* debe ser mayor al z-[9999] */
+    }
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
+
+    const PROCESO_ID = {{ $proceso->getId() }};
+
     function abrirModalGestionEstudiantes() {
         document.getElementById('modal-gestion-estudiantes').classList.remove('hidden');
         document.getElementById('modal-gestion-estudiantes').classList.add('flex');
@@ -172,7 +162,7 @@
         // Obtener parámetros seleccionados
         const anio = document.getElementById('anio').value;
         const periodo = document.getElementById('periodo').value;
-        const codigoPrograma = 74; // Puedes hacerlo dinámico si lo deseas
+        const codigoPrograma = 74; 
         
         fetch(`/programa_academico/estudiantes-candidatos/${codigoPrograma}/${anio}/${periodo}`)
             .then(response => response.json())
@@ -181,12 +171,17 @@
 
                 const estudiantes = data.data || [];
 
-                if (estudiantes.length > 0) {
-                    console.log(estudiantes);
+                if (estudiantes.length > 0) { 
+                    
+                    document.getElementById('estudiantes-encontrados').textContent = estudiantes.length;
+                   
                     const tbody = document.querySelector("#tabla-estudiantes tbody");
                     tbody.innerHTML = ''; // Limpia filas anteriores
 
                     estudiantes.forEach(est => {
+
+                        document.getElementById('creditos-pensum').textContent = data.creditosPensum || 'No disponible';
+
                         const fila = document.createElement('tr');
                         fila.className = 'bg-white hover:bg-blue-50 transition';
 
@@ -199,14 +194,12 @@
                             <td class="px-4 py-2"><span class="inline-block px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">${est.situacion || ''}</span></td>
                             <td class="px-2 py-2 text-center">${est.numeroCreditosPendientes ?? '-'}</td>
                             <td class="px-4 py-2 text-center">
-                                <div class="flex items-center justify-center gap-3 text-xs">
-                                    <button class="text-blue-600 hover:text-blue-800 flex items-center gap-1">
-                                        <i class="fas fa-eye"></i> Ver
-                                    </button>
-                                    <button class="text-red-500 hover:text-red-700 flex items-center gap-1">
-                                        <i class="fas fa-trash-alt"></i> Quitar
-                                    </button>
-                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer checkbox-estudiante" data-codigo="${est.codigo}" checked>
+                                    <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-blue-600 transition-colors relative">
+                                        <div class="absolute top-[2px] left-[2px] w-5 h-5 bg-white rounded-full transition-transform peer-checked:translate-x-full"></div>
+                                    </div>
+                                </label>
                             </td>
                         `;
 
@@ -233,6 +226,66 @@
         filas.forEach(fila => {
             const textoFila = fila.textContent.toLowerCase();
             fila.style.display = textoFila.includes(filtro) ? "" : "none";
+        });
+    }
+
+
+    function guardarSeleccionados() {
+        const seleccionados = Array.from(document.querySelectorAll('.checkbox-estudiante:checked'))
+            .map(cb => cb.dataset.codigo);
+
+        if (seleccionados.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Sin selección',
+                text: 'Debes seleccionar al menos un estudiante.'
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: 'Guardando...',
+            text: 'Por favor espera un momento.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });        
+
+        fetch('/programa_academico/asociar-estudiantes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                estudiantes: seleccionados,
+                proc_id: PROCESO_ID 
+            })
+        })
+        .then(async response => {
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Error al guardar');
+            }
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: data.message || 'Estudiantes asociados correctamente'
+            }).then(() => {
+                cerrarModalGestionEstudiantes(); 
+            });
+
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message || 'No se pudo guardar los estudiantes.'
+            });
         });
     }
 

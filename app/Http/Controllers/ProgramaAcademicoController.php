@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Src\admisiones\usecase\notificaciones\ListarNotificacionesPorUsuarioUseCase;
 use Src\admisiones\usecase\procesos\BuscarProcesoUseCase;
 use Src\admisiones\usecase\procesos\ListarProcesosUseCase;
+use Src\admisiones\usecase\programas\AsociarCandidatosAProcesoGradoUseCase;
 use Src\admisiones\usecase\programas\BuscarEstudiantesCandidatosGradoUseCase;
 use Src\shared\di\FabricaDeRepositorios;
 
@@ -76,7 +77,7 @@ class ProgramaAcademicoController extends Controller
             Auth::user()->programaAcademico()->getCodigo(), 
             $anio, 
             $periodo);
-            
+
 
         return response()->json([
                 'code' => $response->getCode(),
@@ -85,4 +86,32 @@ class ProgramaAcademicoController extends Controller
             ], $response->getCode());
 
     }
+
+    public function asociarEstudiantesCandidatosAProcesoGrado(Request $request)
+    {
+        $validated = $request->validate([
+            'estudiantes'   => ['required', 'array', 'min:1'],
+            'estudiantes.*' => ['required', 'string', 'max:20'],
+            'proc_id'      => ['required', 'integer'],
+        ]);
+
+        $estudiantes = $validated['estudiantes'];
+        $procesoID     = $validated['proc_id'];
+
+
+        $asociarCandidatos = new AsociarCandidatosAProcesoGradoUseCase(
+            FabricaDeRepositorios::getInstance()->getProgramaRepository(),
+            FabricaDeRepositorios::getInstance()->getProcesoRepository(),
+        );
+
+
+        $response = $asociarCandidatos->ejecutar($procesoID, $estudiantes);
+        
+        return response()->json([
+            'code' => $response->getCode(),
+            'message' => $response->getMessage(),
+            'data' => $response->getData()
+        ], $response->getCode());
+    }
+
 }

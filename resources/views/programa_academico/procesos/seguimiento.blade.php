@@ -131,17 +131,22 @@
     <!-- 👥 Gestión de Estudiantes -->
     <h3 class="text-md font-semibold text-gray-700 mb-2">Estudiantes Candidatos a Grado</h3>
     <div class="border border-gray-300 p-6 rounded-md bg-gray-50 text-center mb-6">
-        <p class="text-sm text-gray-600 mb-3">Actualmente no hay estudiantes registrados como candidatos a grado en este programa.</p>
-        <a href="#"
-            onclick="abrirModalGestionEstudiantes()"
-            class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 transition"
-            aria-label="Registrar estudiantes candidatos a grado">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
-            </svg>
-            Gestionar Estudiantes
-        </a>
+
+        @if (auth()->user()->programaAcademico()->tieneCandidatosAsocidos($proceso->getId()))
+            Tiene candidatos ya asociados
+        @else
+            <p class="text-sm text-gray-600 mb-3">Actualmente no hay estudiantes registrados como candidatos a grado en este programa.</p>
+            <a href="#"
+                onclick="abrirModalGestionEstudiantes()"
+                class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 transition"
+                aria-label="Registrar estudiantes candidatos a grado">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Gestionar Estudiantes
+            </a>
+        @endif
 
     </div>
 
@@ -310,22 +315,6 @@
             mostrarContenido(notificaciones[nuevoIndice]);
         }
     }
-
-    // function marcarComoLeida(event, boton) {
-    //     event.stopPropagation();
-
-    //     const item = boton.closest("li");
-    //     item.querySelector("button").remove(); 
-    //     const checkIcon = document.createElement("i");
-    //     checkIcon.className = "fas fa-check-double text-sm text-gray-400";
-    //     item.appendChild(checkIcon);
-
-    //     document.getElementById("lista-leidas").appendChild(item);
-
-    //     if (document.querySelectorAll("#lista-no-leidas li").length === 0) {
-    //         document.getElementById("sin-recientes").classList.remove("hidden");
-    //     }
-    // }
 
     function marcarComoLeida(event, boton) {
         event.stopPropagation();

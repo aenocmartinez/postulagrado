@@ -19,4 +19,5 @@ interface ProgramaRepository {
     public function buscarPorID(int $programaID): Programa;
     public function listarProgramas(): array;
     public function buscarEstudiantesCandidatosAGrado(int $codigoPrograma, int $anio, int $periodo): array;
+    public function tieneCandidatosAsociados(int $procesoID, int $programaID): bool;    
 }

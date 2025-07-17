@@ -113,7 +113,11 @@ class Programa
 
     public function getEstudiantesCandidatosAGradoPorPeriodo(int $periodoAnio, int $periodoNumero): array
     {
-        return $this->programaRepo->listarEstudiantesCandidatosAGrado($this->codigo, $periodoAnio, $periodoNumero);
+        return $this->programaRepo->buscarEstudiantesCandidatosAGrado($this->codigo, $periodoAnio, $periodoNumero);
+    }
+
+    public function tieneCandidatosAsocidos(int $procesoID=0): bool {
+        return $this->programaRepo->tieneCandidatosAsociados($procesoID, $this->id);
     }
 
     public function existe(): bool {

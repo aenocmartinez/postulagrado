@@ -19,5 +19,6 @@ interface ProcesoRepository {
     public function quitarTodosLosPrograma(int $procesoID): bool;
     public function listarProgramas(int $procesoID): array;
     public function buscarProgramaPorProceso(int $procesoID, int $programaID): ProgramaProceso;
-    public function listarNotificaciones(int $procesoID): array;
+    public function listarNotificaciones(int $procesoID): array;   
+    public function agregarCandidatoAProceso(int $programaProcesoID, int $codigoEstudiante): bool;
 }
