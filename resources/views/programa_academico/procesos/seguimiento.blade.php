@@ -185,57 +185,59 @@
     <div class="bg-white shadow-md rounded-lg p-4 border border-gray-200 text-sm h-[400px] overflow-y-auto">
         <h3 class="text-gray-800 text-sm font-semibold mb-3">Notificaciones del programa</h3>
 
-        {{-- Recientes --}}
+        {{-- Recientes (no leídas) --}}
         <div class="mb-5">
             <h4 class="text-[12px] font-semibold text-blue-800 mb-2 border-b pb-1 text-right">Recientes</h4>
             <ul id="lista-no-leidas" class="space-y-3 text-xs text-gray-800">
-                <li class="flex justify-between items-center border-b pb-2 cursor-pointer"
-                    onclick="mostrarContenido(this)" data-titulo="Inicio del proceso de postulación"
-                    data-mensaje="Estimado estudiante,<br><br>Nos complace informarte que se ha dado inicio al proceso de postulación para grado. A continuación encontrarás toda la información necesaria:<br><br>1. Ingresa al sistema PostulaGrado con tu usuario institucional.<br>2. Verifica que tus datos personales estén correctos.<br>3. Adjunta los documentos requeridos:<br>&nbsp;&nbsp;&nbsp;&nbsp;- Paz y salvo de Biblioteca<br>&nbsp;&nbsp;&nbsp;&nbsp;- Paz y salvo Financiero<br>&nbsp;&nbsp;&nbsp;&nbsp;- Formulario diligenciado<br>4. Una vez finalices el proceso, recibirás una confirmación por correo electrónico.<br><br>Recuerda que tienes plazo hasta el <strong>30 de abril de 2024</strong> para completar tu postulación.<br><br>Cualquier duda, no dudes en escribirnos a admisiones@unicolmayor.edu.co.<br><br>Atentamente,<br>Oficina de Admisiones y Registro Académico.">
-                    <div>
-                        <p class="font-medium">Inicio del proceso de postulación</p>
-                        <p class="text-[11px] text-gray-500">12/03/2024</p>
-                    </div>
-                    <button title="Marcar como vista"
-                            onclick="marcarComoLeida(event, this)"
-                            class="text-blue-600 hover:text-green-600 transition">
-                        <i class="fas fa-check-double text-sm"></i>
-                    </button>
-                </li>
-
-                <li class="flex justify-between items-center border-b pb-2 cursor-pointer"
-                    onclick="mostrarContenido(this)" data-titulo="Actualización del cronograma de actividades del proceso de grado: Proceso de grado 2025-1"
-                    data-mensaje="Este es el contenido nuevo para la notificación de actualización de requisitos. Asegúrate de revisar los documentos necesarios para la postulación.<br><br>Recuerda que tienes plazo hasta el <strong>30 de abril de 2024</strong> para completar tu postulación.<br><br>Cualquier duda, no dudes en escribirnos a">
-                    <div>
-                        <p class="font-medium">Actualización del cronograma de actividades del proceso de grado: Proceso de grado 2025-1</p>
-                        <p class="text-[11px] text-gray-500">12/03/2024</p>
-                    </div>
-                    <button title="Marcar como vista"
-                            onclick="marcarComoLeida(event, this)"
-                            class="text-blue-600 hover:text-green-600 transition">
-                        <i class="fas fa-check-double text-sm"></i>
-                    </button>
-                </li>                
+                @forelse($notificaciones as $notificacion)
+                    @if(!$notificacion->fueLeida())
+                        <li class="flex justify-between items-center border-b pb-2 cursor-pointer"
+                            onclick="mostrarContenido(this)"
+                            data-id="{{ $notificacion->getId() }}"
+                            data-titulo="{{ e($notificacion->getAsunto()) }}"
+                            data-mensaje="{!! e($notificacion->getMensaje()) !!}">
+                            <div>
+                                <p class="font-medium">{{ $notificacion->getAsunto() }}</p>
+                                <p class="text-[11px] text-gray-500">{{ \Carbon\Carbon::parse($notificacion->getFechaCreacion())->format('d/m/Y') }}</p>
+                            </div>
+                            <button title="Marcar como vista"
+                                    onclick="marcarComoLeida(event, this)"
+                                    class="text-blue-600 hover:text-green-600 transition">
+                                <i class="fas fa-check-double text-sm"></i>
+                            </button>
+                        </li>
+                    @endif
+                @empty
+                    <li class="text-xs text-gray-500">No hay notificaciones para mostrar.</li>
+                @endforelse
             </ul>
-            <p id="sin-recientes" class="text-xs text-gray-500 hidden">No hay notificaciones recientes para mostrar.</p>
+            @if(collect($notificaciones)->filter(fn($n) => !$n->fueLeida())->isEmpty())
+                <p id="sin-recientes" class="text-xs text-gray-500">No hay notificaciones recientes para mostrar.</p>
+            @endif
         </div>
 
         {{-- Revisadas o Vistas --}}
         <div>
             <h4 class="text-[12px] font-semibold text-blue-800 mb-2 border-b pb-1 text-right">Notificaciones revisadas</h4>
             <ul id="lista-leidas" class="space-y-3 text-xs text-gray-700">
-                <li class="flex justify-between items-center border-b pb-2 cursor-pointer"
-                    onclick="mostrarContenido(this)" data-titulo="Recordatorio de requisitos"
-                    data-mensaje="Este es un recordatorio para enviar los documentos requeridos antes del 25 de abril.<br><br>Incluye:<br>- Formato de solicitud<br>- Comprobante de pago<br>- Paz y salvo académico<br><br>No olvides revisar tu correo institucional para mayor información.">
-                    <div>
-                        <p class="text-gray-700">Recordatorio de requisitos</p>
-                        <p class="text-[11px] text-gray-500">05/04/2024</p>
-                    </div>
-                    <i class="fas fa-check-double text-sm text-gray-400"></i>
-                </li>
+                @foreach($notificaciones as $notificacion)
+                    @if($notificacion->fueLeida())
+                        <li class="flex justify-between items-center border-b pb-2 cursor-pointer"
+                            onclick="mostrarContenido(this)"
+                            data-titulo="{{ e($notificacion->getAsunto()) }}"
+                            data-mensaje="{!! e($notificacion->getMensaje()) !!}">
+                            <div>
+                                <p class="text-gray-700">{{ $notificacion->getAsunto() }}</p>
+                                <p class="text-[11px] text-gray-500">{{ \Carbon\Carbon::parse($notificacion->getFechaCreacion())->format('d/m/Y') }}</p>
+                            </div>
+                            <i class="fas fa-check-double text-sm text-gray-400"></i>
+                        </li>
+                    @endif
+                @endforeach
             </ul>
         </div>
     </div>
+
 
     {{-- Modal --}}
     <div id="modal-notificacion" class="fixed inset-0 bg-black bg-opacity-30 hidden justify-center items-center z-50">
@@ -309,20 +311,53 @@
         }
     }
 
+    // function marcarComoLeida(event, boton) {
+    //     event.stopPropagation();
+
+    //     const item = boton.closest("li");
+    //     item.querySelector("button").remove(); 
+    //     const checkIcon = document.createElement("i");
+    //     checkIcon.className = "fas fa-check-double text-sm text-gray-400";
+    //     item.appendChild(checkIcon);
+
+    //     document.getElementById("lista-leidas").appendChild(item);
+
+    //     if (document.querySelectorAll("#lista-no-leidas li").length === 0) {
+    //         document.getElementById("sin-recientes").classList.remove("hidden");
+    //     }
+    // }
+
     function marcarComoLeida(event, boton) {
         event.stopPropagation();
 
         const item = boton.closest("li");
-        item.querySelector("button").remove(); // quita el botón
+        const notiId = item.getAttribute("data-id"); // Asegúrate de tener esto en tu li
+
+        // Eliminar botón y mover ítem a la lista de leídas
+        item.querySelector("button").remove();
         const checkIcon = document.createElement("i");
         checkIcon.className = "fas fa-check-double text-sm text-gray-400";
         item.appendChild(checkIcon);
-
         document.getElementById("lista-leidas").appendChild(item);
 
+        // Ocultar mensaje si ya no hay no leídas
         if (document.querySelectorAll("#lista-no-leidas li").length === 0) {
             document.getElementById("sin-recientes").classList.remove("hidden");
         }
+
+        // Llamada al backend
+        fetch(`/notificaciones/${notiId}/marcar-leida`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        }).then(response => {
+            if (!response.ok) {
+                console.error('Error al marcar como leída');
+            }
+        });
     }
 </script>
 @endsection

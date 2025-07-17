@@ -14,6 +14,7 @@ class Notificacion
     private string $canal;
     private string $destinatarios;
     private string $estado;
+    private bool $fueLeida;
     private Proceso $proceso;
     private NotificacionRepository $notificacionRepo;
 
@@ -26,6 +27,7 @@ class Notificacion
         $this->canal = '';
         $this->destinatarios = '';
         $this->estado = '';
+        $this->fueLeida = false;
         $this->proceso = new Proceso();
         $this->notificacionRepo = FabricaDeRepositorios::getInstance()->getNotificacionRepository();
     }
@@ -103,6 +105,16 @@ class Notificacion
     public function setEstado(string $estado): void
     {
         $this->estado = $estado;
+    }
+
+    public function setFueLeida(bool $fueLeida): void
+    {
+        $this->fueLeida = $fueLeida;
+    }
+
+    public function fueLeida(): bool
+    {
+        return $this->fueLeida;
     }
 
     public function setProceso(Proceso $proceso): void

@@ -121,6 +121,8 @@ class NotificacionDao extends Model implements NotificacionRepository
             Cache::forget('notificacion_' . $notificacion->getId());
             Cache::forget("notificaciones_listado_{$notificacion->getProceso()->getId()}");
 
+            $this->olvidarCacheNotificacionesUsuarios($notificacion->getDestinatarios());
+
             return true;
         } catch (\Exception $e) {
             Log::error("Error en crear notificación: " . $e->getMessage());
@@ -149,6 +151,8 @@ class NotificacionDao extends Model implements NotificacionRepository
             Cache::forget('notificaciones_listado');
             Cache::forget('notificacion_' . $notificacion->getId());
             Cache::forget("notificaciones_listado_".$notificacion->getProceso()->getId());
+
+            $this->olvidarCacheNotificacionesUsuarios($notificacion->getDestinatarios());
     
             return true;
         } catch (\Exception $e) {
@@ -156,5 +160,97 @@ class NotificacionDao extends Model implements NotificacionRepository
             return false;
         }
     }
-    
+
+    public function listarPorUsuario(string $email): array
+    {
+        return Cache::remember("notificaciones_usuario_{$email}", now()->addHours(4), function () use ($email) {
+            $procesoDao = FabricaDeRepositorios::getInstance()->getProcesoRepository();
+            $notificaciones = [];
+
+            try {
+                $registros = DB::connection('oracle_academpostulgrado')
+                    ->table('ACADEMPOSTULGRADO.NOTIFICACION AS N')
+                    ->leftJoin('ACADEMPOSTULGRADO.NOTIFICACION_LEIDA AS NL', function ($join) use ($email) {
+                        $join->on('N.NOTI_ID', '=', 'NL.NOTI_ID')
+                            ->where('NL.USUA_CORREO', '=', $email);
+                    })
+                    ->select(
+                        'N.NOTI_ID',
+                        'N.PROC_ID',
+                        'N.NOTI_FECHA',
+                        'N.NOTI_ASUNTO',
+                        'N.NOTI_CANAL',
+                        'N.NOTI_MENSAJE',
+                        'N.NOTI_DESTINATARIOS',
+                        'N.NOTI_ESTADO',
+                        DB::raw("CASE WHEN NL.NOTL_ID IS NOT NULL THEN 1 ELSE 0 END AS fue_leida")
+                    )
+                    ->whereRaw("DBMS_LOB.INSTR(N.NOTI_DESTINATARIOS, ?) > 0", [$email])
+                    ->where("N.NOTI_ESTADO", 'ENVIADA')
+                    ->orderBy('N.NOTI_FECHA', 'desc')
+                    ->get();
+
+                foreach ($registros as $registro) {
+                    $notificacion = new Notificacion($this);
+                    $notificacion->setId($registro->noti_id);
+                    $notificacion->setFechaCreacion($registro->noti_fecha);
+                    $notificacion->setAsunto($registro->noti_asunto);
+                    $notificacion->setCanal($registro->noti_canal);
+                    $notificacion->setMensaje($registro->noti_mensaje);
+                    $notificacion->setDestinatarios($registro->noti_destinatarios);
+                    $notificacion->setEstado($registro->noti_estado);
+                    $notificacion->setFueLeida((bool) $registro->fue_leida); 
+
+                    $proceso = $procesoDao->buscarProcesoPorId($registro->proc_id);
+                    $notificacion->setProceso($proceso);
+
+                    $notificaciones[] = $notificacion;
+                }
+            } catch (\Exception $e) {
+                Log::error("Error en listar notificaciones por usuario ($email): " . $e->getMessage());
+            }
+
+            return $notificaciones;
+        });
+    }
+
+    public function marcarComoLeida(int $notificacionID, string $emailUsuario): bool
+    {
+        try {
+            $conexion = DB::connection('oracle_academpostulgrado');
+
+            $existe = $conexion->table('ACADEMPOSTULGRADO.NOTIFICACION_LEIDA')
+                ->where('NOTI_ID', $notificacionID)
+                ->where('USUA_CORREO', $emailUsuario)
+                ->exists();
+
+            if (!$existe) {
+                $conexion->table('ACADEMPOSTULGRADO.NOTIFICACION_LEIDA')->insert([
+                    'NOTI_ID' => $notificacionID,
+                    'USUA_CORREO' => $emailUsuario,
+                    'NOTL_FECHALECTURA' => now(),
+                ]);
+            }
+
+            Cache::forget("notificaciones_usuario_{$emailUsuario}");
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::error("Error al marcar como leída la notificación {$notificacionID} para {$emailUsuario}: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    private function olvidarCacheNotificacionesUsuarios(string $destinatarios): void
+    {
+        $emails = explode(',', $destinatarios);
+
+        foreach ($emails as $email) {
+            $email = trim($email);
+            if (!empty($email)) {
+                Cache::forget("notificaciones_usuario_{$email}");
+            }
+        }
+    }
+
 }

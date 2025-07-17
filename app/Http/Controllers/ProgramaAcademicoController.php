@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Src\admisiones\usecase\notificaciones\ListarNotificacionesPorUsuarioUseCase;
 use Src\admisiones\usecase\procesos\BuscarProcesoUseCase;
 use Src\admisiones\usecase\procesos\ListarProcesosUseCase;
 use Src\shared\di\FabricaDeRepositorios;
@@ -37,23 +38,29 @@ class ProgramaAcademicoController extends Controller
             FabricaDeRepositorios::getInstance()->getProcesoRepository()
         );
 
+        $listaNotificaciones = new ListarNotificacionesPorUsuarioUseCase(
+            FabricaDeRepositorios::getInstance()->getNotificacionRepository()
+        );
+
         $responseBuscarProceso = $buscarProceso->ejecutar($procesoID);
         if ($responseBuscarProceso->getCode() != 200) {
             return redirect()->route('programa_academico.procesos.index')
                                 ->with($responseBuscarProceso->getCode(), $responseBuscarProceso->getMessage());
         }
 
-
-
+        $listaNotificacionesResponse = $listaNotificaciones->ejecutar(Auth::user()->email);
+        if ($listaNotificacionesResponse->getCode() != 200) {
+            return redirect()->route('programa_academico.procesos.index')
+                                ->with($listaNotificacionesResponse->getCode(), $listaNotificacionesResponse->getMessage());
+        }
 
         /** @var \Src\admisiones\domain\Proceso $proceso */
         $proceso = $responseBuscarProceso->getData();
-
-
+        
 
         return view('programa_academico.procesos.seguimiento', [
             'proceso' => $proceso,
-        
+            'notificaciones' => $listaNotificacionesResponse->getData(),        
         ]);
     }    
 }

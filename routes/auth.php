@@ -105,6 +105,8 @@ Route::middleware('auth')->group(function () {
     Route::get('notificaciones/proceso/{id}', [NotificacionController::class, 'indexPorProceso'])->name('notificaciones.por_proceso');
     Route::get('/notificaciones/{id}/editar', [NotificacionController::class, 'edit'])->name('notificaciones.edit');
     Route::put('/notificaciones/{id}', [NotificacionController::class, 'update'])->name('notificaciones.update');
+    Route::post('/notificaciones/{id}/marcar-leida', [NotificacionController::class, 'marcarComoLeida'])->name('notificaciones.marcar_como_leida');
+
 
 
     // Documentos de Proceso

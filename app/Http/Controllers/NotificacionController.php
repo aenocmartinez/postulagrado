@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\GuardarNotificacion;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-
+use Illuminate\Support\Facades\Auth;
 use Src\admisiones\dto\notificacion\NotificacionDTO;
 use Src\admisiones\usecase\notificaciones\ActualizarNotificacionUseCase;
 use Src\admisiones\usecase\notificaciones\AnularNotificacionUseCase;
 use Src\admisiones\usecase\notificaciones\BuscarNotificacionUseCase;
 use Src\admisiones\usecase\notificaciones\CrearNotificacionUseCase;
 use Src\admisiones\usecase\notificaciones\ListarNotificacionesUseCase;
+use Src\admisiones\usecase\notificaciones\MarcarNotificacionComoLeidaUseCase;
 use Src\admisiones\usecase\procesos\BuscarProcesoUseCase;
 use Src\admisiones\usecase\procesos\ListarProcesosUseCase;
 use Src\admisiones\usecase\programaContacto\ListarContactosUseCase;
@@ -197,5 +198,18 @@ class NotificacionController extends Controller
                         ->with($response->getCode(), $response->getMessage());
     }
 
+    public function marcarComoLeida($id)
+    {
+        $email = Auth::user()->email;
+
+        $marcarNotificacion = new MarcarNotificacionComoLeidaUseCase(
+            FabricaDeRepositorios::getInstance()->getNotificacionRepository(),
+        );
+
+
+        $marcarNotificacion->ejecutar($id, $email);
+
+        return response()->json(['success' => true]);
+    }
 
 }
