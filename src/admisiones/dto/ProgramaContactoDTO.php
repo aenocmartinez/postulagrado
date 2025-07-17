@@ -36,7 +36,7 @@ class ProgramaContactoDTO {
         $this->programaID = $programaID;
     }
 
-    public function setObservacion(string $observacion): void {
+    public function setObservacion(?string $observacion): void {
         $this->observacion = $observacion;
     }
 
@@ -57,6 +57,9 @@ class ProgramaContactoDTO {
     }
 
     public function getObservacion(): string {
+        if (empty($this->observacion)) {
+            return "No hay observaciones";
+        }
         return $this->observacion;
     }
 

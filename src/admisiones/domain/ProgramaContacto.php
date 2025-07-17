@@ -62,8 +62,12 @@ class ProgramaContacto
         return $this->observacion;
     }
 
-    public function setObservacion(string $observacion): void
+    public function setObservacion(?string $observacion): void
     {
+        if (empty($observacion)) {
+            $observacion = "No hay observaciones";
+        }
+        
         $this->observacion = $observacion;
     }
 

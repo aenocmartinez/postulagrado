@@ -37,24 +37,19 @@ class ProgramaAcademicoController extends Controller
             FabricaDeRepositorios::getInstance()->getProcesoRepository()
         );
 
-        $response = $buscarProceso->ejecutar($procesoID);
-        if ($response->getCode() != 200) {
-            return redirect()->route('programa_academico.procesos.index')->with($response->getCode(), $response->getMessage());
+        $responseBuscarProceso = $buscarProceso->ejecutar($procesoID);
+        if ($responseBuscarProceso->getCode() != 200) {
+            return redirect()->route('programa_academico.procesos.index')
+                                ->with($responseBuscarProceso->getCode(), $responseBuscarProceso->getMessage());
         }
 
+
+
+
         /** @var \Src\admisiones\domain\Proceso $proceso */
-        $proceso = $response->getData();   
+        $proceso = $responseBuscarProceso->getData();
 
-        // echo "Proceso => " . $procesoID . "<br>";
-        // echo "Proceso => " . Auth::user()->programaAcademico()->getId() . "<br>";
-        // $buscarProceso = new BuscarProcesoUseCase(
-        //     FabricaDeRepositorios::getInstance()->getProcesoRepository()
-        // );
 
-        // $response = $buscarProceso->ejecutar($procesoID);
-        // if ($response->getCode() != 200) {
-        //     return redirect()->route('seguimientos.index')->with($response->getCode(), $response->getMessage());
-        // }
 
         return view('programa_academico.procesos.seguimiento', [
             'proceso' => $proceso,
