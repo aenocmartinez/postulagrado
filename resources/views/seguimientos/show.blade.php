@@ -478,6 +478,7 @@
 
     // ✅ FUNCIÓN PARA MOSTRAR MÁS DETALLES DEL PROGRAMA
     function cargarVistaProgramaAvance(procesoID, programaID) {
+        
         $.get(`{{ url('procesos') }}/${procesoID}/programas/${programaID}`, function (data) {
             
             // Insertar el contenido en la sección de notificaciones

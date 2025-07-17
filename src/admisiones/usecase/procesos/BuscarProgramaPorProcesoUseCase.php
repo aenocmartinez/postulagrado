@@ -22,7 +22,7 @@ class BuscarProgramaPorProcesoUseCase
             return new ResponsePostulaGrado(404, "Proceso no encontrado");
         }
 
-        $programaProceso = $proceso->getPrograma($programaID);
+        $programaProceso = $proceso->getPrograma($programaID);        
 
         if (!$programaProceso->existe()) {
             return new ResponsePostulaGrado(404, "Programa no encontrado");

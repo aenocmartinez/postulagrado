@@ -321,7 +321,7 @@ class ProcesoDao extends Model implements ProcesoRepository
 
     public function buscarProgramaPorProceso(int $procesoID, int $programaID): ProgramaProceso
     {
-        return Cache::remember('programa_proceso_' . $procesoID . '_' . $programaID, now()->addHours(4), function () use ($procesoID, $programaID) {
+        // return Cache::remember('programa_proceso_' . $procesoID . '_' . $programaID, now()->addHours(4), function () use ($procesoID, $programaID) {
             $programaProceso = new ProgramaProceso();
     
             try {
@@ -353,7 +353,7 @@ class ProcesoDao extends Model implements ProcesoRepository
             }
     
             return $programaProceso;
-        });
+        // });
     }
       
     public function listarNotificaciones(int $procesoID): array
