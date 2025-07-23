@@ -130,36 +130,13 @@
 
     <!-- 👥 Gestión de Estudiantes -->
     <h3 class="text-md font-semibold text-gray-700 mb-2">Estudiantes Candidatos a Grado</h3>
-    <div class="border border-gray-300 p-6 rounded-md bg-gray-50 text-center mb-6">
-
-        @if (auth()->user()->programaAcademico()->tieneCandidatosAsocidos($proceso->getId()))
-                        
-            <a href="#"
-            onclick="abrirModalEstudiantesVinculados()"
-            class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-green-700 transition"
-            aria-label="Ver estudiantes vinculados">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            Ver estudiantes 
-            </a>            
-
-        @else
-            <p class="text-sm text-gray-600 mb-3">Actualmente no hay estudiantes registrados como candidatos a grado en este programa.</p>
-            <a href="#"
-                onclick="abrirModalGestionEstudiantes()"
-                class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 transition"
-                aria-label="Registrar estudiantes candidatos a grado">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
-                </svg>
-                Gestionar Estudiantes
-            </a>
-        @endif
-
+    <div class="border border-gray-300 p-6 rounded-md bg-gray-50 text-center mb-6" id="seccion-estudiantes-vinculados">
+        @include('programa_academico.procesos.seccion-boton-estudiantes', ['proceso' => $proceso])
     </div>
+
+    <template id="template-boton-estudiantes">
+        @include('programa_academico.procesos.seccion-boton-estudiantes', ['proceso' => $proceso])
+    </template>
 
     <hr class="my-8 border-t border-gray-300">
 
@@ -273,8 +250,6 @@
     </div>
 
 
-    
-    
     @endsection
     
     

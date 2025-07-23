@@ -348,6 +348,7 @@
                 text: data.message || 'Estudiantes asociados correctamente'
             }).then(() => {
                 cerrarModalGestionEstudiantes(); 
+                refrescarBotonEstudiantesDesdeTemplate();
             });
 
         })
@@ -362,14 +363,23 @@
     }
 
 
-function abrirModalEstudiantesVinculados() {
-    document.getElementById('modal-estudiantes-vinculados').classList.remove('hidden');
-    document.getElementById('modal-estudiantes-vinculados').classList.add('flex');
-}
+    function abrirModalEstudiantesVinculados() {
+        document.getElementById('modal-estudiantes-vinculados').classList.remove('hidden');
+        document.getElementById('modal-estudiantes-vinculados').classList.add('flex');
+    }
 
-function cerrarModalEstudiantesVinculados() {
-    document.getElementById('modal-estudiantes-vinculados').classList.add('hidden');
-    document.getElementById('modal-estudiantes-vinculados').classList.remove('flex');
-}
+    function cerrarModalEstudiantesVinculados() {
+        document.getElementById('modal-estudiantes-vinculados').classList.add('hidden');
+        document.getElementById('modal-estudiantes-vinculados').classList.remove('flex');
+    }
+
+    function refrescarBotonEstudiantesDesdeTemplate() {
+        const template = document.getElementById('template-boton-estudiantes');
+        const contenedor = document.getElementById('seccion-estudiantes-vinculados');
+
+        if (template && contenedor) {
+            contenedor.innerHTML = template.innerHTML;
+        }
+    }
 
 </script>
