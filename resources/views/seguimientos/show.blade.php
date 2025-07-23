@@ -6,6 +6,23 @@
 
 @section('content')
 
+
+@php
+    $actividadesPorEstado = $proceso->getActividadesPorEstadoTemporal();
+
+    $conteo = collect($actividadesPorEstado)->map(fn($items) => count($items));
+
+    $enCurso     = $actividadesPorEstado['EnCurso'] ?? [];
+    $finalizadas = $actividadesPorEstado['Finalizadas'] ?? [];
+    $programadas = $actividadesPorEstado['Programadas'] ?? [];
+    $proximas    = $actividadesPorEstado['ProximasIniciar'] ?? [];
+
+    // Cálculo porcentaje de avance del proceso
+    $total = $conteo->sum();
+    $totalFinalizadas = $conteo['Finalizadas'] ?? 0;
+    $porcentajeAvanceDelProceso = $total > 0 ? round(($totalFinalizadas / $total) * 100, 1) : 0;
+@endphp
+
 <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200 max-w-6xl mx-auto">
     
     <!-- 📌 Información del Proceso -->
@@ -18,6 +35,15 @@
             </p>
         </div>
     </div>
+
+    <!-- 📊 Avance del Programa -->
+    <h3 class="text-md font-semibold text-gray-700 mb-2">Avance del Proceso</h3>
+    <div class="w-full bg-gray-300 rounded h-4 mb-1">
+        <div class="h-4 bg-blue-600 rounded" style="width: {{ $porcentajeAvanceDelProceso }}%"></div>
+    </div>
+    <p class="text-xs text-gray-500 text-right">{{ $porcentajeAvanceDelProceso }}% completado</p>
+
+    <hr class="my-8 border-t border-gray-300">    
 
     <!-- 🔴🟡🟢 Segmentación de Actividades con Listado -->
     <h3 class="text-md font-semibold text-gray-700 mt-6 mb-3">Actividades</h3>
