@@ -133,8 +133,17 @@
     <div class="border border-gray-300 p-6 rounded-md bg-gray-50 text-center mb-6">
 
         @if (auth()->user()->programaAcademico()->tieneCandidatosAsocidos($proceso->getId()))
-            
-            Tiene estudiantes asociados en el proceso
+                        
+            <a href="#"
+            onclick="abrirModalEstudiantesVinculados()"
+            class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-green-700 transition"
+            aria-label="Ver estudiantes vinculados">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Ver estudiantes 
+            </a>            
 
         @else
             <p class="text-sm text-gray-600 mb-3">Actualmente no hay estudiantes registrados como candidatos a grado en este programa.</p>
@@ -262,10 +271,16 @@
             </div>
         </div>
     </div>
-    @endsection
 
+
+    
+    
+    @endsection
+    
+    
 </div>
 
+    {{-- Modal estudiantes vinculados --}}
 
     @include('programa_academico.procesos.estudiantes')
 

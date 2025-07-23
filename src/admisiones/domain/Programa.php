@@ -120,6 +120,35 @@ class Programa
         return $this->programaRepo->tieneCandidatosAsociados($procesoID, $this->id);
     }
 
+    public function listarEstudiantesCandidatos(int $procesoID = 0): array
+    {        
+        $candidatos = $this->programaRepo->listarEstudiantesCandidatos($this->id, $procesoID);
+        if (empty($candidatos)) {
+            return [];
+        }
+
+        $codigos = array_map(fn($c) => $c->estu_codigo, $candidatos);
+        
+        $detalles = $this->programaRepo->obtenerEstudiantePorCodigo($codigos); 
+
+        $detallesIndexados = [];
+        foreach ($detalles as $detalle) {
+            $codigo = $detalle->estp_codigomatricula;
+            $detallesIndexados[$codigo] = $detalle;
+        }
+
+        return array_map(function ($candidato) use ($detallesIndexados) {
+            $codigo = $candidato->estu_codigo;
+
+            return [
+                'ppes_id'     => $candidato->ppes_id,
+                'estu_codigo' => $codigo,
+                'detalle'     => $detallesIndexados[$codigo] ?? null,
+            ];
+        }, $candidatos);
+        
+    }
+
     public function existe(): bool {
         return $this->id > 0;
     }

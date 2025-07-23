@@ -418,4 +418,87 @@ class ProgramaDao implements ProgramaRepository
         return $resultado !== null;
     }
 
+    public function listarEstudiantesCandidatos(int $programaID, int $procesoID): array
+    {
+        $sql = "
+            SELECT 
+                ppes.PPES_ID,
+                ppes.ESTU_CODIGO
+            FROM ACADEMPOSTULGRADO.PROCESO_PROGRAMA_ESTUDIANTES ppes
+            INNER JOIN ACADEMPOSTULGRADO.PROCESO_PROGRAMA pp
+                ON pp.PROGR_ID = ppes.PROGR_ID
+            WHERE pp.PROC_ID = :proceso_id
+            AND pp.PROG_ID = :programa_id
+        ";
+
+        return DB::connection('oracle_academpostulgrado')->select($sql, [
+            'proceso_id' => $procesoID,
+            'programa_id' => $programaID,
+        ]);
+    }
+
+    public function obtenerEstudiantePorCodigo(string|array $codigosEstudiante): array
+    {
+        if (empty($codigosEstudiante)) {
+            return [];
+        }
+
+        $bindings = [];
+        $whereClause = '';
+
+        if (is_array($codigosEstudiante)) {
+            $placeholders = [];
+            foreach ($codigosEstudiante as $index => $codigo) {
+                $key = ":codigo{$index}";
+                $bindings[$key] = $codigo;
+                $placeholders[] = $key;
+            }
+            $whereClause = 'IN (' . implode(',', $placeholders) . ')';
+        } else {
+            $bindings = [':codigo' => $codigosEstudiante];
+            $whereClause = '= :codigo';
+        }
+
+        $sql = "
+            SELECT 
+                ESTP.ESTP_CODIGOMATRICULA,
+                CLAVE2.TOTALCREDITOSPENSUM AS PENSUM_ESTUD, -- Usamos total de créditos como representación del pensum
+                ESTP.ESTP_PERIODOACADEMICO AS UBICACION_SEMESTRAL,
+                SITE.SITE_DESCRIPCION AS SITUACION,
+                (CLAVE2.TOTALCREDITOSPENSUM - ESTP.ESTP_CREDITOSAPROBADOS) AS CRED_PENDIENTES,
+                PEGE.PEGE_DOCUMENTOIDENTIDAD AS DOCUMENTO,
+                PENG.PENG_PRIMERAPELLIDO || ' ' || PENG.PENG_SEGUNDOAPELLIDO || ' ' ||
+                PENG.PENG_PRIMERNOMBRE || ' ' || PENG.PENG_SEGUNDONOMBRE AS NOMBRES
+            FROM ACADEMICO.ESTUDIANTEPENSUM ESTP
+            INNER JOIN ACADEMICO.PERSONAGENERAL PEGE ON ESTP.PEGE_ID = PEGE.PEGE_ID 
+            INNER JOIN GENERAL.PERSONANATURALGENERAL PENG ON PEGE.PEGE_ID = PENG.PEGE_ID
+            JOIN ACADEMICO.SITUACIONESTUDIANTE SITE ON ESTP.SITE_ID = SITE.SITE_ID
+            LEFT JOIN (
+                SELECT ESTP_ID, PENS_TOTALCREDITOS AS TOTALCREDITOSPENSUM,
+                    SUM(MATE_PONDERACIONACADEMICA) AS CLAVE2PONDERA,
+                    PENS_PONMINMATNOR AS PONDERACIONBASICA
+                FROM (
+                    SELECT ESTP.ESTP_ID, PENS.PENS_TOTALCREDITOS, MATE.MATE_PONDERACIONACADEMICA,
+                        PENS.PENS_PONMINMATNOR
+                    FROM ACADEMICO.ESTUDIANTEPENSUM ESTP
+                    JOIN ACADEMICO.PENSUM PENS ON ESTP.PENS_ID = PENS.PENS_ID
+                    JOIN ACADEMICO.PENSUMMATERIA PEMA ON PENS.PENS_ID = PEMA.PENS_ID
+                    JOIN ACADEMICO.MATERIA MATE ON PEMA.MATE_CODIGOMATERIA = MATE.MATE_CODIGOMATERIA
+                    JOIN ACADEMICO.REGISTROACADEMICO REAC ON REAC.MATE_CODIGOMATERIA = MATE.MATE_CODIGOMATERIA
+                                                        AND REAC.ESTP_ID = ESTP.ESTP_ID
+                    WHERE PEMA.CICU_ID = 4
+                    AND REAC.REAC_APROBADO = 1
+                    AND PENS.TIPA_ID = 2
+                    AND (ESTP.ESTP_PERIODOACADEMICO = PENS.PENS_NUMPERIODOS - 1
+                        OR ESTP.ESTP_PERIODOACADEMICO = PENS.PENS_NUMPERIODOS)
+                )
+                GROUP BY ESTP_ID, PENS_TOTALCREDITOS, PENS_PONMINMATNOR
+            ) CLAVE2 ON ESTP.ESTP_ID = CLAVE2.ESTP_ID
+
+            WHERE ESTP.ESTP_CODIGOMATRICULA $whereClause
+        ";
+
+        return DB::connection('oracle_academico')->select($sql, $bindings);
+    }
+
 }

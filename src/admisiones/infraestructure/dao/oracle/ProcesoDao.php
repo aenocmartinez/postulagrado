@@ -426,11 +426,7 @@ class ProcesoDao extends Model implements ProcesoRepository
         $sql = "
             SELECT 
                 ppes.PPES_ID,
-                ppes.ESTU_CODIGO,
-                ppes.PPES_ANO,
-                ppes.PPES_PERIODO,
-                ppes.PPES_FECHACAMBIO,
-                ppes.PPES_REGISTRADOPOR
+                ppes.ESTU_CODIGO
             FROM ACADEMPOSTULGRADO.PROCESO_PROGRAMA_ESTUDIANTES ppes
             INNER JOIN ACADEMPOSTULGRADO.PROCESO_PROGRAMA pp
                 ON pp.PROGR_ID = ppes.PROGR_ID

@@ -1,4 +1,4 @@
-<!-- Modal Gestión Estudiantes -->
+<!-- Modal Para Buscar Estudiantes Por Primera vez -->
 <div id="modal-gestion-estudiantes"
      class="fixed inset-0 bg-black bg-opacity-30 hidden justify-center items-start z-[9999] pt-10">
     <div class="bg-white max-w-7xl w-full mx-auto rounded-lg shadow-lg p-6 relative max-h-[90vh] overflow-y-auto z-[10000]">
@@ -122,6 +122,73 @@
         </div>
     </div>
 </div>
+
+<!-- Modal vr estudiantes vinculados -->
+<div id="modal-estudiantes-vinculados"
+     class="fixed inset-0 bg-black bg-opacity-30 hidden justify-center items-start z-[9999] pt-10">
+    <div class="bg-white max-w-7xl w-full mx-auto rounded-lg shadow-lg p-6 relative max-h-[90vh] overflow-y-auto z-[10000]">
+
+        <button onclick="cerrarModalEstudiantesVinculados()" class="absolute top-3 right-4 text-gray-500 hover:text-red-600">
+            <i class="fas fa-times text-lg"></i>
+        </button>
+
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Estudiantes vinculados al proceso</h3>
+
+        <!-- Encabezado contextual -->
+        <div class="bg-gray-50 border-l-4 border-green-500 p-4 rounded-md mb-4 text-sm text-gray-700 shadow-sm">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-graduation-cap text-green-600"></i>
+                    <p><strong>Programa:</strong> {{ auth()->user()->programaAcademico()->getNombre() }}</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-id-badge text-green-600"></i>
+                    <p><strong>Código SNIES:</strong> {{ auth()->user()->programaAcademico()->getSnies() }}</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-users text-green-600"></i>
+                    <p><strong>Total vinculados:</strong> {{ count(auth()->user()->programaAcademico()->listarEstudiantesCandidatos($proceso->getId())) }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de estudiantes -->
+        <div class="overflow-x-auto border rounded-lg">
+            <table class="min-w-full text-sm text-left border-collapse">
+                <thead class="bg-green-100 text-green-900 text-xs uppercase tracking-wide">
+                    <tr>
+                        <th class="px-4 py-3">Pensum</th>
+                        <th class="px-4 py-3">Código</th>
+                        <th class="px-4 py-3">Documento</th>
+                        <th class="px-4 py-3">Nombre</th>
+                        <th class="px-4 py-3">Ubicación</th>
+                        <th class="px-4 py-3">Situación</th>
+                        <th class="px-2 py-3 whitespace-nowrap text-center">Créditos<br>Pend.</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-800">
+                    @foreach(auth()->user()->programaAcademico()->listarEstudiantesCandidatos($proceso->getId()) as $est)
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="px-4 py-2">{{ $est['detalle']->pensum_estud ?? '-' }}</td>
+                            <td class="px-4 py-2">{{ $est['estu_codigo'] }}</td>
+                            <td class="px-4 py-2">{{ $est['detalle']->documento ?? '-' }}</td>
+                            <td class="px-4 py-2">{{ $est['detalle']->nombres ?? '-' }}</td>
+                            <td class="px-4 py-2">{{ $est['detalle']->ubicacion_semestral ?? '-' }}</td>
+                            <td class="px-4 py-2">
+                                <span class="inline-block px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">
+                                    {{ $est['detalle']->situacion ?? '-' }}
+                                </span>
+                            </td>
+                            <td class="px-2 py-2 text-center">{{ $est['detalle']->cred_pendientes ?? '-' }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
 
 <style>
     .swal2-container {
@@ -293,5 +360,16 @@
             });
         });
     }
+
+
+function abrirModalEstudiantesVinculados() {
+    document.getElementById('modal-estudiantes-vinculados').classList.remove('hidden');
+    document.getElementById('modal-estudiantes-vinculados').classList.add('flex');
+}
+
+function cerrarModalEstudiantesVinculados() {
+    document.getElementById('modal-estudiantes-vinculados').classList.add('hidden');
+    document.getElementById('modal-estudiantes-vinculados').classList.remove('flex');
+}
 
 </script>
