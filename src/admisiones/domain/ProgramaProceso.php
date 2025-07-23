@@ -50,8 +50,8 @@ class ProgramaProceso
         return $this->porcentajeAvance;
     }  
 
-    public function getEstuadiantesCandidatosAGradoPorPeriodo(int $periodoAnio, int $periodoNumero): array {
-        return $this->programa->getEstudiantesCandidatosAGradoPorPeriodo($periodoAnio, $periodoNumero);
+    public function getCandidatosAGrado(): array {
+        return $this->proceso->getEstudiantesAsociados($this->programa->getId());
     }
     
     public function existe(): bool {

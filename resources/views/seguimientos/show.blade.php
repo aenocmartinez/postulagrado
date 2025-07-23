@@ -477,22 +477,36 @@
     }
 
     // ✅ FUNCIÓN PARA MOSTRAR MÁS DETALLES DEL PROGRAMA
+
     function cargarVistaProgramaAvance(procesoID, programaID) {
-        
+        // Mostrar loading con Swal
+        Swal.fire({
+            title: 'Cargando...',
+            text: 'Por favor espera un momento.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         $.get(`{{ url('procesos') }}/${procesoID}/programas/${programaID}`, function (data) {
-            
-            // Insertar el contenido en la sección de notificaciones
+            // Insertar el contenido
             $("#seccion-notificaciones").html(data);
 
-            // Ajustar la posición desplazando la pantalla hacia la sección
+            // Desplazar a la sección
             let posicion = $("#seccion-notificaciones").offset().top;
-
-            $("html, body").animate({
-                scrollTop: posicion - 20 // Ajuste pequeño para evitar que quede pegado al borde
-            }, 500);
+            $("html, body").animate({ scrollTop: posicion - 20 }, 500);
 
         }).fail(function () {
             console.error("Error al cargar el avance del programa.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo cargar el avance del programa.'
+            });
+        }).always(function () {
+            // Cerrar el loading
+            Swal.close();
         });
     }
 

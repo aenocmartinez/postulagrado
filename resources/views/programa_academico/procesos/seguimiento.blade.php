@@ -218,9 +218,9 @@
                     <li class="text-xs text-gray-500">No hay notificaciones para mostrar.</li>
                 @endforelse
             </ul>
-            @if(collect($notificaciones)->filter(fn($n) => !$n->fueLeida())->isEmpty())
-                <p id="sin-recientes" class="text-xs text-gray-500">No hay notificaciones recientes para mostrar.</p>
-            @endif
+            
+            <p id="sin-recientes" class="text-xs text-gray-500 hidden">No hay notificaciones recientes para mostrar.</p>
+
         </div>
 
         {{-- Revisadas o Vistas --}}

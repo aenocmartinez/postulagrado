@@ -423,9 +423,26 @@ class ProcesoDao extends Model implements ProcesoRepository
 
     public function listarCandidatosPorProcesoYPrograma(int $procesoId, int $programaID): array
     {
+        $sql = "
+            SELECT 
+                ppes.PPES_ID,
+                ppes.ESTU_CODIGO,
+                ppes.PPES_ANO,
+                ppes.PPES_PERIODO,
+                ppes.PPES_FECHACAMBIO,
+                ppes.PPES_REGISTRADOPOR
+            FROM ACADEMPOSTULGRADO.PROCESO_PROGRAMA_ESTUDIANTES ppes
+            INNER JOIN ACADEMPOSTULGRADO.PROCESO_PROGRAMA pp
+                ON pp.PROGR_ID = ppes.PROGR_ID
+            WHERE pp.PROC_ID = :proceso_id
+            AND pp.PROG_ID = :programa_id
+        ";
 
-
-        return [];
+        return DB::connection('oracle_academpostulgrado')
+            ->select($sql, [
+                'proceso_id' => $procesoId,
+                'programa_id' => $programaID,
+            ]);
     }
 
 

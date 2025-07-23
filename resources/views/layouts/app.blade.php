@@ -137,6 +137,13 @@
                     @yield('content') 
                 </div>
                 
+
+
+                <div id="loader-programa-avance" class="hidden flex items-center justify-center py-4">
+                    <div class="animate-spin h-6 w-6 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+                    <span class="ml-2 text-sm text-gray-600">Cargando avance del programa...</span>
+                </div>
+
                 <!-- Notificaciones más compactas con altura fija -->
                  <div id="seccion-notificaciones">
 

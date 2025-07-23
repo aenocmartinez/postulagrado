@@ -220,7 +220,7 @@ class Proceso
     }
 
     public function getEstudiantesAsociados(int $programaID): array {
-        return $this->repository->listarCandidatosPorProcesoYPrograma($this->id, $programaID);
+        return $this->repository->listarCandidatosPorProcesoYPrograma($this->id, $programaID);        
     }
 
     public function toDTO(): ProcesoDTO {

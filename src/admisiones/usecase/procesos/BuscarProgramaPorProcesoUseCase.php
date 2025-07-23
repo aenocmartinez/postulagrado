@@ -28,6 +28,8 @@ class BuscarProgramaPorProcesoUseCase
             return new ResponsePostulaGrado(404, "Programa no encontrado");
         }
 
+        $programaProceso->setProceso($proceso);
+
         return new ResponsePostulaGrado(200, "Programa encontrado", $programaProceso);
     }
 }

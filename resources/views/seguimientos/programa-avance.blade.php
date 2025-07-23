@@ -12,7 +12,7 @@
     </p>
 
     @php
-        $estudiantesCanditados = $programaProceso->getEstuadiantesCandidatosAGradoPorPeriodo(2024, 2);
+        $estudiantesCanditados = $programaProceso->getCandidatosAGrado();
     @endphp
 
     <div class="grid grid-cols-2 gap-4 mt-4 text-sm">
