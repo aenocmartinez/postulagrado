@@ -10,6 +10,7 @@ use Src\admisiones\usecase\procesos\BuscarProcesoUseCase;
 use Src\admisiones\usecase\procesos\ListarProcesosUseCase;
 use Src\admisiones\usecase\programas\AsociarCandidatosAProcesoGradoUseCase;
 use Src\admisiones\usecase\programas\BuscarEstudiantesCandidatosGradoUseCase;
+use Src\admisiones\usecase\programas\BuscarEstudianteUseCase;
 use Src\admisiones\usecase\programas\QuitarEstudianteDeProcesoUseCase;
 use Src\shared\di\FabricaDeRepositorios;
 
@@ -117,6 +118,8 @@ class ProgramaAcademicoController extends Controller
             'message' => $response->getMessage(),
             'data' => $response->getData()
         ], $response->getCode());
+        // return redirect()->route('programa_academico.procesos.seguimiento', ['id' => $procesoID])
+        //                 ->with($response->getCode(), $response->getMessage());        
     }
 
     public function quitarEstudiante(int $estudianteProcesoProgramaID)
@@ -134,6 +137,48 @@ class ProgramaAcademicoController extends Controller
             'data' => $response->getData()
         ], $response->getCode());
         
-    }    
+    }  
+    
+    public function buscarEstudiante(Request $request)
+    {
+        $documentoOrCodigo = $request->get('termino');
+
+        $buscarEstudiante = new BuscarEstudianteUseCase(
+            FabricaDeRepositorios::getInstance()->getEstudianteRepository(),
+        );
+        
+        /** @var \Src\shared\response\ResponsePostulaGrado $response */
+        $response = $buscarEstudiante->ejecutar($documentoOrCodigo);
+        $estudiantes = $response->getData();
+                
+
+        return response()->json($estudiantes);
+    }
+
+    public function agregarUnEstudianteAProceso(Request $request) {
+        $estudiantes   = [$request->get('codigo')];
+        $procesoID     = $request->get('proceso_id');
+        $anio          = 2024;
+        $periodo       = 1;
+
+
+        $asociarCandidatos = new AsociarCandidatosAProcesoGradoUseCase(
+            FabricaDeRepositorios::getInstance()->getProgramaRepository(),
+            FabricaDeRepositorios::getInstance()->getProcesoRepository(),
+        );
+
+
+        $response = $asociarCandidatos->ejecutar($procesoID, $estudiantes, $anio, $periodo);       
+        
+        return response()->json([
+            'code' => $response->getCode(),
+            'message' => $response->getMessage(),
+            'data' => $response->getData()
+        ], $response->getCode());        
+        
+        // return redirect()->route('programa_academico.procesos.seguimiento', ['id' => $procesoID])
+        //                 ->with($response->getCode(), $response->getMessage());
+    }
+
 
 }

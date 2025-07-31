@@ -1,4 +1,7 @@
 @if (auth()->user()->programaAcademico()->tieneCandidatosAsocidos($proceso->getId()))
+    <p class="text-sm text-gray-600 mb-3">
+        Haz clic en el botón para ver los estudiantes vinculados al proceso.
+    </p>
     <a href="#"
        onclick="abrirModalEstudiantesVinculados()"
        class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"

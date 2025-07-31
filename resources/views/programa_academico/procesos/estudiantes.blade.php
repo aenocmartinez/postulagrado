@@ -92,7 +92,7 @@
                                 <th class="px-4 py-3">Código</th>
                                 <th class="px-4 py-3">Documento</th>
                                 <th class="px-4 py-3">Nombre</th>
-                                <th class="px-4 py-3">Ubicación</th>
+                                <th class="px-4 py-3">Categoria</th>
                                 <th class="px-4 py-3">Situación</th>
                                 <th class="px-2 py-3 whitespace-nowrap text-center">Créditos<br>Pend.</th>
                                 <th class="px-4 py-3 text-center">Seleccionar</th>
@@ -134,6 +134,32 @@
 
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Estudiantes vinculados al proceso</h3>
 
+        <!-- Botón para agregar estudiante -->
+        <div class="flex justify-between items-center mb-4 mt-2">
+            <div></div> <!-- espacio a la izquierda -->
+            <button onclick="mostrarFormularioAgregarEstudiante()"
+                    class="bg-green-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400">
+                <i class="fas fa-user-plus mr-1"></i> Agregar estudiante
+            </button>
+        </div>      
+        
+        <!-- Formulario oculto para agregar un nuevo estudiante -->
+        <div id="formulario-agregar-estudiante" class="hidden mb-4 border border-green-200 p-4 rounded bg-green-50">
+            <div class="flex justify-center mb-3">
+                <div class="flex items-center gap-4 w-full md:w-2/3 lg:w-1/2">
+                    <input type="text" id="busqueda-estudiante"
+                        placeholder="Ingrese código o documento"
+                        class="w-full border border-gray-300 rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400">
+                    <button onclick="buscarEstudiante()"
+                            class="bg-blue-600 text-white px-4 py-2 text-sm rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        Buscar
+                    </button>
+                </div>
+            </div>
+
+            <div id="resultado-busqueda-estudiante" class="text-sm text-gray-800"></div>
+        </div>      
+
         <!-- Encabezado contextual -->
         <div class="bg-gray-50 border-l-4 border-green-500 p-4 rounded-md mb-4 text-sm text-gray-700 shadow-sm">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -164,6 +190,7 @@
                 >
             </div>
 
+
             <!-- Tabla de estudiantes vinculados al proceso -->
             <table class="min-w-full text-sm text-left border-collapse">
                 <thead class="bg-green-100 text-green-900 text-xs uppercase tracking-wide">
@@ -172,7 +199,7 @@
                         <th class="px-4 py-3">Código</th>
                         <th class="px-4 py-3">Documento</th>
                         <th class="px-4 py-3">Nombre</th>
-                        <th class="px-4 py-3">Ubicación</th>
+                        <th class="px-4 py-3">Categoria</th>
                         <th class="px-4 py-3">Situación</th>
                         <th class="px-2 py-3 text-center whitespace-nowrap">Créditos<br>Pend.</th>
                         <th class="px-4 py-3 text-center">Acciones</th>
@@ -185,7 +212,7 @@
                             <td class="px-4 py-2">{{ $est['estu_codigo'] }}</td>
                             <td class="px-4 py-2">{{ $est['detalle']->documento ?? '-' }}</td>
                             <td class="px-4 py-2">{{ $est['detalle']->nombres ?? '-' }}</td>
-                            <td class="px-4 py-2">{{ $est['detalle']->ubicacion_semestral ?? '-' }}</td>
+                            <td class="px-4 py-2">{{ $est['detalle']->categoria ?? '-' }}</td>
                             <td class="px-4 py-2">
                                 <span class="inline-block px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">
                                     {{ $est['detalle']->situacion ?? '-' }}
@@ -285,7 +312,7 @@
                             <td class="px-4 py-2">${est.codigo || ''}</td>
                             <td class="px-4 py-2">${est.documento || ''}</td>
                             <td class="px-4 py-2">${est.nombre || ''}</td>
-                            <td class="px-4 py-2">${est.ubicacionSemestre || ''}</td>
+                            <td class="px-4 py-2">${est.categoria || ''}</td>
                             <td class="px-4 py-2"><span class="inline-block px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">${est.situacion || ''}</span></td>
                             <td class="px-2 py-2 text-center">${est.numeroCreditosPendientes ?? '-'}</td>
                             <td class="px-4 py-2 text-center">
@@ -429,37 +456,45 @@
             confirmButtonColor: '#dc2626',
             cancelButtonColor: '#6b7280',
         }).then((result) => {
-            if (result.isConfirmed) {
-                fetch(`/programa-academico/estudiantes/${ppesId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Éxito',
-                        text: data.message || 'Estudiante retirado correctamente'
-                    }).then(() => {
-                        // Recargar o refrescar la lista según tu lógica
-                        cerrarModalEstudiantesVinculados();
-                        location.reload(); // o refrescar sección si tienes render dinámico
-                    });
-                })
-                .catch(error => {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'No se pudo quitar el estudiante. Intenta nuevamente.'
-                    });
+            if (!result.isConfirmed) return;
+
+            // Mostrar indicador de carga
+            Swal.fire({
+                title: 'Procesando...',
+                text: 'Eliminando estudiante del proceso',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            fetch(`/programa-academico/estudiantes/${ppesId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: data.message || 'Estudiante retirado correctamente'
+                }).then(() => {
+                    cerrarModalEstudiantesVinculados();
+                    location.reload(); // o actualizar tabla dinámicamente si lo prefieres
                 });
-            }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se pudo quitar el estudiante. Intenta nuevamente.'
+                });
+            });
         });
-    }   
-    
+    }
     
     document.getElementById('buscador-estudiantes').addEventListener('input', function () {
         const filtro = this.value.toLowerCase().trim();
@@ -470,5 +505,111 @@
             fila.style.display = textoFila.includes(filtro) ? '' : 'none';
         });
     });
+
+</script>
+
+<script>
+    function mostrarFormularioAgregarEstudiante() {
+        document.getElementById('formulario-agregar-estudiante').classList.remove('hidden');
+    }
+
+    async function buscarEstudiante() {
+        const termino = document.getElementById('busqueda-estudiante').value.trim();
+        if (!termino) return;
+
+        const resultadoContenedor = document.getElementById('resultado-busqueda-estudiante');
+        resultadoContenedor.innerHTML = 'Buscando...';
+
+        try {
+            const response = await fetch(`/proceso-estudiante/buscar?termino=${encodeURIComponent(termino)}`);
+            const data = await response.json();
+
+            if (!data || data.length === 0) {
+                resultadoContenedor.innerHTML = '<p class="text-red-600">No se encontraron resultados.</p>';
+                return;
+            }
+
+            // Mostrar resultados
+            resultadoContenedor.innerHTML = data.map(est => `
+                <div class="flex justify-between items-center border-b py-2">
+                    <div>
+                        <p><strong>${est.nombres}</strong> - ${est.estp_codigomatricula} - ${est.documento}</p>
+                    </div>
+                    <button onclick="agregarEstudianteAlProceso(${est.estp_codigomatricula})"
+                            class="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700">
+                        Agregar
+                    </button>
+                </div>
+            `).join('');
+        } catch (err) {
+            resultadoContenedor.innerHTML = '<p class="text-red-600">Error al buscar estudiante.</p>';
+        }
+    }
+
+    async function agregarEstudianteAlProceso(estudianteId) {
+        const confirmacion = await Swal.fire({
+            title: '¿Está seguro?',
+            text: 'Este estudiante será vinculado al proceso de grado.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, agregar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#16a34a', // verde
+            cancelButtonColor: '#6b7280',
+        });
+
+        if (!confirmacion.isConfirmed) {
+            return; // Cancelado por el usuario
+        }
+
+        // Mostrar loading
+        Swal.fire({
+            title: 'Procesando...',
+            text: 'Por favor espere un momento',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        try {
+            const response = await fetch(`/proceso-estudiante/agregar`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    codigo: estudianteId,
+                    proceso_id: {{ $proceso->getId() }}
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.code === 200) {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: data.message || 'Estudiante agregado correctamente.'
+                }).then(() => {
+                    location.reload(); // o actualizar tabla dinámicamente
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message || 'No se pudo agregar el estudiante.'
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error inesperado',
+                text: 'Ocurrió un error al intentar agregar el estudiante.'
+            });
+        }
+    }
 
 </script>

@@ -3,6 +3,7 @@
 namespace Src\shared\di;
 
 use Src\admisiones\infraestructure\dao\oracle\ActividadDao;
+use Src\admisiones\infraestructure\dao\oracle\EstudianteDao;
 use Src\admisiones\infraestructure\dao\oracle\JornadaDao;
 use Src\admisiones\infraestructure\dao\oracle\MetodologiaDao;
 use Src\admisiones\infraestructure\dao\oracle\ModalidadDao;
@@ -14,6 +15,7 @@ use Src\admisiones\infraestructure\dao\oracle\ProgramaContactoDao;
 use Src\admisiones\infraestructure\dao\oracle\ProgramaDao;
 use Src\admisiones\infraestructure\dao\oracle\UnidadRegionalDao;
 use Src\admisiones\repositories\ActividadRepository;
+use Src\admisiones\repositories\EstudianteRepository;
 use Src\admisiones\repositories\JornadaRepository;
 use Src\admisiones\repositories\MetodologiaRepository;
 use Src\admisiones\repositories\ModalidadRepository;
@@ -40,6 +42,7 @@ class FabricaDeRepositorios
     private ProgramaContactoRepository $programaContactoRepo;
     private NotificacionRepository $notificacionRepo;
     private ProcesoDocumentoRepository $procesoDocumentoRepo;
+    private EstudianteRepository $estudianteRepo;
 
     public function __construct()
     {
@@ -54,6 +57,7 @@ class FabricaDeRepositorios
         $this->programaContactoRepo = new ProgramaContactoDao();
         $this->notificacionRepo = new NotificacionDao();
         $this->procesoDocumentoRepo = new ProcesoDocumentoDao();
+        $this->estudianteRepo = new EstudianteDao();
     }
 
     public static function getInstance(): FabricaDeRepositorios 
@@ -111,4 +115,8 @@ class FabricaDeRepositorios
     public function getProcesoDocumentoRepository(): ProcesoDocumentoRepository {
         return $this->procesoDocumentoRepo;
     }
+
+    public function getEstudianteRepository(): EstudianteRepository {
+        return $this->estudianteRepo;
+    }    
 }

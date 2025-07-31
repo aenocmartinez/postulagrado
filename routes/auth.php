@@ -129,6 +129,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/programa-academico/estudiantes/{estudianteProcesoProgramaID}', [ProgramaAcademicoController::class, 'quitarEstudiante'])
         ->name('programa_academico.estudiantes.quitar');
 
-
+    Route::get('/proceso-estudiante/buscar', [ProgramaAcademicoController::class, 'buscarEstudiante']);
+    Route::post('/proceso-estudiante/agregar', [ProgramaAcademicoController::class, 'agregarUnEstudianteAProceso']);
 
 });
