@@ -120,8 +120,7 @@ class ProgramaAcademicoController extends Controller
     }
 
     public function quitarEstudiante(int $estudianteProcesoProgramaID)
-    {
-        
+    {   
         $quitarEstudiante = new QuitarEstudianteDeProcesoUseCase(
             FabricaDeRepositorios::getInstance()->getProgramaRepository(),
             FabricaDeRepositorios::getInstance()->getProcesoRepository(),                
