@@ -22,4 +22,5 @@ interface ProgramaRepository {
     public function tieneCandidatosAsociados(int $procesoID, int $programaID): bool;
     public function listarEstudiantesCandidatos(int $programaID, int $procesoID): array;
     public function obtenerEstudiantePorCodigo(string|array $codigosEstudiante): array;
+    public function quitarEstudiante(int $estudianteProcesoProgramaID);
 }

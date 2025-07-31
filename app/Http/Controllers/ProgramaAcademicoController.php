@@ -10,6 +10,7 @@ use Src\admisiones\usecase\procesos\BuscarProcesoUseCase;
 use Src\admisiones\usecase\procesos\ListarProcesosUseCase;
 use Src\admisiones\usecase\programas\AsociarCandidatosAProcesoGradoUseCase;
 use Src\admisiones\usecase\programas\BuscarEstudiantesCandidatosGradoUseCase;
+use Src\admisiones\usecase\programas\QuitarEstudianteDeProcesoUseCase;
 use Src\shared\di\FabricaDeRepositorios;
 
 class ProgramaAcademicoController extends Controller
@@ -117,5 +118,23 @@ class ProgramaAcademicoController extends Controller
             'data' => $response->getData()
         ], $response->getCode());
     }
+
+    public function quitarEstudiante(int $estudianteProcesoProgramaID)
+    {
+        
+        $quitarEstudiante = new QuitarEstudianteDeProcesoUseCase(
+            FabricaDeRepositorios::getInstance()->getProgramaRepository(),
+            FabricaDeRepositorios::getInstance()->getProcesoRepository(),                
+        );
+
+        $response = $quitarEstudiante->ejecutar($estudianteProcesoProgramaID);
+
+        return response()->json([
+            'code' => $response->getCode(),
+            'message' => $response->getMessage(),
+            'data' => $response->getData()
+        ], $response->getCode());
+        
+    }    
 
 }

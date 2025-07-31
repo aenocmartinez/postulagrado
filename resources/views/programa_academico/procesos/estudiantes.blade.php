@@ -153,7 +153,7 @@
         </div>
 
         <!-- Tabla de estudiantes -->
-        <div class="overflow-x-auto border rounded-lg">
+        <!-- <div class="overflow-x-auto border rounded-lg">
             <table class="min-w-full text-sm text-left border-collapse">
                 <thead class="bg-green-100 text-green-900 text-xs uppercase tracking-wide">
                     <tr>
@@ -184,7 +184,56 @@
                     @endforeach
                 </tbody>
             </table>
-        </div>
+        </div> -->
+<div class="overflow-x-auto border rounded-lg">
+    <table class="min-w-full text-sm text-left border-collapse">
+        <thead class="bg-green-100 text-green-900 text-xs uppercase tracking-wide">
+            <tr>
+                <th class="px-4 py-3">Pensum</th>
+                <th class="px-4 py-3">Código</th>
+                <th class="px-4 py-3">Documento</th>
+                <th class="px-4 py-3">Nombre</th>
+                <th class="px-4 py-3">Ubicación</th>
+                <th class="px-4 py-3">Situación</th>
+                <th class="px-2 py-3 text-center whitespace-nowrap">Créditos<br>Pend.</th>
+                <th class="px-4 py-3 text-center">Acciones</th> <!-- Nueva columna -->
+            </tr>
+        </thead>
+        <tbody class="text-gray-800">
+            @foreach(auth()->user()->programaAcademico()->listarEstudiantesCandidatos($proceso->getId()) as $est)
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="px-4 py-2">{{ $est['detalle']->pensum_estud ?? '-' }}</td>
+                    <td class="px-4 py-2">{{ $est['estu_codigo'] }}</td>
+                    <td class="px-4 py-2">{{ $est['detalle']->documento ?? '-' }}</td>
+                    <td class="px-4 py-2">{{ $est['detalle']->nombres ?? '-' }}</td>
+                    <td class="px-4 py-2">{{ $est['detalle']->ubicacion_semestral ?? '-' }}</td>
+                    <td class="px-4 py-2">
+                        <span class="inline-block px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">
+                            {{ $est['detalle']->situacion ?? '-' }}
+                        </span>
+                    </td>
+                    <td class="px-2 py-2 text-center">{{ $est['detalle']->cred_pendientes ?? '-' }}</td>
+                    <td class="px-4 py-2 text-center">
+                        <div class="flex justify-center gap-2">
+                            <!-- Botón Ver -->
+                            <button onclick="verDetalleEstudiante('{{ $est['estu_codigo'] }}')"
+                                    class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                    title="Ver detalles del estudiante">
+                                <i class="fas fa-search mr-1"></i> Ver
+                            </button>
+                            <!-- Botón Quitar -->
+                            <button onclick="quitarEstudianteDelProceso('{{ $est['ppes_id'] }}')"
+                                    class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
+                                    title="Quitar del proceso">
+                                <i class="fas fa-trash-alt mr-1"></i> Quitar
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>        
 
     </div>
 </div>
@@ -382,4 +431,53 @@
         }
     }
 
+    function verDetalleEstudiante(codigo) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Detalle del Estudiante',
+            text: `Próximamente se mostrará el detalle del estudiante con código: ${codigo}`,
+        });
+    }
+
+    function quitarEstudianteDelProceso(ppesId) {
+        Swal.fire({
+            title: '¿Está seguro?',
+            text: 'Este estudiante será desvinculado del proceso.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, quitar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#6b7280',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/programa-academico/estudiantes/${ppesId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Éxito',
+                        text: data.message || 'Estudiante retirado correctamente'
+                    }).then(() => {
+                        // Recargar o refrescar la lista según tu lógica
+                        cerrarModalEstudiantesVinculados();
+                        location.reload(); // o refrescar sección si tienes render dinámico
+                    });
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se pudo quitar el estudiante. Intenta nuevamente.'
+                    });
+                });
+            }
+        });
+    }    
 </script>

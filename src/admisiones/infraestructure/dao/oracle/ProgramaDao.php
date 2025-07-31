@@ -501,4 +501,26 @@ class ProgramaDao implements ProgramaRepository
         return DB::connection('oracle_academico')->select($sql, $bindings);
     }
 
+   public function quitarEstudiante(int $estudianteProcesoProgramaID)
+    {
+        try {
+            $registro = DB::connection('oracle_academpostulgrado')
+                ->table('ACADEMPOSTULGRADO.PROCESO_PROGRAMA_ESTUDIANTES')
+                ->where('ppes_id', $estudianteProcesoProgramaID)
+                ->first();
+
+            if (!$registro) {
+                return ;
+            }
+
+            DB::connection('oracle_academpostulgrado')
+                ->table('ACADEMPOSTULGRADO.PROCESO_PROGRAMA_ESTUDIANTES')
+                ->where('ppes_id', $estudianteProcesoProgramaID)
+                ->delete();
+
+        } catch (\Throwable $e) {
+            Log::info($e->getMessage);
+        }
+    }
+
 }
