@@ -154,6 +154,17 @@
 
         <!-- Tabla de estudiantes que hacen parte del proceso -->
         <div class="overflow-x-auto border rounded-lg">
+
+            <!-- Buscador en la tabla -->
+            <div class="flex justify-end mb-4 mt-2 mr-2">
+                <input type="text"
+                    id="buscador-estudiantes"
+                    placeholder="Buscar por nombre, código o documento"
+                    class="border border-gray-300 rounded px-4 py-2 text-sm w-full md:w-1/2 lg:w-1/3 focus:outline-none focus:ring-2 focus:ring-green-400"
+                >
+            </div>
+
+            <!-- Tabla de estudiantes vinculados al proceso -->
             <table class="min-w-full text-sm text-left border-collapse">
                 <thead class="bg-green-100 text-green-900 text-xs uppercase tracking-wide">
                     <tr>
@@ -447,5 +458,17 @@
                 });
             }
         });
-    }    
+    }   
+    
+    
+    document.getElementById('buscador-estudiantes').addEventListener('input', function () {
+        const filtro = this.value.toLowerCase().trim();
+        const filas = document.querySelectorAll('#modal-estudiantes-vinculados tbody tr');
+
+        filas.forEach(fila => {
+            const textoFila = fila.innerText.toLowerCase();
+            fila.style.display = textoFila.includes(filtro) ? '' : 'none';
+        });
+    });
+
 </script>
