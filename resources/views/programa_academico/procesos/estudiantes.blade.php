@@ -222,15 +222,19 @@
                             <td class="px-4 py-2 text-center">
                                 <div class="flex justify-center gap-2">
                                     <!-- Botón Ver -->
-                                    <button onclick="verDetalleEstudiante('{{ $est['estu_codigo'] }}')"
-                                            class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                            title="Ver detalles del estudiante">
+                                    <button 
+                                        data-codigo="{{ $est['estu_codigo'] }}"
+                                        onclick="verDetalleEstudiante(this.dataset.codigo)"
+                                        class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        title="Ver detalles del estudiante">
                                         <i class="fas fa-search mr-1"></i> Ver
                                     </button>
                                     <!-- Botón Quitar -->
-                                    <button onclick="quitarEstudianteDelProceso('{{ $est['ppes_id'] }}')"
-                                            class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
-                                            title="Quitar del proceso">
+                                    <button 
+                                        data-ppes-id="{{ $est['ppes_id'] }}"
+                                        onclick="quitarEstudianteDelProceso(this.dataset.ppesId)"
+                                        class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
+                                        title="Quitar del proceso">
                                         <i class="fas fa-trash-alt mr-1"></i> Quitar
                                     </button>
                                 </div>
@@ -391,9 +395,12 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<span id="proceso" data-id="{{ $proceso->getId() }}"></span>
 <script>
+    const PROCESO_ID = document.getElementById('proceso').dataset.id;
+</script>
 
-    const PROCESO_ID = {{ $proceso->getId() }};
+<script>
 
     function abrirModalGestionEstudiantes() {
         document.getElementById('modal-gestion-estudiantes').classList.remove('hidden');
@@ -807,7 +814,7 @@
                 },
                 body: JSON.stringify({
                     codigo: estudianteId,
-                    proceso_id: {{ $proceso->getId() }}
+                    proceso_id: PROCESO_ID
                 })
             });
 
