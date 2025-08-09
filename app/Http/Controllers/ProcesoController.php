@@ -7,16 +7,16 @@ use App\Http\Requests\ActualizarProceso;
 use App\Http\Requests\CrearProceso;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
-use Src\admisiones\domain\Proceso;
-use Src\admisiones\dto\proceso\ProcesoDTO;
-use Src\admisiones\usecase\general\ListarNivelEducativoUseCase;
-use Src\admisiones\usecase\procesos\ActualizarProcesoUseCase;
-use Src\admisiones\usecase\procesos\BuscarProgramaPorProcesoUseCase;
-use Src\admisiones\usecase\procesos\CrearProcesoUseCase;
-use Src\admisiones\usecase\procesos\EditarProcesoUseCase;
-use Src\admisiones\usecase\procesos\EliminarProcesoUseCase;
-use Src\admisiones\usecase\procesos\ListarProcesosUseCase;
-use Src\admisiones\usecase\procesos\QuitarProgramaAProcesoUseCase;
+use Src\domain\Proceso;
+use Src\dto\proceso\ProcesoDTO;
+use Src\usecase\general\ListarNivelEducativoUseCase;
+use Src\usecase\procesos\ActualizarProcesoUseCase;
+use Src\usecase\procesos\BuscarProgramaPorProcesoUseCase;
+use Src\usecase\procesos\CrearProcesoUseCase;
+use Src\usecase\procesos\EditarProcesoUseCase;
+use Src\usecase\procesos\EliminarProcesoUseCase;
+use Src\usecase\procesos\ListarProcesosUseCase;
+use Src\usecase\procesos\QuitarProgramaAProcesoUseCase;
 use Src\shared\di\FabricaDeRepositorios;
 
 class ProcesoController extends Controller

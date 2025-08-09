@@ -4,12 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CrearActividad;
 use Illuminate\Http\Request;
-use Src\admisiones\domain\Proceso;
-use Src\admisiones\usecase\actividades\ActualizarActividadUseCase;
-use Src\admisiones\usecase\actividades\AgregarActividadUseCase;
-use Src\admisiones\usecase\actividades\ListarActividadesUseCase;
-use Src\admisiones\usecase\actividades\QuitarActividadUseCase;
-use Src\admisiones\usecase\actividades\AgregarActividadesMasivoUseCase;
+use Src\usecase\actividades\ActualizarActividadUseCase;
+use Src\usecase\actividades\AgregarActividadUseCase;
+use Src\usecase\actividades\ListarActividadesUseCase;
+use Src\usecase\actividades\QuitarActividadUseCase;
+use Src\usecase\actividades\AgregarActividadesMasivoUseCase;
 use Src\shared\di\FabricaDeRepositorios;
 use Src\shared\response\ResponsePostulaGrado;
 

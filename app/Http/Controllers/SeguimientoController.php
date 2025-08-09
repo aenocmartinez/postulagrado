@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Src\admisiones\usecase\procesos\BuscarProcesoUseCase;
-use Src\admisiones\usecase\procesos\ListarProcesosUseCase;
+use Src\usecase\procesos\BuscarProcesoUseCase;
+use Src\usecase\procesos\ListarProcesosUseCase;
 use Src\shared\di\FabricaDeRepositorios;
 
 class SeguimientoController extends Controller

@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Src\admisiones\usecase\notificaciones\ListarNotificacionesPorUsuarioUseCase;
-use Src\admisiones\usecase\procesos\BuscarProcesoUseCase;
-use Src\admisiones\usecase\procesos\ListarProcesosUseCase;
-use Src\admisiones\usecase\programas\AsociarCandidatosAProcesoGradoUseCase;
-use Src\admisiones\usecase\programas\BuscarEstudiantesCandidatosGradoUseCase;
-use Src\admisiones\usecase\programas\BuscarEstudianteUseCase;
-use Src\admisiones\usecase\programas\QuitarEstudianteDeProcesoUseCase;
+use Src\usecase\notificaciones\ListarNotificacionesPorUsuarioUseCase;
+use Src\usecase\procesos\BuscarProcesoUseCase;
+use Src\usecase\procesos\ListarProcesosUseCase;
+use Src\usecase\programas\AsociarCandidatosAProcesoGradoUseCase;
+use Src\usecase\programas\BuscarEstudiantesCandidatosGradoUseCase;
+use Src\usecase\programas\BuscarEstudianteUseCase;
+use Src\usecase\programas\QuitarEstudianteDeProcesoUseCase;
 use Src\shared\di\FabricaDeRepositorios;
 
 class ProgramaAcademicoController extends Controller
@@ -75,8 +75,10 @@ class ProgramaAcademicoController extends Controller
             FabricaDeRepositorios::getInstance()->getProgramaRepository(),
         );
 
+        /** @var App\Models\User $user */
+
         $response = $buscarCantidatosGrado->ejecutar(
-            Auth::user()->programaAcademico()->getCodigo(), 
+            $user->programaAcademico()->getCodigo(), 
             $anio, 
             $periodo);
 

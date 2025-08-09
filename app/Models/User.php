@@ -7,7 +7,7 @@ use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Src\admisiones\domain\Programa;
+use Src\domain\Programa;
 use Src\shared\di\FabricaDeRepositorios;
 
 /**

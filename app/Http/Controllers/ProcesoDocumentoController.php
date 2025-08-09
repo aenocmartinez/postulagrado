@@ -4,14 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Src\admisiones\usecase\procesoDocumentos\AdjuntarDocumentoAProcesoUseCase;
-use Src\admisiones\usecase\procesoDocumentos\ListarDocumentosDeProcesoUseCase;
-use Src\admisiones\usecase\procesoDocumentos\ConsultarDocumentoDeProcesoUseCase;
-use Src\admisiones\usecase\procesoDocumentos\EliminarDocumentoDeProcesoUseCase;
-use Src\admisiones\dto\procesoDocumento\ProcesoDocumentoDTO;
+use Src\usecase\procesoDocumentos\AdjuntarDocumentoAProcesoUseCase;
+use Src\usecase\procesoDocumentos\ListarDocumentosDeProcesoUseCase;
+use Src\usecase\procesoDocumentos\ConsultarDocumentoDeProcesoUseCase;
+use Src\usecase\procesoDocumentos\EliminarDocumentoDeProcesoUseCase;
+use Src\dto\procesoDocumento\ProcesoDocumentoDTO;
 use Src\shared\di\FabricaDeRepositorios;
-use Illuminate\Support\Facades\Storage;
-use Src\admisiones\dto\proceso\ProcesoDTO;
+use Src\dto\proceso\ProcesoDTO;
 
 class ProcesoDocumentoController extends Controller
 {
@@ -91,6 +90,7 @@ class ProcesoDocumentoController extends Controller
             return redirect()->back()->withErrors($response->getMessage());
         }
 
+        /** @var Src\domain\ProcesoDocumento $documento */
         $documento = $response->getData();
 
         return response()->download(public_path($documento->getRuta()));

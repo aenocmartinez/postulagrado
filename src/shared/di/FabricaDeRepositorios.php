@@ -2,30 +2,30 @@
 
 namespace Src\shared\di;
 
-use Src\admisiones\infraestructure\dao\oracle\ActividadDao;
-use Src\admisiones\infraestructure\dao\oracle\EstudianteDao;
-use Src\admisiones\infraestructure\dao\oracle\JornadaDao;
-use Src\admisiones\infraestructure\dao\oracle\MetodologiaDao;
-use Src\admisiones\infraestructure\dao\oracle\ModalidadDao;
-use Src\admisiones\infraestructure\dao\oracle\NivelEducativoDao;
-use Src\admisiones\infraestructure\dao\oracle\NotificacionDao;
-use Src\admisiones\infraestructure\dao\oracle\ProcesoDao;
-use Src\admisiones\infraestructure\dao\oracle\ProcesoDocumentoDao;
-use Src\admisiones\infraestructure\dao\oracle\ProgramaContactoDao;
-use Src\admisiones\infraestructure\dao\oracle\ProgramaDao;
-use Src\admisiones\infraestructure\dao\oracle\UnidadRegionalDao;
-use Src\admisiones\repositories\ActividadRepository;
-use Src\admisiones\repositories\EstudianteRepository;
-use Src\admisiones\repositories\JornadaRepository;
-use Src\admisiones\repositories\MetodologiaRepository;
-use Src\admisiones\repositories\ModalidadRepository;
-use Src\admisiones\repositories\NivelEducativoRepository;
-use Src\admisiones\repositories\NotificacionRepository;
-use Src\admisiones\repositories\ProcesoDocumentoRepository;
-use Src\admisiones\repositories\ProcesoRepository;
-use Src\admisiones\repositories\ProgramaContactoRepository;
-use Src\admisiones\repositories\ProgramaRepository;
-use Src\admisiones\repositories\UnidadRegionalRepository;
+use Src\infraestructure\dao\oracle\ActividadDao;
+use Src\infraestructure\dao\oracle\EstudianteDao;
+use Src\infraestructure\dao\oracle\JornadaDao;
+use Src\infraestructure\dao\oracle\MetodologiaDao;
+use Src\infraestructure\dao\oracle\ModalidadDao;
+use Src\infraestructure\dao\oracle\NivelEducativoDao;
+use Src\infraestructure\dao\oracle\NotificacionDao;
+use Src\infraestructure\dao\oracle\ProcesoDao;
+use Src\infraestructure\dao\oracle\ProcesoDocumentoDao;
+use Src\infraestructure\dao\oracle\ProgramaContactoDao;
+use Src\infraestructure\dao\oracle\ProgramaDao;
+use Src\infraestructure\dao\oracle\UnidadRegionalDao;
+use Src\repositories\ActividadRepository;
+use Src\repositories\EstudianteRepository;
+use Src\repositories\JornadaRepository;
+use Src\repositories\MetodologiaRepository;
+use Src\repositories\ModalidadRepository;
+use Src\repositories\NivelEducativoRepository;
+use Src\repositories\NotificacionRepository;
+use Src\repositories\ProcesoDocumentoRepository;
+use Src\repositories\ProcesoRepository;
+use Src\repositories\ProgramaContactoRepository;
+use Src\repositories\ProgramaRepository;
+use Src\repositories\UnidadRegionalRepository;
 
 class FabricaDeRepositorios 
 {

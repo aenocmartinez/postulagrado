@@ -5,14 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CrearContacto;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-use Src\admisiones\dto\ProgramaContactoDTO;
-use Src\admisiones\usecase\programaContacto\ActualizarContactoUseCase;
-use Src\admisiones\usecase\programaContacto\CrearContactoUseCase;
-use Src\admisiones\usecase\programaContacto\EditarContactoUseCase;
-use Src\admisiones\usecase\programaContacto\EliminarContactoUseCase;
-use Src\admisiones\usecase\programaContacto\ListarContactosUseCase;
-use Src\admisiones\usecase\programaContacto\VerContactoUseCase;
-use Src\admisiones\usecase\programas\ListarProgramasUseCase;
+use Src\dto\ProgramaContactoDTO;
+use Src\usecase\programaContacto\ActualizarContactoUseCase;
+use Src\usecase\programaContacto\CrearContactoUseCase;
+use Src\usecase\programaContacto\EditarContactoUseCase;
+use Src\usecase\programaContacto\EliminarContactoUseCase;
+use Src\usecase\programaContacto\ListarContactosUseCase;
+use Src\usecase\programaContacto\VerContactoUseCase;
+use Src\usecase\programas\ListarProgramasUseCase;
 use Src\shared\di\FabricaDeRepositorios;
 
 class ProgramaContactoController extends Controller

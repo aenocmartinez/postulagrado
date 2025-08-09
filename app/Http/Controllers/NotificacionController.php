@@ -3,19 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GuardarNotificacion;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Src\admisiones\dto\notificacion\NotificacionDTO;
-use Src\admisiones\usecase\notificaciones\ActualizarNotificacionUseCase;
-use Src\admisiones\usecase\notificaciones\AnularNotificacionUseCase;
-use Src\admisiones\usecase\notificaciones\BuscarNotificacionUseCase;
-use Src\admisiones\usecase\notificaciones\CrearNotificacionUseCase;
-use Src\admisiones\usecase\notificaciones\ListarNotificacionesUseCase;
-use Src\admisiones\usecase\notificaciones\MarcarNotificacionComoLeidaUseCase;
-use Src\admisiones\usecase\procesos\BuscarProcesoUseCase;
-use Src\admisiones\usecase\procesos\ListarProcesosUseCase;
-use Src\admisiones\usecase\programaContacto\ListarContactosUseCase;
+use Src\dto\notificacion\NotificacionDTO;
+use Src\usecase\notificaciones\ActualizarNotificacionUseCase;
+use Src\usecase\notificaciones\AnularNotificacionUseCase;
+use Src\usecase\notificaciones\BuscarNotificacionUseCase;
+use Src\usecase\notificaciones\CrearNotificacionUseCase;
+use Src\usecase\notificaciones\MarcarNotificacionComoLeidaUseCase;
+use Src\usecase\procesos\BuscarProcesoUseCase;
+use Src\usecase\procesos\ListarProcesosUseCase;
+use Src\usecase\programaContacto\ListarContactosUseCase;
 use Src\shared\di\FabricaDeRepositorios;
 
 class NotificacionController extends Controller
