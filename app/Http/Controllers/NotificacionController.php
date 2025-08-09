@@ -26,7 +26,7 @@ class NotificacionController extends Controller
 
         $response = $listarProcesos->ejecutar();
     
-        return view('notificaciones.index', [
+        return view('admisiones.notificaciones.index', [
             'procesos' => $response->getData(),
         ]);
     }
@@ -46,7 +46,7 @@ class NotificacionController extends Controller
             return redirect()->route('notificaciones.index')->with($response->getCode(), $response->getMessage());
         }
     
-        return view('notificaciones.index_por_proceso', [
+        return view('admisiones.notificaciones.index_por_proceso', [
             'proceso' => $proceso,
         ]);
     }    
@@ -72,7 +72,7 @@ class NotificacionController extends Controller
         $response = $listarContactos->ejecutar();
         $contactos = $response->getData();
 
-        return view('notificaciones.create', [
+        return view('admisiones.notificaciones.create', [
             'contactos' => $contactos,
             'proceso' => $proceso,
         ]);
@@ -116,7 +116,7 @@ class NotificacionController extends Controller
             return redirect()->route('notificaciones.index')->with($response->getCode(), $response->getMessage());
         }
     
-        return view('notificaciones.show', [
+        return view('admisiones.notificaciones.show', [
             'notificacion' => $notificacion,
         ]);
     }
@@ -163,7 +163,7 @@ class NotificacionController extends Controller
         $response = $listarContactos->ejecutar();
         $contactos = $response->getData();        
     
-        return view('notificaciones.edit', [
+        return view('admisiones.notificaciones.edit', [
             'notificacion' => $notificacion,
             'contactos' => $contactos,
         ]);

@@ -16,7 +16,7 @@ class SeguimientoController extends Controller
 
         $response = $listaProcesos->ejecutar();
 
-        return view('seguimientos.index', [
+        return view('admisiones.seguimientos.index', [
             'procesos' => $response->getData()
         ]);
     }
@@ -32,7 +32,7 @@ class SeguimientoController extends Controller
             return redirect()->route('seguimientos.index')->with($response->getCode(), $response->getMessage());
         }
 
-        return view('seguimientos.show', [
+        return view('admisiones.seguimientos.show', [
             'proceso' => $response->getData()
         ]);
     }

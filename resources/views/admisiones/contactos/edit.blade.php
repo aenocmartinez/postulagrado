@@ -14,7 +14,7 @@
             @csrf
             @method('PUT')
 
-            @include('contactos.partials.form', ['contacto' => $contacto])
+            @include('admisiones.contactos.partials.form', ['contacto' => $contacto])
 
             <!-- Botones -->
             <div class="flex justify-end space-x-2 mt-4">

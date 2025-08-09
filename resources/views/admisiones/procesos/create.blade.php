@@ -15,7 +15,7 @@
     <form action="{{ route('procesos.store') }}" method="POST" class="space-y-4">
         @csrf
 
-        @include('procesos.partials.form')
+        @include('admisiones.procesos.partials.form')
 
         <br>
         

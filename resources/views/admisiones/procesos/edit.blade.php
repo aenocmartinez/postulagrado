@@ -16,7 +16,7 @@
         @csrf
         @method('PUT')
 
-        @include('procesos.partials.form')
+        @include('admisiones.procesos.partials.form')
 
         <br>
         

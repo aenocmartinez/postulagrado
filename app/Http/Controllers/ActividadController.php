@@ -27,7 +27,7 @@ class ActividadController extends Controller
             return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
         }
 
-        return view('actividades.index', [
+        return view('admisiones.actividades.index', [
             'proceso' => $response->getData(),
         ]);
     }

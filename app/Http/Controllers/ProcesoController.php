@@ -49,7 +49,7 @@ class ProcesoController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
-        return view('procesos.index', ['procesos' => $procesosPaginados]);
+        return view('admisiones.procesos.index', ['procesos' => $procesosPaginados]);
     }
 
     public function create()
@@ -59,7 +59,7 @@ class ProcesoController extends Controller
         );
 
         $response = $listarNivelEducativo->ejecutar();        
-        return view('procesos.create', [
+        return view('admisiones.procesos.create', [
             'listaNivelEduactivo' => $response->getData(),
         ]);
     }
@@ -100,7 +100,7 @@ class ProcesoController extends Controller
         
         $nivelesEducativo = $listarNivelEducativo->ejecutar();
 
-        return view('procesos.edit', [
+        return view('admisiones.procesos.edit', [
             'proceso' => $response->getData(),
             'listaNivelEduactivo' => $nivelesEducativo->getData(),
         ]);
@@ -154,7 +154,7 @@ class ProcesoController extends Controller
 
         $response = $buscarProgramaProceso->ejecutar($procesoID, $programaID);
 
-        return view('seguimientos.programa-avance', [
+        return view('admisiones.seguimientos.programa-avance', [
             'programaProceso' => $response->getData()
         ]);
     }

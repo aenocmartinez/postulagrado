@@ -39,7 +39,7 @@ class ProgramaContactoController extends Controller
             ['path' => request()->url(), 'query' => request()->query()]
         );
 
-        return view("contactos.index", [
+        return view("admisiones.contactos.index", [
             "contactos" => $contactos
         ]);
     }
@@ -52,7 +52,7 @@ class ProgramaContactoController extends Controller
 
         $response = $listarProgramas->ejecutar();
 
-        return view("contactos.create", [
+        return view("admisiones.contactos.create", [
             'programas' => $response->getData()
         ]);
     }
@@ -100,7 +100,7 @@ class ProgramaContactoController extends Controller
             return redirect()->route('contactos.index')->with($response->getCode(), $response->getMessage());  
         }
 
-        return view('contactos.show', [
+        return view('admisiones.contactos.show', [
             'contacto' => $response->getData()
         ]);
     }
@@ -119,7 +119,7 @@ class ProgramaContactoController extends Controller
 
         $data = $response->getData();
         
-        return view('contactos.edit', [
+        return view('admisiones.contactos.edit', [
             'contacto' => $data['contacto'],
             'programas' => $data['programas'],
         ]);

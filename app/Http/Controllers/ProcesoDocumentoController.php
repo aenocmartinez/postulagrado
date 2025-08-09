@@ -28,7 +28,7 @@ class ProcesoDocumentoController extends Controller
 
         $proceso = $response->getData();
 
-        return view('proceso_documentos.index', [
+        return view('admisiones.proceso_documentos.index', [
             'proceso' => $proceso,
         ]);
     }
@@ -72,7 +72,7 @@ class ProcesoDocumentoController extends Controller
                 ->withErrors('El proceso no fue encontrado.');
         }
     
-        return view('proceso_documentos.create', [
+        return view('admisiones.proceso_documentos.create', [
             'proceso' => $proceso,
         ]);
     }    

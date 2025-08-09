@@ -13,7 +13,7 @@
         <form method="POST" action="{{ route('contactos.store') }}">
             @csrf
 
-            @include('contactos.partials.form')
+            @include('admisiones.contactos.partials.form')
 
             <!-- Botones -->
             <div class="flex justify-end space-x-2">
