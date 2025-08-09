@@ -135,7 +135,7 @@
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Estudiantes vinculados al proceso</h3>
 
         <!-- Botón para agregar estudiante -->
-        <div class="flex justify-between items-center mb-4 mt-2">
+        <div class="flex justify-between items-center mb-4 mt-2" id="boton-agregar-nuevo-estudiante">
             <div></div> <!-- espacio a la izquierda -->
             <button onclick="mostrarFormularioAgregarEstudiante()"
                     class="bg-green-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400">
@@ -161,7 +161,7 @@
         </div>      
 
         <!-- Encabezado contextual -->
-        <div class="bg-gray-50 border-l-4 border-green-500 p-4 rounded-md mb-4 text-sm text-gray-700 shadow-sm">
+        <div class="bg-gray-50 border-l-4 border-green-500 p-4 rounded-md mb-4 text-sm text-gray-700 shadow-sm" id="encabezado-contextual">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div class="flex items-center gap-2">
                     <i class="fas fa-graduation-cap text-green-600"></i>
@@ -192,7 +192,7 @@
 
 
             <!-- Tabla de estudiantes vinculados al proceso -->
-            <table class="min-w-full text-sm text-left border-collapse">
+            <table class="min-w-full text-sm text-left border-collapse" id="tabla-estudiantes-vinculados-proceso">
                 <thead class="bg-green-100 text-green-900 text-xs uppercase tracking-wide">
                     <tr>
                         <th class="px-4 py-3">Pensum</th>
@@ -239,6 +239,143 @@
                     @endforeach
                 </tbody>
             </table>
+
+
+            <!-- Vista de detalle del estudiante (inicialmente oculta) -->
+            <div id="detalle-estudiante" class="hidden text-gray-800 space-y-10 px-4 py-6">
+
+                <!-- Botón volver -->
+                <div class="flex justify-end">
+                    <button onclick="volverAListadoEstudiantes()"
+                            class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-full hover:bg-gray-200 transition">
+                        <i class="fas fa-arrow-left mr-2"></i> Volver al listado
+                    </button>
+                </div>
+
+                <!-- Métricas clave en círculos -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                    <div class="flex flex-col items-center">
+                        <div class="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center shadow-inner text-xl font-bold text-green-800">
+                            <span id="det-creditos">---</span>
+                        </div>
+                        <p class="mt-2 text-sm text-gray-600 font-medium">Créditos aprobados</p>
+                    </div>
+
+                    <div class="flex flex-col items-center">
+                        <div class="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center shadow-inner text-xl font-bold text-blue-800">
+                            <span id="det-formulario">---</span>
+                        </div>
+                        <p class="mt-2 text-sm text-gray-600 font-medium">Formulario actualizado</p>
+                    </div>
+
+                    <div class="flex flex-col items-center">
+                        <div class="w-24 h-24 rounded-full bg-purple-100 flex items-center justify-center shadow-inner text-xl font-bold text-purple-800">
+                            <span id="det-egresado">---</span>
+                        </div>
+                        <p class="mt-2 text-sm text-gray-600 font-medium">Egresado Unicolmayor</p>
+                    </div>
+
+                    <div class="flex flex-col items-center">
+                        <div class="w-24 h-24 rounded-full bg-yellow-100 flex items-center justify-center shadow-inner text-xl font-bold text-yellow-800">
+                            <span id="det-representante">---</span>
+                        </div>
+                        <p class="mt-2 text-sm text-gray-600 font-medium">Representante Estudiantil</p>
+                    </div>
+                </div>
+
+                <!-- Información personal y contacto -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+                    <!-- Información personal -->
+                    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                        <h4 class="text-base font-semibold mb-4 flex items-center gap-2 text-gray-700">
+                            <i class="fas fa-id-card text-indigo-500"></i> Información personal
+                        </h4>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-user text-gray-500 w-5"></i>
+                                <span><strong>Nombre:</strong> <span id="det-nombre"></span></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-graduation-cap text-gray-500 w-5"></i>
+                                <span><strong>Programa:</strong> <span id="det-programa"></span></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-venus-mars text-gray-500 w-5"></i>
+                                <span><strong>Género:</strong> <span id="det-genero"></span></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-users text-gray-500 w-5"></i>
+                                <span><strong>Hijo de funcionario/docente:</strong> <span id="det-hijo-funcionario"></span></span>
+                            </div>
+                            <div class="flex items-center gap-2 hidden" id="campo-universidad-pregrado">
+                                <i class="fas fa-university text-gray-500 w-5"></i>
+                                <span><strong>Universidad Pregrado:</strong> <span id="det-universidad-pregrado"></span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contacto -->
+                    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                        <h4 class="text-base font-semibold mb-4 flex items-center gap-2 text-gray-700">
+                            <i class="fas fa-address-book text-blue-500"></i> Información de contacto
+                        </h4>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-envelope text-gray-500 w-5"></i>
+                                <span><strong>Correo:</strong> <span id="det-correo"></span></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-phone text-gray-500 w-5"></i>
+                                <span><strong>Teléfono:</strong> <span id="det-telefono"></span></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-id-badge text-gray-500 w-5"></i>
+                                <span><strong>Documento:</strong> <span id="det-documento"></span></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-file-pdf text-gray-500 w-5"></i>
+                                <span><strong>Ver documento:</strong>
+                                    <a id="det-link-documento" href="#" target="_blank"
+                                    class="text-blue-600 underline hover:text-blue-800">Abrir archivo</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estado de paz y salvo con barra de cumplimiento -->
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+                    <h4 class="text-base font-semibold mb-4 text-gray-700 flex items-center gap-2">
+                        <i class="fas fa-shield-alt text-green-500"></i> Estado de Paz y Salvo
+                    </h4>
+
+                    <!-- Barra de porcentaje -->
+                    <div class="mb-6">
+                        <div class="flex justify-between text-sm text-gray-500 mb-1">
+                            <span>Porcentaje de cumplimiento</span>
+                            <span id="det-pazsalvo-porcentaje">0%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                            <div id="barra-pazsalvo"
+                                class="h-full bg-green-500 transition-all duration-500 ease-in-out"
+                                style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Estados individuales -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        <div><p class="text-sm text-gray-500">Financiera</p><p class="font-medium" id="det-financiera">---</p></div>
+                        <div><p class="text-sm text-gray-500">Admisiones</p><p class="font-medium" id="det-admisiones">---</p></div>
+                        <div><p class="text-sm text-gray-500">Biblioteca</p><p class="font-medium" id="det-biblioteca">---</p></div>
+                        <div><p class="text-sm text-gray-500">Recursos Educativos</p><p class="font-medium" id="det-recursos">---</p></div>
+                        <div><p class="text-sm text-gray-500">Centro de Idiomas</p><p class="font-medium" id="det-idiomas">---</p></div>
+                    </div>
+                </div>
+
+            </div>
+            
+
         </div>        
 
     </div>
@@ -417,7 +554,6 @@
         });
     }
 
-
     function abrirModalEstudiantesVinculados() {
         document.getElementById('modal-estudiantes-vinculados').classList.remove('hidden');
         document.getElementById('modal-estudiantes-vinculados').classList.add('flex');
@@ -438,12 +574,101 @@
     }
 
     function verDetalleEstudiante(codigo) {
-        Swal.fire({
-            icon: 'info',
-            title: 'Detalle del Estudiante',
-            text: `Próximamente se mostrará el detalle del estudiante con código: ${codigo}`,
-        });
+        // Simulación de datos reales (reemplaza por un fetch si lo necesitas)
+        const datos = {
+            nombre: 'Juan Pérez Gómez',
+            programa: 'Especialización en Gerencia Pública',
+            creditos: 135,
+            formularioActualizado: true,
+            esEgresado: true,
+            representante: false,
+            genero: 'Masculino',
+            hijoFuncionario: true,
+            universidadPregrado: 'Universidad Nacional',
+            correo: 'juan.perez@correo.edu.co',
+            telefono: '3101234567',
+            documento: '1020456789',
+            documentoURL: '/documentos/1020456789.pdf',
+            pazSalvo: {
+                financiera: 'Paz y Salvo',
+                admisiones: 'Pendiente',
+                biblioteca: 'Pendiente',
+                recursos: 'Pendiente',
+                idiomas: 'Paz y Salvo'
+            },
+            esPostgrado: true
+        };
+
+        // Ocultar todo lo demás
+        document.getElementById('tabla-estudiantes-vinculados-proceso')?.classList.add('hidden');
+        document.getElementById('formulario-agregar-estudiante')?.classList.add('hidden');
+        document.getElementById('buscador-estudiantes')?.parentElement.classList.add('hidden');
+        document.getElementById('boton-agregar-nuevo-estudiante')?.classList.add('hidden');
+        document.getElementById('encabezado-contextual')?.classList.add('hidden');
+
+        // Mostrar sección de detalle
+        document.getElementById('detalle-estudiante')?.classList.remove('hidden');
+
+        // Círculos principales
+        document.getElementById('det-creditos').innerText = datos.creditos;
+        document.getElementById('det-formulario').innerText = datos.formularioActualizado ? 'Sí' : 'Pendiente';
+        document.getElementById('det-egresado').innerText = datos.esEgresado ? 'Sí' : 'No';
+        document.getElementById('det-representante').innerText = datos.representante ? 'Sí' : 'No';
+
+        // Info personal
+        document.getElementById('det-nombre').innerText = datos.nombre;
+        document.getElementById('det-programa').innerText = datos.programa;
+        document.getElementById('det-genero').innerText = datos.genero;
+        document.getElementById('det-hijo-funcionario').innerText = datos.hijoFuncionario ? 'Sí' : 'No';
+
+        if (datos.esPostgrado) {
+            document.getElementById('campo-universidad-pregrado')?.classList.remove('hidden');
+            document.getElementById('det-universidad-pregrado').innerText = datos.universidadPregrado;
+        } else {
+            document.getElementById('campo-universidad-pregrado')?.classList.add('hidden');
+        }
+
+        // Contacto
+        document.getElementById('det-correo').innerText = datos.correo;
+        document.getElementById('det-telefono').innerText = datos.telefono;
+        document.getElementById('det-documento').innerText = datos.documento;
+        document.getElementById('det-link-documento').href = datos.documentoURL;
+
+        // Paz y salvo individuales
+        document.getElementById('det-financiera').innerText = datos.pazSalvo.financiera;
+        document.getElementById('det-admisiones').innerText = datos.pazSalvo.admisiones;
+        document.getElementById('det-biblioteca').innerText = datos.pazSalvo.biblioteca;
+        document.getElementById('det-recursos').innerText = datos.pazSalvo.recursos;
+        document.getElementById('det-idiomas').innerText = datos.pazSalvo.idiomas;
+
+        // Calcular porcentaje
+        const estados = Object.values(datos.pazSalvo);
+        calcularPorcentajePazYSalvo(estados);
     }
+
+    function calcularPorcentajePazYSalvo(estados) {
+        const total = estados.length;
+        const cumplidos = estados.filter(e => e.toLowerCase() === 'paz y salvo').length;
+        const porcentaje = Math.round((cumplidos / total) * 100);
+        document.getElementById('det-pazsalvo-porcentaje').innerText = `${porcentaje}%`;
+        document.getElementById('barra-pazsalvo').style.width = `${porcentaje}%`;
+        document.getElementById('barra-pazsalvo').classList.toggle('bg-green-500', porcentaje === 100);
+        document.getElementById('barra-pazsalvo').classList.toggle('bg-blue-400', porcentaje < 100 && porcentaje >= 60);
+        document.getElementById('barra-pazsalvo').classList.toggle('bg-red-500', porcentaje < 60);
+    }
+
+    function volverAListadoEstudiantes() {
+        // Ocultar el detalle
+        document.getElementById('detalle-estudiante')?.classList.add('hidden');
+
+        // Mostrar nuevamente la vista principal
+        document.getElementById('tabla-estudiantes-vinculados-proceso')?.classList.remove('hidden');
+        document.getElementById('formulario-agregar-estudiante')?.classList.remove('hidden');
+        document.getElementById('buscador-estudiantes')?.parentElement.classList.remove('hidden');
+        document.getElementById('boton-agregar-nuevo-estudiante')?.classList.remove('hidden');
+        document.getElementById('encabezado-contextual')?.classList.remove('hidden');
+    }
+
 
     function quitarEstudianteDelProceso(ppesId) {
         Swal.fire({
