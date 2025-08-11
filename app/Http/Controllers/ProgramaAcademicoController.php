@@ -120,8 +120,6 @@ class ProgramaAcademicoController extends Controller
             'message' => $response->getMessage(),
             'data' => $response->getData()
         ], $response->getCode());
-        // return redirect()->route('programa_academico.procesos.seguimiento', ['id' => $procesoID])
-        //                 ->with($response->getCode(), $response->getMessage());        
     }
 
     public function quitarEstudiante(int $estudianteProcesoProgramaID)
@@ -157,29 +155,67 @@ class ProgramaAcademicoController extends Controller
         return response()->json($estudiantes);
     }
 
-    public function agregarUnEstudianteAProceso(Request $request) {
-        $estudiantes   = [$request->get('codigo')];
-        $procesoID     = $request->get('proceso_id');
-        $anio          = 2024;
-        $periodo       = 1;
+    public function agregarUnEstudianteAProceso(Request $request)
+    {
+        [$code, $message] = $this->asociarCandidato(
+            (int)$request->proceso_id,
+            (string)$request->codigo,
+            2024,
+            1
+        );
 
+        $payload = ['code' => $code, 'message' => $message];
 
-        $asociarCandidatos = new AsociarCandidatosAProcesoGradoUseCase(
+        if ($code === 200) {
+            $est     = $this->construirEstParaFila((int)$request->proceso_id, (string)$request->codigo);
+            $payload['row_html'] = view('programa_academico.procesos.partials.fila_estudiante_vinculado', compact('est'))->render();
+        }
+
+        return response()->json($payload, $code);
+    }
+
+    private function asociarCandidato(int $procesoId, string $codigo, int $anio, int $periodo): array
+    {
+        $uc = new AsociarCandidatosAProcesoGradoUseCase(
             FabricaDeRepositorios::getInstance()->getProgramaRepository(),
             FabricaDeRepositorios::getInstance()->getProcesoRepository(),
         );
 
+        $resp = $uc->ejecutar($procesoId, [$codigo], $anio, $periodo);
+        return [(int)$resp->getCode(), $resp->getMessage()];
+    }
 
-        $response = $asociarCandidatos->ejecutar($procesoID, $estudiantes, $anio, $periodo);       
-        
-        return response()->json([
-            'code' => $response->getCode(),
-            'message' => $response->getMessage(),
-            'data' => $response->getData()
-        ], $response->getCode());        
-        
-        // return redirect()->route('programa_academico.procesos.seguimiento', ['id' => $procesoID])
-        //                 ->with($response->getCode(), $response->getMessage());
+    private function construirEstParaFila(int $procesoId, string $codigo): array
+    {        
+        /** @var Models\User $user */
+        $user = Auth::user();
+        $lista = $user->programaAcademico()->listarEstudiantesCandidatos($procesoId);
+        $est   = collect($lista)->firstWhere('estu_codigo', $codigo);
+
+        if (!$est || empty($est['detalle'])) {
+            $buscarUc = new BuscarEstudianteUseCase(
+                FabricaDeRepositorios::getInstance()->getEstudianteRepository(),
+            );
+            $resp = $buscarUc->ejecutar($codigo);
+
+            if ((int)$resp->getCode() === 200) {
+                $det = (array) $resp->getData();
+                $est = [
+                    'ppes_id'     => $est['ppes_id'] ?? null,
+                    'estu_codigo' => $codigo,
+                    'detalle'     => (object)[
+                        'pensum_estud'    => $det['pensum_estud']    ?? ($det['pensum'] ?? '-'),
+                        'documento'       => $det['documento']       ?? '-',
+                        'nombres'         => $det['nombres']         ?? ($det['nombre'] ?? '-'),
+                        'categoria'       => $det['categoria']       ?? '-',
+                        'situacion'       => $det['situacion']       ?? '-',
+                        'cred_pendientes' => $det['cred_pendientes'] ?? ($det['numeroCreditosPendientes'] ?? '-'),
+                    ],
+                ];
+            }
+        }
+
+        return $est;
     }
 
 

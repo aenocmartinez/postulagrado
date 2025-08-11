@@ -782,76 +782,113 @@
     }
 
     async function agregarEstudianteAlProceso(estudianteId) {
-        const confirmacion = await Swal.fire({
-            title: '¿Está seguro?',
-            text: 'Este estudiante será vinculado al proceso de grado.',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Sí, agregar',
-            cancelButtonText: 'Cancelar',
-            confirmButtonColor: '#16a34a', // verde
-            cancelButtonColor: '#6b7280',
+    const confirmacion = await Swal.fire({
+        title: '¿Está seguro?',
+        text: 'Este estudiante será vinculado al proceso de grado.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, agregar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#16a34a',
+        cancelButtonColor: '#6b7280',
+    });
+    if (!confirmacion.isConfirmed) return;
+
+    // Loading
+    Swal.fire({
+        title: 'Procesando...',
+        text: 'Por favor espere un momento',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    try {
+        const res = await fetch(`/proceso-estudiante/agregar`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ codigo: estudianteId, proceso_id: PROCESO_ID })
         });
 
-        if (!confirmacion.isConfirmed) {
-            return; // Cancelado por el usuario
+        const data = await res.json();
+
+        if (!res.ok || data.code !== 200) {
+        throw new Error(data.message || 'No se pudo agregar el estudiante.');
         }
 
-        // Mostrar loading
+        // Éxito
         Swal.fire({
-            title: 'Procesando...',
-            text: 'Por favor espere un momento',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
+        icon: 'success',
+        title: '¡Éxito!',
+        text: data.message || 'Estudiante agregado correctamente.',
+        timer: 1400,
+        showConfirmButton: false
         });
 
-        try {
-            const response = await fetch(`/proceso-estudiante/agregar`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    codigo: estudianteId,
-                    proceso_id: PROCESO_ID
-                })
-            });
+        // 1) Ocultar y limpiar formulario de agregar
+        document.getElementById('formulario-agregar-estudiante')?.classList.add('hidden');
+        const input = document.getElementById('busqueda-estudiante');
+        if (input) input.value = '';
+        const resDiv = document.getElementById('resultado-busqueda-estudiante');
+        if (resDiv) resDiv.innerHTML = '';
 
-            const data = await response.json();
+        // 2) Insertar/actualizar la fila sin recargar
+        if (data.row_html) {
+        const tbody = document.querySelector('#tabla-estudiantes-vinculados-proceso tbody');
+        if (tbody) {
+            // Parseamos el HTML para detectar el código y evitar duplicados
+            const temp = document.createElement('tbody');
+            temp.innerHTML = data.row_html.trim();
+            const newRow = temp.querySelector('tr');
+            const codigo = newRow?.getAttribute('data-codigo');
 
-            if (data.code === 200) {
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Éxito!',
-                    text: data.message || 'Estudiante agregado correctamente.'
-                }).then(() => {
-
-                    document.getElementById('formulario-agregar-estudiante')?.classList.add('hidden');
-                    const input = document.getElementById('busqueda-estudiante');
-                    if (input) input.value = '';
-                    const res = document.getElementById('resultado-busqueda-estudiante');
-                    if (res) res.innerHTML = '';  
-
-                    location.reload();
-                });
+            if (codigo) {
+            const existente = tbody.querySelector(`tr[data-codigo="${codigo}"]`);
+            if (existente) {
+                existente.replaceWith(newRow);
             } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: data.message || 'No se pudo agregar el estudiante.'
-                });
+                tbody.insertAdjacentElement('afterbegin', newRow);
             }
-        } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error inesperado',
-                text: 'Ocurrió un error al intentar agregar el estudiante.'
-            });
+            } else {
+            // Si no vino data-codigo, inserta sin reemplazo
+            tbody.insertAdjacentHTML('afterbegin', data.row_html);
+            }
         }
+        }
+
+        // 3) Actualizar contador “Total vinculados”
+        const totalSpan = document.getElementById('total-vinculados');
+        if (totalSpan) {
+        const nuevoTotal = (parseInt(totalSpan.textContent || '0', 10) + 1);
+        totalSpan.textContent = String(isNaN(nuevoTotal) ? 1 : nuevoTotal);
+        } else {
+        // Fallback al layout actual (ajústalo si cambias el encabezado)
+        const encabezado = document.getElementById('encabezado-contextual');
+        const strongs = encabezado ? encabezado.querySelectorAll('p strong') : [];
+        const totalStrong = strongs[strongs.length - 1];
+        if (totalStrong) {
+            const actual = parseInt(totalStrong.textContent || '0', 10);
+            totalStrong.textContent = String(isNaN(actual) ? 1 : actual + 1);
+        }
+        }
+
+        // 4) Asegurar que se vea el listado (por si estabas en el detalle)
+        document.getElementById('detalle-estudiante')?.classList.add('hidden');
+        document.getElementById('tabla-estudiantes-vinculados-proceso')?.classList.remove('hidden');
+        document.getElementById('buscador-estudiantes')?.parentElement.classList.remove('hidden');
+        document.getElementById('boton-agregar-nuevo-estudiante')?.classList.remove('hidden');
+        document.getElementById('encabezado-contextual')?.classList.remove('hidden');
+
+    } catch (err) {
+        Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: err.message || 'Ocurrió un error al intentar agregar el estudiante.'
+        });
+    }
     }
 
 </script>
