@@ -137,11 +137,20 @@
         <!-- Botón para agregar estudiante -->
         <div class="flex justify-between items-center mb-4 mt-2" id="boton-agregar-nuevo-estudiante">
             <div></div> <!-- espacio a la izquierda -->
-            <button onclick="toggleFormularioAgregarEstudiante()"
-                    class="bg-green-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400">
-            <i class="fas fa-user-plus mr-1"></i> Agregar estudiante
-            </button>
-        </div>      
+
+            <div class="flex items-center gap-3" id="botones-acciones-estudiante">
+                <button onclick="enviarEnlaceActualizacion()"
+                        class="bg-yellow-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                    <i class="fas fa-envelope mr-1"></i> Enviar enlace de actualización
+                </button>
+
+                <button onclick="toggleFormularioAgregarEstudiante()"
+                        class="bg-green-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400">
+                    <i class="fas fa-user-plus mr-1"></i> Agregar estudiante
+                </button>
+            </div>
+        </div>
+    
         
         <!-- Formulario oculto para agregar un nuevo estudiante -->
         <div id="formulario-agregar-estudiante" class="hidden mb-4 border border-green-200 p-4 rounded bg-green-50 relative">
@@ -963,3 +972,55 @@
     }
 </script>
 
+<script>
+    function enviarEnlaceActualizacion() {
+        Swal.fire({
+            title: '¿Está seguro?',
+            text: 'Se enviará un correo con el enlace para que los estudiantes actualicen su información.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, enviar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#16a34a',
+            cancelButtonColor: '#6b7280',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Enviando...',
+                    text: 'Por favor espere un momento',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                fetch(`{{ route('programa_academico.enviar-enlace-actualizacion') }}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ proceso_id: PROCESO_ID })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    Swal.fire({
+                        icon: data.code === 200 ? 'success' : 'error',
+                        title: data.code === 200 ? '¡Enviado!' : 'Error',
+                        text: data.message || (data.code === 200 
+                            ? 'El enlace fue enviado correctamente.' 
+                            : 'No se pudo enviar el enlace.')
+                    });
+                })
+                .catch(() => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error inesperado',
+                        text: 'Ocurrió un error al intentar enviar el enlace.'
+                    });
+                });
+            }
+        });
+    }
+</script>

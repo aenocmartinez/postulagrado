@@ -124,6 +124,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/programa_academico/estudiantes-candidatos/{codigoPrograma}/{anio}/{periodo}', [ProgramaAcademicoController::class, 'buscarEstudiantesCandidatosAGrado'])->name('programa_academico.candidatos-grado');
     
     Route::post('/programa_academico/asociar-estudiantes', [ProgramaAcademicoController::class, 'asociarEstudiantesCandidatosAProcesoGrado'])->name('programa_academico.asociar-estudiantes-proceso');
+    
+    Route::post('/programa_academico/enviar-enlace-actualizacion',
+        [ProgramaAcademicoController::class, 'enviarEnlaceActualizacionAEstudiantes']
+    )->name('programa_academico.enviar-enlace-actualizacion');
+
 
 
     Route::delete('/programa-academico/estudiantes/{estudianteProcesoProgramaID}', [ProgramaAcademicoController::class, 'quitarEstudiante'])

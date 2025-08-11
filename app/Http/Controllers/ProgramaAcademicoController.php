@@ -13,6 +13,7 @@ use Src\usecase\programas\BuscarEstudiantesCandidatosGradoUseCase;
 use Src\usecase\programas\BuscarEstudianteUseCase;
 use Src\usecase\programas\QuitarEstudianteDeProcesoUseCase;
 use Src\shared\di\FabricaDeRepositorios;
+use Src\usecase\programas\EnviarEnlaceActualizacionUseCase;
 
 class ProgramaAcademicoController extends Controller
 {
@@ -218,5 +219,21 @@ class ProgramaAcademicoController extends Controller
         return $est;
     }
 
+    public function enviarEnlaceActualizacionAEstudiantes(Request $request)
+    {
+        $procesoID = $request->get('proceso_id');
+
+        $enviarEnlace = new EnviarEnlaceActualizacionUseCase(
+            FabricaDeRepositorios::getInstance()->getProgramaRepository(),
+            FabricaDeRepositorios::getInstance()->getProcesoRepository(),
+        );
+
+        $response = $enviarEnlace->ejecutar($procesoID);
+
+        return response()->json([
+            'code' => $response->getCode(),
+            'message' => $response->getMessage(),
+        ], $response->getCode());
+    }
 
 }
