@@ -38,13 +38,14 @@ class ObtenerDatosFormularioActualizacionUseCase
         $estudiante = $this->programaRepo->obtenerEstudiantePorCodigo($codigo);
         if (!$estudiante) {
             return new ResponsePostulaGrado(404, 'No se encontró información del estudiante.');
-        }
+        }        
 
         $data = [
-            'token'      => $token,
-            'proceso_id' => $enlace->getProcesoID(),
-            'codigo'     => $codigo,
-            'estudiante' => $estudiante,
+            'token'         => $token,
+            'proceso_id'    => $enlace->getProcesoID(),
+            'codigo'        => $codigo,
+            'estudiante'    => $estudiante,
+            'esPostgrado'   => true,
         ];
 
         return new ResponsePostulaGrado(200, 'OK', $data);        

@@ -20,6 +20,7 @@ class ActualizacionDatosController extends Controller
         
         if ($resp->getCode() === 200) {
             $data = $resp->getData() ?? [];
+            // dd($data);
             return view('estudiantes.form-actualizacion', $data);
         }
 
