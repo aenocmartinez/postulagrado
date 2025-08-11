@@ -3,6 +3,7 @@
 namespace Src\shared\di;
 
 use Src\infraestructure\dao\oracle\ActividadDao;
+use Src\infraestructure\dao\oracle\EnlaceActualizacionDao;
 use Src\infraestructure\dao\oracle\EstudianteDao;
 use Src\infraestructure\dao\oracle\JornadaDao;
 use Src\infraestructure\dao\oracle\MetodologiaDao;
@@ -15,6 +16,7 @@ use Src\infraestructure\dao\oracle\ProgramaContactoDao;
 use Src\infraestructure\dao\oracle\ProgramaDao;
 use Src\infraestructure\dao\oracle\UnidadRegionalDao;
 use Src\repositories\ActividadRepository;
+use Src\repositories\EnlaceActualizacionRepository;
 use Src\repositories\EstudianteRepository;
 use Src\repositories\JornadaRepository;
 use Src\repositories\MetodologiaRepository;
@@ -43,6 +45,7 @@ class FabricaDeRepositorios
     private NotificacionRepository $notificacionRepo;
     private ProcesoDocumentoRepository $procesoDocumentoRepo;
     private EstudianteRepository $estudianteRepo;
+    private EnlaceActualizacionRepository $enlaceActualizacionRepo;
 
     public function __construct()
     {
@@ -58,6 +61,7 @@ class FabricaDeRepositorios
         $this->notificacionRepo = new NotificacionDao();
         $this->procesoDocumentoRepo = new ProcesoDocumentoDao();
         $this->estudianteRepo = new EstudianteDao();
+        $this->enlaceActualizacionRepo = new EnlaceActualizacionDao();
     }
 
     public static function getInstance(): FabricaDeRepositorios 
@@ -118,5 +122,9 @@ class FabricaDeRepositorios
 
     public function getEstudianteRepository(): EstudianteRepository {
         return $this->estudianteRepo;
-    }    
+    }  
+    
+    public function getEnlaceActualizacionRepository(): EnlaceActualizacionRepository {
+        return $this->enlaceActualizacionRepo;
+    }
 }

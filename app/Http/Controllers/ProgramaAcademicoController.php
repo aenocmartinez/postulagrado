@@ -226,6 +226,7 @@ class ProgramaAcademicoController extends Controller
         $enviarEnlace = new EnviarEnlaceActualizacionUseCase(
             FabricaDeRepositorios::getInstance()->getProgramaRepository(),
             FabricaDeRepositorios::getInstance()->getProcesoRepository(),
+            FabricaDeRepositorios::getInstance()->getEnlaceActualizacionRepository(),
         );
 
         $response = $enviarEnlace->ejecutar($procesoID);

@@ -3,6 +3,10 @@
 namespace Src\usecase\programas;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
+use Src\domain\EnlaceActualizacion;
+use Src\repositories\EnlaceActualizacionRepository;
 use Src\repositories\ProcesoRepository;
 use Src\repositories\ProgramaRepository;
 use Src\Shared\Notifications\GestorNotificaciones;
@@ -15,44 +19,129 @@ class EnviarEnlaceActualizacionUseCase
     protected GestorNotificaciones $gestorNotificaciones;
     private ProgramaRepository $programaRepo;
     private ProcesoRepository $procesoRepo;
-    
-    public function __construct(ProgramaRepository $programaRepo, ProcesoRepository $procesoRepo) {
+    private EnlaceActualizacionRepository $enlaceRepo;
+    private int $diasExpiracion = 7;
+
+    public function __construct(
+        ProgramaRepository $programaRepo,
+        ProcesoRepository $procesoRepo,
+        EnlaceActualizacionRepository $enlaceRepo
+    ) {
         $this->gestorNotificaciones = new GestorNotificaciones();
         $this->programaRepo = $programaRepo;
         $this->procesoRepo = $procesoRepo;
+        $this->enlaceRepo = $enlaceRepo;
     }
 
     public function ejecutar(int $procesoID): ResponsePostulaGrado
     {
-        /** @var App\Models\User $user */
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         $programa = $user->programaAcademico();
 
         $programaProceso = $this->procesoRepo->buscarProgramaPorProceso($procesoID, $programa->getId());
-
         if (!$programaProceso->existe()) {
             return new ResponsePostulaGrado(404, "Programa no asociado al proceso.");
-        }        
-
-        foreach($programa->listarEstudiantesCandidatos($procesoID) as $estudiante) {
-
-            $mensajeHtml = MensajesPersonalizados::generarHtmlEnlaceActualizacion(
-                "https://www.pulzo.com",
-                $estudiante['detalle']->nombres
-            );
-
-            $notificacionDTO = new NotificacionDTO(
-                'Actualización de información personal – Proceso de postulación a grado',
-                $mensajeHtml,
-                [$estudiante['detalle']->email_institucional],
-                ['mailtrap']
-            );
-
-            $this->gestorNotificaciones->enviarNotificacion($notificacionDTO);            
         }
 
+        $estudiantes = $programa->listarEstudiantesCandidatos($procesoID);
 
-        return new ResponsePostulaGrado(200, "Enviado");
+        $total = count($estudiantes);
+        $enviados = 0;
+        $errores = 0;
+        $fallidos = [];
+
+        foreach ($estudiantes as $estudiante) {
+            $codigo = (string) ($estudiante['estu_codigo'] ?? '');
+            $email  = (string) ($estudiante['detalle']->email_institucional ?? '');
+            $nombre = (string) ($estudiante['detalle']->nombres ?? 'Estudiante');
+
+            if (!$codigo || !$email) {
+                $errores++;
+                $fallidos[] = ['codigo' => $codigo, 'email' => $email, 'motivo' => 'Falta código o email'];
+                continue;
+            }
+
+            try {                
+                $token = $this->emitirToken($procesoID, $codigo);
+                $urlFormulario = $this->construirUrlFormulario($token);
+
+                $mensajeHtml = MensajesPersonalizados::generarHtmlEnlaceActualizacion($urlFormulario, $nombre);
+
+                $notificacionDTO = new NotificacionDTO(
+                    'Actualización de información personal – Proceso de postulación a grado',
+                    $mensajeHtml,
+                    [$email],
+                    ['mailtrap']
+                );
+
+                $this->gestorNotificaciones->enviarNotificacion($notificacionDTO);
+                $enviados++;
+
+            } catch (\Throwable $e) {
+                $errores++;
+                $fallidos[] = ['codigo' => $codigo, 'email' => $email, 'motivo' => $e->getMessage()];
+            }
+        }
+
+        $mensaje = "Solicitudes enviadas: {$enviados}/{$total}";
+        if ($errores > 0) {
+            $mensaje .= " | Errores: {$errores}";
+        }
+
+        return new ResponsePostulaGrado(200, $mensaje, [
+            'total'   => $total,
+            'enviados'=> $enviados,
+            'errores' => $errores,
+            'fallidos'=> $fallidos,
+        ]);
     }
 
+    /**
+     * Reutiliza un token vigente y no usado; si no existe, crea uno nuevo.
+     */
+    private function emitirToken(int $procesoID, string $codigoEstudiante): string
+    {
+        $vigente = $this->enlaceRepo->buscarPorCodigoEstudianteYProceso($codigoEstudiante, $procesoID);
+
+        $ahora = Carbon::now();
+        $exp   = $vigente?->getFechaExpira();
+        $usado = strtoupper($vigente?->getUsado() ?? 'N');
+
+        $estaVigente = $vigente
+            && $usado === 'N'
+            && (!$exp || $ahora->lt(Carbon::parse($exp)));
+
+        if ($estaVigente) {
+            return $vigente->getToken();
+        }
+
+        // Generar nuevo token y persistir
+        $token = Str::uuid()->toString();
+        $fechaExpira = Carbon::now()->addDays($this->diasExpiracion)->format('Y-m-d H:i:s');
+
+        $enlace = (new EnlaceActualizacion())
+            ->setProcesoID($procesoID)
+            ->setCodigoEstudiante($codigoEstudiante)
+            ->setToken($token)
+            ->setUsado('N')
+            ->setFechaExpira($fechaExpira)
+            ->setFechaUso(''); 
+
+        $ok = $this->enlaceRepo->guardar($enlace);
+        if (!$ok) {
+            throw new \RuntimeException('No fue posible registrar el enlace de actualización.');
+        }
+
+        return $token;
+    }
+
+    /**
+     * Construye la URL pública usando la ruta del formulario con token.
+     * Asegúrate de tener: Route::get('/actualizar-datos/{token}', ...)->name('actualizacion.form.token');
+     */
+    private function construirUrlFormulario(string $token): string
+    {
+        return route('actualizacion.form.token', ['token' => $token]);
+    }
 }
