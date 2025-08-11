@@ -674,6 +674,9 @@
         document.getElementById('buscador-estudiantes')?.parentElement.classList.remove('hidden');
         document.getElementById('boton-agregar-nuevo-estudiante')?.classList.remove('hidden');
         document.getElementById('encabezado-contextual')?.classList.remove('hidden');
+
+        // Mantener el formulario cerrado
+        document.getElementById('formulario-agregar-estudiante')?.classList.add('hidden');
     }
 
 
@@ -826,7 +829,14 @@
                     title: '¡Éxito!',
                     text: data.message || 'Estudiante agregado correctamente.'
                 }).then(() => {
-                    location.reload(); // o actualizar tabla dinámicamente
+
+                    document.getElementById('formulario-agregar-estudiante')?.classList.add('hidden');
+                    const input = document.getElementById('busqueda-estudiante');
+                    if (input) input.value = '';
+                    const res = document.getElementById('resultado-busqueda-estudiante');
+                    if (res) res.innerHTML = '';  
+
+                    location.reload();
                 });
             } else {
                 Swal.fire({

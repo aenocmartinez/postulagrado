@@ -2,6 +2,7 @@
 
 namespace Src\usecase\programas;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Src\repositories\ProcesoRepository;
 use Src\repositories\ProgramaRepository;
@@ -17,6 +18,7 @@ class AsociarCandidatosAProcesoGradoUseCase
     public function ejecutar(int $procesoID, $estudiantes=[], int $anio, int $periodo): ResponsePostulaGrado 
     {
         /** @var App\Models\User $user */
+        $user = Auth::user();
         $programa = $user->programaAcademico();
 
         $programaProceso = $this->procesoRepo->buscarProgramaPorProceso($procesoID, $programa->getId());
