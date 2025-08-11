@@ -137,28 +137,42 @@
         <!-- Botón para agregar estudiante -->
         <div class="flex justify-between items-center mb-4 mt-2" id="boton-agregar-nuevo-estudiante">
             <div></div> <!-- espacio a la izquierda -->
-            <button onclick="mostrarFormularioAgregarEstudiante()"
+            <button onclick="toggleFormularioAgregarEstudiante()"
                     class="bg-green-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400">
-                <i class="fas fa-user-plus mr-1"></i> Agregar estudiante
+            <i class="fas fa-user-plus mr-1"></i> Agregar estudiante
             </button>
         </div>      
         
         <!-- Formulario oculto para agregar un nuevo estudiante -->
-        <div id="formulario-agregar-estudiante" class="hidden mb-4 border border-green-200 p-4 rounded bg-green-50">
-            <div class="flex justify-center mb-3">
-                <div class="flex items-center gap-4 w-full md:w-2/3 lg:w-1/2">
-                    <input type="text" id="busqueda-estudiante"
-                        placeholder="Ingrese código o documento"
-                        class="w-full border border-gray-300 rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400">
-                    <button onclick="buscarEstudiante()"
-                            class="bg-blue-600 text-white px-4 py-2 text-sm rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
-                        Buscar
-                    </button>
-                </div>
-            </div>
+        <div id="formulario-agregar-estudiante" class="hidden mb-4 border border-green-200 p-4 rounded bg-green-50 relative">
+        <button type="button"
+                onclick="toggleFormularioAgregarEstudiante('hide')"
+                class="absolute right-3 top-3 text-gray-500 hover:text-red-600"
+                title="Cerrar">
+            <i class="fas fa-times"></i>
+        </button>
 
-            <div id="resultado-busqueda-estudiante" class="text-sm text-gray-800"></div>
-        </div>      
+        <div class="flex justify-center mb-3">
+            <div class="flex items-center gap-4 w-full md:w-2/3 lg:w-1/2">
+            <input type="text" id="busqueda-estudiante"
+                    placeholder="Ingrese código o documento"
+                    class="w-full border border-gray-300 rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400">
+            <button onclick="buscarEstudiante()"
+                    class="bg-blue-600 text-white px-4 py-2 text-sm rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                Buscar
+            </button>
+            <!-- Botón Cancelar (opcional) -->
+            <button type="button"
+                    onclick="toggleFormularioAgregarEstudiante('hide')"
+                    class="border border-gray-300 text-gray-700 px-3 py-2 text-sm rounded hover:bg-gray-100">
+                Cancelar
+            </button>
+            </div>
+        </div>
+
+        <div id="resultado-busqueda-estudiante" class="text-sm text-gray-800"></div>
+        </div>
+
 
         <!-- Encabezado contextual -->
         <div class="bg-gray-50 border-l-4 border-green-500 p-4 rounded-md mb-4 text-sm text-gray-700 shadow-sm" id="encabezado-contextual">
@@ -697,9 +711,6 @@
 </script>
 
 <script>
-    function mostrarFormularioAgregarEstudiante() {
-        document.getElementById('formulario-agregar-estudiante').classList.remove('hidden');
-    }
 
     async function buscarEstudiante() {
         const termino = document.getElementById('busqueda-estudiante').value.trim();
@@ -846,87 +857,109 @@
 
 </script>
 
+<script>
+    async function quitarEstudianteDelProceso(ppesId) {
+    // Confirmación
+    const confirmacion = await Swal.fire({
+        title: '¿Está seguro?',
+        text: 'Este estudiante será desvinculado del proceso.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, quitar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#6b7280',
+    });
+    if (!confirmacion.isConfirmed) return;
+
+    // Loading
+    Swal.fire({
+        title: 'Procesando...',
+        text: 'Eliminando estudiante del proceso',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    try {
+        // Petición DELETE
+        const res = await fetch(`/programa-academico/estudiantes/${ppesId}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+        }
+        });
+        const data = await res.json();
+        if (!res.ok || (data.code && data.code !== 200)) {
+        throw new Error(data.message || 'No se pudo quitar el estudiante.');
+        }
+
+        // Éxito
+        Swal.fire({
+        icon: 'success',
+        title: 'Éxito',
+        text: data.message || 'Estudiante retirado correctamente',
+        timer: 1400,
+        showConfirmButton: false
+        });
+
+        // Quitar la fila del DOM por ppesId
+        const btn = document.querySelector(`button[data-ppes-id="${ppesId}"]`);
+        const row = btn ? btn.closest('tr') : null;
+        if (row) row.remove();
+
+        // Actualizar contador "Total vinculados"
+        const totalSpan = document.getElementById('total-vinculados');
+        if (totalSpan) {
+        const nuevo = Math.max(0, (parseInt(totalSpan.textContent || '0', 10) - 1));
+        totalSpan.textContent = String(nuevo);
+        } else {
+        // Fallback si aún no usas <span id="total-vinculados">
+        const encabezado = document.getElementById('encabezado-contextual');
+        const strongs = encabezado ? encabezado.querySelectorAll('p strong') : [];
+        const totalStrong = strongs[strongs.length - 1];
+        if (totalStrong) {
+            const actual = parseInt(totalStrong.textContent || '0', 10);
+            totalStrong.textContent = String(Math.max(0, actual - 1));
+        }
+        }
+
+        // (Opcional) Asegurar que se vea el listado por si estabas en el detalle
+        document.getElementById('detalle-estudiante')?.classList.add('hidden');
+        document.getElementById('tabla-estudiantes-vinculados-proceso')?.classList.remove('hidden');
+        document.getElementById('buscador-estudiantes')?.parentElement.classList.remove('hidden');
+        document.getElementById('boton-agregar-nuevo-estudiante')?.classList.remove('hidden');
+        document.getElementById('encabezado-contextual')?.classList.remove('hidden');
+
+    } catch (err) {
+        Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: err.message || 'No se pudo quitar el estudiante. Intenta nuevamente.'
+        });
+    }
+    }
+</script>
 
 <script>
-async function quitarEstudianteDelProceso(ppesId) {
-  // Confirmación
-  const confirmacion = await Swal.fire({
-    title: '¿Está seguro?',
-    text: 'Este estudiante será desvinculado del proceso.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Sí, quitar',
-    cancelButtonText: 'Cancelar',
-    confirmButtonColor: '#dc2626',
-    cancelButtonColor: '#6b7280',
-  });
-  if (!confirmacion.isConfirmed) return;
+    function toggleFormularioAgregarEstudiante(force) {
+    const form = document.getElementById('formulario-agregar-estudiante');
+    const input = document.getElementById('busqueda-estudiante');
+    const res   = document.getElementById('resultado-busqueda-estudiante');
 
-  // Loading
-  Swal.fire({
-    title: 'Procesando...',
-    text: 'Eliminando estudiante del proceso',
-    allowOutsideClick: false,
-    didOpen: () => Swal.showLoading()
-  });
+    if (force === 'show') form.classList.remove('hidden');
+    else if (force === 'hide') form.classList.add('hidden');
+    else form.classList.toggle('hidden');
 
-  try {
-    // Petición DELETE
-    const res = await fetch(`/programa-academico/estudiantes/${ppesId}`, {
-      method: 'DELETE',
-      headers: {
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-        'Accept': 'application/json'
-      }
-    });
-    const data = await res.json();
-    if (!res.ok || (data.code && data.code !== 200)) {
-      throw new Error(data.message || 'No se pudo quitar el estudiante.');
-    }
-
-    // Éxito
-    Swal.fire({
-      icon: 'success',
-      title: 'Éxito',
-      text: data.message || 'Estudiante retirado correctamente',
-      timer: 1400,
-      showConfirmButton: false
-    });
-
-    // Quitar la fila del DOM por ppesId
-    const btn = document.querySelector(`button[data-ppes-id="${ppesId}"]`);
-    const row = btn ? btn.closest('tr') : null;
-    if (row) row.remove();
-
-    // Actualizar contador "Total vinculados"
-    const totalSpan = document.getElementById('total-vinculados');
-    if (totalSpan) {
-      const nuevo = Math.max(0, (parseInt(totalSpan.textContent || '0', 10) - 1));
-      totalSpan.textContent = String(nuevo);
+    // Si lo ocultamos, limpiamos campos
+    const estaOculto = form.classList.contains('hidden');
+    if (estaOculto) {
+        if (input) input.value = '';
+        if (res) res.innerHTML = '';
     } else {
-      // Fallback si aún no usas <span id="total-vinculados">
-      const encabezado = document.getElementById('encabezado-contextual');
-      const strongs = encabezado ? encabezado.querySelectorAll('p strong') : [];
-      const totalStrong = strongs[strongs.length - 1];
-      if (totalStrong) {
-        const actual = parseInt(totalStrong.textContent || '0', 10);
-        totalStrong.textContent = String(Math.max(0, actual - 1));
-      }
+        // Si lo abrimos, focus al input
+        input?.focus();
     }
-
-    // (Opcional) Asegurar que se vea el listado por si estabas en el detalle
-    document.getElementById('detalle-estudiante')?.classList.add('hidden');
-    document.getElementById('tabla-estudiantes-vinculados-proceso')?.classList.remove('hidden');
-    document.getElementById('buscador-estudiantes')?.parentElement.classList.remove('hidden');
-    document.getElementById('boton-agregar-nuevo-estudiante')?.classList.remove('hidden');
-    document.getElementById('encabezado-contextual')?.classList.remove('hidden');
-
-  } catch (err) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: err.message || 'No se pudo quitar el estudiante. Intenta nuevamente.'
-    });
-  }
-}
+    }
 </script>
+
