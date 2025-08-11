@@ -173,7 +173,12 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <i class="fas fa-users text-green-600"></i>
-                    <p><strong>Total vinculados:</strong> {{ count(auth()->user()->programaAcademico()->listarEstudiantesCandidatos($proceso->getId())) }}</p>
+                    <p>
+                        <strong>Total vinculados:</strong>
+                        <span id="total-vinculados">
+                            {{ count(auth()->user()->programaAcademico()->listarEstudiantesCandidatos($proceso->getId())) }}
+                        </span>
+                    </p>
                 </div>
             </div>
         </div>
@@ -678,58 +683,6 @@
         // Mantener el formulario cerrado
         document.getElementById('formulario-agregar-estudiante')?.classList.add('hidden');
     }
-
-
-    function quitarEstudianteDelProceso(ppesId) {
-        Swal.fire({
-            title: '¿Está seguro?',
-            text: 'Este estudiante será desvinculado del proceso.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Sí, quitar',
-            cancelButtonText: 'Cancelar',
-            confirmButtonColor: '#dc2626',
-            cancelButtonColor: '#6b7280',
-        }).then((result) => {
-            if (!result.isConfirmed) return;
-
-            // Mostrar indicador de carga
-            Swal.fire({
-                title: 'Procesando...',
-                text: 'Eliminando estudiante del proceso',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
-            fetch(`/programa-academico/estudiantes/${ppesId}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Éxito',
-                    text: data.message || 'Estudiante retirado correctamente'
-                }).then(() => {
-                    cerrarModalEstudiantesVinculados();
-                    location.reload(); // o actualizar tabla dinámicamente si lo prefieres
-                });
-            })
-            .catch(error => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'No se pudo quitar el estudiante. Intenta nuevamente.'
-                });
-            });
-        });
-    }
     
     document.getElementById('buscador-estudiantes').addEventListener('input', function () {
         const filtro = this.value.toLowerCase().trim();
@@ -891,4 +844,89 @@
     }
     }
 
+</script>
+
+
+<script>
+async function quitarEstudianteDelProceso(ppesId) {
+  // Confirmación
+  const confirmacion = await Swal.fire({
+    title: '¿Está seguro?',
+    text: 'Este estudiante será desvinculado del proceso.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, quitar',
+    cancelButtonText: 'Cancelar',
+    confirmButtonColor: '#dc2626',
+    cancelButtonColor: '#6b7280',
+  });
+  if (!confirmacion.isConfirmed) return;
+
+  // Loading
+  Swal.fire({
+    title: 'Procesando...',
+    text: 'Eliminando estudiante del proceso',
+    allowOutsideClick: false,
+    didOpen: () => Swal.showLoading()
+  });
+
+  try {
+    // Petición DELETE
+    const res = await fetch(`/programa-academico/estudiantes/${ppesId}`, {
+      method: 'DELETE',
+      headers: {
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        'Accept': 'application/json'
+      }
+    });
+    const data = await res.json();
+    if (!res.ok || (data.code && data.code !== 200)) {
+      throw new Error(data.message || 'No se pudo quitar el estudiante.');
+    }
+
+    // Éxito
+    Swal.fire({
+      icon: 'success',
+      title: 'Éxito',
+      text: data.message || 'Estudiante retirado correctamente',
+      timer: 1400,
+      showConfirmButton: false
+    });
+
+    // Quitar la fila del DOM por ppesId
+    const btn = document.querySelector(`button[data-ppes-id="${ppesId}"]`);
+    const row = btn ? btn.closest('tr') : null;
+    if (row) row.remove();
+
+    // Actualizar contador "Total vinculados"
+    const totalSpan = document.getElementById('total-vinculados');
+    if (totalSpan) {
+      const nuevo = Math.max(0, (parseInt(totalSpan.textContent || '0', 10) - 1));
+      totalSpan.textContent = String(nuevo);
+    } else {
+      // Fallback si aún no usas <span id="total-vinculados">
+      const encabezado = document.getElementById('encabezado-contextual');
+      const strongs = encabezado ? encabezado.querySelectorAll('p strong') : [];
+      const totalStrong = strongs[strongs.length - 1];
+      if (totalStrong) {
+        const actual = parseInt(totalStrong.textContent || '0', 10);
+        totalStrong.textContent = String(Math.max(0, actual - 1));
+      }
+    }
+
+    // (Opcional) Asegurar que se vea el listado por si estabas en el detalle
+    document.getElementById('detalle-estudiante')?.classList.add('hidden');
+    document.getElementById('tabla-estudiantes-vinculados-proceso')?.classList.remove('hidden');
+    document.getElementById('buscador-estudiantes')?.parentElement.classList.remove('hidden');
+    document.getElementById('boton-agregar-nuevo-estudiante')?.classList.remove('hidden');
+    document.getElementById('encabezado-contextual')?.classList.remove('hidden');
+
+  } catch (err) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: err.message || 'No se pudo quitar el estudiante. Intenta nuevamente.'
+    });
+  }
+}
 </script>
