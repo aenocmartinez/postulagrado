@@ -14,6 +14,7 @@ use Src\usecase\programas\BuscarEstudianteUseCase;
 use Src\usecase\programas\QuitarEstudianteDeProcesoUseCase;
 use Src\shared\di\FabricaDeRepositorios;
 use Src\usecase\programas\EnviarEnlaceActualizacionUseCase;
+use Src\usecase\programas\ObtenerDetalleEstudianteProcesoUseCase;
 
 class ProgramaAcademicoController extends Controller
 {
@@ -235,6 +236,35 @@ class ProgramaAcademicoController extends Controller
             'code' => $response->getCode(),
             'message' => $response->getMessage(),
         ], $response->getCode());
+    }
+
+    /**
+     * GET /programa-academico/estudiantes/{procesoId}/{codigo}
+     * Retorna el detalle de un estudiante vinculado a un proceso.
+     */
+    public function detalleEstudianteProceso(int $procesoId, string $codigo)
+    {
+        try {
+            $useCase = new ObtenerDetalleEstudianteProcesoUseCase(
+                FabricaDeRepositorios::getInstance()->getProgramaRepository(),
+                FabricaDeRepositorios::getInstance()->getProcesoRepository(),
+            );
+
+            $resp = $useCase->ejecutar($procesoId, $codigo);
+
+            return response()->json([
+                'code'    => $resp->getCode(),
+                'message' => $resp->getMessage(),
+                'data'    => $resp->getData(),
+            ], $resp->getCode());
+        } catch (\Throwable $e) {
+            report($e);
+
+            return response()->json([
+                'code'    => 500,
+                'message' => 'Error al obtener el detalle del estudiante.',
+            ], 500);
+        }
     }
 
 }

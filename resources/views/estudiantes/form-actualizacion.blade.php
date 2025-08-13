@@ -41,7 +41,11 @@
 <style>
   h1{margin:0 0 8px 0;font-size:22px}
   p.lead{margin:0 0 16px 0;color:#374151}
-  .grid{display:grid;gap:12px}
+  .grid{
+    display:grid;
+    column-gap:12px; 
+    row-gap:18px;    
+    }
   @media (min-width:640px){ .grid-2{grid-template-columns:repeat(2,1fr)} }
   @media (min-width:940px){ .grid-3{grid-template-columns:repeat(3,1fr)} }
   label{display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px}
