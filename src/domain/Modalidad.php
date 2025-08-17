@@ -2,12 +2,9 @@
 
 namespace Src\domain;
 
-use Src\repositories\ModalidadRepository;
-
 class Modalidad
 {
     public function __construct(
-        private ModalidadRepository $repository,
         private int $id = 0, 
         private string $nombre = ""        
     ){}

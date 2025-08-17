@@ -49,39 +49,39 @@
                 <tbody>
                     @forelse($procesos as $proceso)
                         <tr class="border-b border-gray-300 bg-white hover:bg-gray-100 transition">
-                            <td class="px-4 py-2 text-gray-900">{{ $proceso->getNombre() }}</td>
-                            <td class="px-4 py-2 text-gray-900">{{ $proceso->getNivelEducativo()->getNombre() }}</td>
-                            <td class="px-4 py-2 font-semibold {{ $proceso->getEstado() == 'ABIERTO' ? 'text-orange-500' : 'text-gray-900' }}">
-                                {{ ucfirst($proceso->getEstado()) }}
+                            <td class="px-4 py-2 text-gray-900">{{ $proceso->nombre }}</td>
+                            <td class="px-4 py-2 text-gray-900">{{ $proceso->nivelEducativoNombre }}</td>
+                            <td class="px-4 py-2 font-semibold {{ $proceso->estado == 'ABIERTO' ? 'text-orange-500' : 'text-gray-900' }}">
+                                {{ ucfirst($proceso->estado) }}
                             </td>
                             <td class="px-4 py-2 text-center">
                                 <div class="flex justify-center gap-4 text-gray-600">
                                     <!-- Botón Editar -->
-                                    <a href="{{ route('procesos.edit', $proceso->getId()) }}" 
+                                    <a href="{{ route('procesos.edit', $proceso->id) }}" 
                                        class="hover:text-blue-600 transition">
                                         Editar
                                     </a>
 
                                     <!-- Botón Eliminar -->
-                                    <form action="{{ route('procesos.destroy', $proceso->getId()) }}" method="POST" class="inline">
+                                    <form action="{{ route('procesos.destroy', $proceso->id) }}" method="POST" class="inline">
                                         @csrf
                                         @method('DELETE')
                                         <!-- Botón Eliminar con confirmación -->
                                         <button type="button" class="eliminar-btn hover:text-red-600 transition" 
-                                                data-url="{{ route('procesos.destroy', $proceso->getId()) }}">
+                                                data-url="{{ route('procesos.destroy', $proceso->id) }}">
                                             Eliminar
                                         </button>
 
                                     </form>
 
                                     <!-- Botón Calendario de Actividades -->
-                                    <a href="{{ route('procesos.actividades', $proceso->getId()) }}" 
+                                    <a href="{{ route('procesos.actividades', $proceso->id) }}" 
                                        class="hover:text-orange-400 transition">
                                         Actividades
                                     </a>
 
                                     <!-- Botón Gestionar Documentos -->
-                                    <a href="{{ route('proceso_documentos.index', $proceso->getId()) }}" 
+                                    <a href="{{ route('procesos.documentos.index', $proceso->id) }}" 
                                     class="hover:text-indigo-600 transition">
                                         Archivos
                                     </a>
@@ -102,7 +102,7 @@
 
         <!-- Paginador -->
         <div class="mt-4">
-            {{ $procesos->appends(['search' => request('search')])->links() }}
+            
         </div>
     </div>
 @endsection

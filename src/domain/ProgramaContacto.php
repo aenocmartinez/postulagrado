@@ -13,7 +13,6 @@ class ProgramaContacto
     private Programa $programa;
 
     public function __construct(
-        private ProgramaContactoRepository $repository,
         private int $id = 0
         ) {}
 
@@ -85,15 +84,15 @@ class ProgramaContacto
         return $this->id > 0;
     }
 
-    public function crear(): bool {
-        return $this->repository->crear($this);
-    }
+    // public function crear(): bool {
+    //     return $this->repository->crear($this);
+    // }
 
-    public function actualizar(): bool {
-        return $this->repository->actualizar($this);
-    }
+    // public function actualizar(): bool {
+    //     return $this->repository->actualizar($this);
+    // }
 
-    public function eliminar(): bool {
-        return $this->repository->eliminar($this->getId());
-    }
+    // public function eliminar(): bool {
+    //     return $this->repository->eliminar($this->getId());
+    // }
 }

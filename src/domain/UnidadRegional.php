@@ -8,7 +8,6 @@ use Src\shared\formato\FormatoString;
 class UnidadRegional
 {
     public function __construct(
-        private UnidadRegionalRepository $repository,
         private int $id = 0, 
         private string $nombre = ""
     ){}

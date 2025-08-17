@@ -4,7 +4,7 @@
     <input type="text" name="nombre" id="nombre"
         class="border border-gray-300 px-3 py-2 rounded-md text-sm w-full focus:ring focus:ring-gray-400 outline-none
         @error('nombre') border-red-500 @enderror"
-        value="{{ old('nombre', isset($proceso) ? $proceso->getNombre() : '') }}">
+        value="{{ old('nombre', isset($proceso) ? $proceso->nombre : '') }}">
     
     @error('nombre')
         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -21,7 +21,7 @@
         <option value=""></option>
         @foreach($listaNivelEduactivo as $nivelEducativo)
             <option value="{{ $nivelEducativo->getId() }}" 
-                    {{ isset($proceso) && $proceso->getNivelEducativo()->getId() == $nivelEducativo->getId() ? 'selected' : '' }}
+                    {{ isset($proceso) && $proceso->nivelEducativoID == $nivelEducativo->getId() ? 'selected' : '' }}
                     {{ old('nivelEducativo') == $nivelEducativo->getId() ? 'selected' : '' }}
                 >
             {{ $nivelEducativo->getNombre() }}

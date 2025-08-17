@@ -12,7 +12,7 @@
     <h2 class="text-lg font-semibold text-gray-800 mb-4">Editar Proceso de Grado</h2>
 
     <!-- Formulario -->
-    <form action="{{ route('procesos.update', $proceso->getId()) }}" method="POST" class="space-y-4">
+    <form action="{{ route('procesos.update', $proceso->id) }}" method="POST" class="space-y-4">
         @csrf
         @method('PUT')
 

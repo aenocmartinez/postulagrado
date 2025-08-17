@@ -7,7 +7,6 @@ use Src\repositories\MetodologiaRepository;
 class Metodologia
 {
     public function __construct(
-        private MetodologiaRepository $repository,
         private int $id = 0, 
         private string $nombre = ""
     ){}

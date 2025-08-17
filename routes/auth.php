@@ -1,7 +1,5 @@
 <?php
 
-use App\Http\Controllers\ActividadController;
-use App\Http\Controllers\ProcesoDocumentoController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
@@ -9,15 +7,16 @@ use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\LaravelActividadController;
+use App\Http\Controllers\LaravelProcesoController;
+use App\Http\Controllers\LaravelProcesoDocumentoController;
 use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\ProcesoController;
 use App\Http\Controllers\ProgramaAcademicoController;
 use App\Http\Controllers\ProgramaContactoController;
 use App\Http\Controllers\SeguimientoController;
 use Illuminate\Support\Facades\Route;
-use Src\admisiones\dto\ProgramaContactoDTO;
 
 Route::middleware('guest')->group(function () {
     // Route::get('register', [RegisteredUserController::class, 'create'])
@@ -67,20 +66,33 @@ Route::middleware('auth')->group(function () {
 
 
     // Procesos
-    Route::get('procesos', [ProcesoController::class, 'index'])->name('procesos.index');
-    Route::get('procesos/create', [ProcesoController::class, 'create'])->name('procesos.create');
-    Route::post('procesos', [ProcesoController::class, 'store'])->name('procesos.store');
-    Route::get('procesos/{id}/edit', [ProcesoController::class, 'edit'])->name('procesos.edit');
-    Route::put('procesos/{id}', [ProcesoController::class, 'update'])->name('procesos.update');
-    Route::delete('procesos/{id}', [ProcesoController::class, 'destroy'])->name('procesos.destroy');
-    Route::delete('procesos/{procesoID}/programas/{programaID}', [ProcesoController::class, 'quitarPrograma'])->name('procesos.quitar-programa');
-    Route::get('procesos/{procesoID}/programas/{programaID}', [ProcesoController::class, 'consultarAvancePrograma'])->name('seguimiento.programa-avance');
+    Route::controller(LaravelProcesoController::class)->group(function () {
+        Route::get('procesos', 'index')->name('procesos.index');
+        Route::get('procesos/crear', 'create')->name('procesos.create');
+        Route::post('procesos', 'store')->name('procesos.store');
+        Route::get('procesos/{id}/edit', 'edit')->name('procesos.edit');
+        Route::put('procesos/{id}', 'update')->name('procesos.update');
+        Route::delete('procesos/{id}', 'destroy')->name('procesos.destroy');
 
+    });
+
+    Route::delete('procesos/{procesoID}/programas/{programaID}', [ProcesoController::class, 'quitarPrograma'])->name('procesos.quitar-programa');
+    Route::get('procesos/{procesoID}/programas/{programaID}', [ProcesoController::class, 'consultarAvancePrograma'])->name('seguimiento.programa-avance');    
+    
     // Actividades
-    Route::get('procesos/{id}/actividades', [ActividadController::class, 'index'])->name('procesos.actividades');
-    Route::post('procesos/{id}/actividades', [ActividadController::class, 'store'])->name('actividades.store');
-    Route::delete('procesos/{id}/actividades/{actividad}', [ActividadController::class, 'destroy'])->name('actividades.destroy');
-    Route::post('/procesos/{id}/actividades/masivo', [ActividadController::class, 'storeMasivo'])->name('actividades.store-masivo');
+    Route::controller(LaravelActividadController::class)->group(function () {
+        Route::get('procesos/{id}/actividades', 'index')->name('procesos.actividades');
+        Route::post('/procesos/{id}/actividades', 'store')->name('actividades.store');
+    });
+
+    // Documentos de Proceso
+    Route::controller(LaravelProcesoDocumentoController::class)->group(function () {
+        Route::get('/procesos/{procesoID}/documentos', 'index')->name('procesos.documentos.index');
+        Route::get('/procesos/{procesoID}/crear-documento', 'create')->name('procesos.documentos.create');
+        Route::post('/procesos/documentos', 'store')->name('proceso_documentos.store');
+        Route::delete('/proceso/{procesoID}/documentos/{documentoID}', 'destroy')->name('procesos.documentos.destroy');
+    });
+    
 
     // Seguimientos
     Route::get('seguimientos', [SeguimientoController::class, 'index'])->name('seguimientos.index');
@@ -106,15 +118,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/notificaciones/{id}/editar', [NotificacionController::class, 'edit'])->name('notificaciones.edit');
     Route::put('/notificaciones/{id}', [NotificacionController::class, 'update'])->name('notificaciones.update');
     Route::post('/notificaciones/{id}/marcar-leida', [NotificacionController::class, 'marcarComoLeida'])->name('notificaciones.marcar_como_leida');
-
-
-
-    // Documentos de Proceso
-    Route::get('/proceso/{proceso}/documentos', [ProcesoDocumentoController::class, 'index'])->name('proceso_documentos.index');
-    Route::post('/proceso/documentos', [ProcesoDocumentoController::class, 'store'])->name('proceso_documentos.store');
-    Route::get('/proceso/documentos/{documento}', [ProcesoDocumentoController::class, 'show'])->name('proceso_documentos.show');
-    Route::delete('/proceso/{proceso}/documentos/{documento}', [ProcesoDocumentoController::class, 'destroy'])->name('proceso_documentos.destroy');
-    Route::get('/procesos/{proceso}/documentos/create', [ProcesoDocumentoController::class, 'create'])->name('proceso_documentos.create');
     
 
     // Programa Académico

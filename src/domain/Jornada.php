@@ -2,12 +2,9 @@
 
 namespace Src\domain;
 
-use Src\repositories\JornadaRepository;
-
 class Jornada
 {
     public function __construct(
-        private JornadaRepository $repository,
         private int $id = 0, 
         private string $nombre = ""
     ){}

@@ -2,7 +2,7 @@
 
 namespace Src\domain;
 
-use Src\repositories\NotificacionRepository;
+use Src\domain\proceso\Proceso;
 use Src\shared\di\FabricaDeRepositorios;
 
 class Notificacion
@@ -16,7 +16,6 @@ class Notificacion
     private string $estado;
     private bool $fueLeida;
     private Proceso $proceso;
-    private NotificacionRepository $notificacionRepo;
 
     public function __construct()
     {
@@ -29,7 +28,6 @@ class Notificacion
         $this->estado = '';
         $this->fueLeida = false;
         $this->proceso = new Proceso();
-        $this->notificacionRepo = FabricaDeRepositorios::getInstance()->getNotificacionRepository();
     }
 
     public function getId(): int
@@ -127,20 +125,20 @@ class Notificacion
         return $this->estado === 'ANULADA';
     }
 
-    public function listar(): array
-    {
-        return $this->notificacionRepo->listar();
-    }
+    // public function listar(): array
+    // {
+    //     return $this->notificacionRepo->listar();
+    // }
 
-    public function crear(): bool
-    {
-        return $this->notificacionRepo->crear($this);
-    }
+    // public function crear(): bool
+    // {
+    //     return $this->notificacionRepo->crear($this);
+    // }
 
-    public function actualizar(): bool
-    {
-        return $this->notificacionRepo->actualizar($this);
-    }
+    // public function actualizar(): bool
+    // {
+    //     return $this->notificacionRepo->actualizar($this);
+    // }
 
     public function existe(): bool
     {
