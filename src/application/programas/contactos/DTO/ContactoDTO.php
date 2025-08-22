@@ -1,8 +1,8 @@
 <?php
 
-namespace Src\dto;
+namespace Src\application\programas\contactos\DTO;
 
-class ProgramaContactoDTO {
+class ContactoDTO {
 
     private int $id;
 

@@ -10,7 +10,7 @@
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Editar Contacto</h2>
 
         <!-- Formulario -->
-        <form method="POST" action="{{ route('contactos.update', $contacto->getId()) }}">
+        <form method="POST" action="{{ route('contactos.update', $contacto['id']) }}">
             @csrf
             @method('PUT')
 

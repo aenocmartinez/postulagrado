@@ -1,8 +1,8 @@
 <?php
 
-namespace Src\usecase\programas;
+namespace Src\application\programas;
 
-use Src\repositories\ProgramaRepository;
+use Src\domain\repositories\ProgramaRepository;
 use Src\shared\response\ResponsePostulaGrado;
 
 class ListarProgramasUseCase
@@ -11,9 +11,8 @@ class ListarProgramasUseCase
         private ProgramaRepository $programaRepo
     ) {}
 
-    public function ejecutar(): ResponsePostulaGrado {
+    public function ejecutar(): array {
 
-        $programas = $this->programaRepo->listarProgramas();
-        return new ResponsePostulaGrado(200, "Programas obtenidos exitosamente.", $programas);
+        return  $this->programaRepo->listarProgramas();
     }
 }

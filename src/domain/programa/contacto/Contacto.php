@@ -1,16 +1,15 @@
 <?php
 
-namespace Src\domain;
+namespace Src\domain\programa\contacto;
 
-use Src\repositories\ProgramaContactoRepository;
-
-class ProgramaContacto 
+class Contacto 
 {
     private string $nombre;
     private string $telefono;
     private string $email;
     private string $observacion;
-    private Programa $programa;
+    private int $programaID;
+    private string $programaNombre;
 
     public function __construct(
         private int $id = 0
@@ -70,29 +69,27 @@ class ProgramaContacto
         $this->observacion = $observacion;
     }
 
-    public function getPrograma(): Programa
+    public function getProgramaID(): int
     {
-        return $this->programa;
+        return $this->programaID;
     }
 
-    public function setPrograma(Programa $programa): void
+    public function setProgramaID(int $programaID): void
     {
-        $this->programa = $programa;
+        $this->programaID = $programaID;
     }
+
+    public function setProgramaNombre(string $programaNombre): void
+    {
+        $this->programaNombre = $programaNombre;
+    }
+
+    public function getProgramaNombre(): string
+    {
+        return $this->programaNombre;
+    }    
 
     public function existe(): bool {
         return $this->id > 0;
     }
-
-    // public function crear(): bool {
-    //     return $this->repository->crear($this);
-    // }
-
-    // public function actualizar(): bool {
-    //     return $this->repository->actualizar($this);
-    // }
-
-    // public function eliminar(): bool {
-    //     return $this->repository->eliminar($this->getId());
-    // }
 }

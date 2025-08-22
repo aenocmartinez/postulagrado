@@ -28,7 +28,7 @@
                 <!-- Botón Nuevo Contacto -->
                 <a href="{{ route('contactos.create') }}" 
                 class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition">
-                    + Nuevo Contacto
+                    + Nuevo contacto
                 </a>
             </div>
 
@@ -48,12 +48,12 @@
                 <tbody>
                     @forelse($contactos as $contacto)
                         <tr class="border-b border-gray-300 bg-white hover:bg-gray-100 transition">
-                            <td class="px-4 py-2 text-gray-900 break-words">{{ $contacto->getNombre() }}</td>
-                            <td class="px-4 py-2 text-gray-900 break-words">{{ $contacto->getEmail() }}</td>
-                            <td class="px-4 py-2 text-gray-900 break-words">{{ $contacto->getPrograma()->getNombre() }}</td>
+                            <td class="px-4 py-2 text-gray-900 break-words">{{ $contacto['nombre'] }}</td>
+                            <td class="px-4 py-2 text-gray-900 break-words">{{ $contacto['email'] }}</td>
+                            <td class="px-4 py-2 text-gray-900 break-words">{{ $contacto['programaNombre'] }}</td>
                             <td class="px-4 py-2 text-center">
                                 <button class="menu-btn text-gray-600 hover:text-gray-800"
-                                        data-id="{{ $contacto->getId() }}">
+                                        data-id="{{ $contacto['id'] }}">
                                     <i class="fas fa-ellipsis-v"></i>
                                 </button>
                             </td>
@@ -71,7 +71,7 @@
 
         <!-- Paginador -->
         <div class="mt-4">
-            {{ $contactos->appends(['search' => request('search')])->links() }}
+            
         </div>
     </div>
 

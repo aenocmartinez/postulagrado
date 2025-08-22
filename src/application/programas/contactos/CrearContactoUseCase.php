@@ -1,37 +1,35 @@
 <?php
 
-namespace Src\usecase\programaContacto;
+namespace Src\application\programas\contactos;
 
-use Src\domain\ProgramaContacto;
-use Src\dto\ProgramaContactoDTO;
-use Src\repositories\ProgramaContactoRepository;
-use Src\shared\di\FabricaDeRepositorios;
+use Src\application\programas\contactos\DTO\ContactoDTO;
+use Src\domain\programa\contacto\Contacto;
+use Src\domain\repositories\ContactoRepository;
+use Src\domain\repositories\ProgramaRepository;
 use Src\shared\response\ResponsePostulaGrado;
 
 class CrearContactoUseCase
 {
     public function __construct(
-        private ProgramaContactoRepository $programaContactoRepo
+        private ContactoRepository $contactoRepo,
+        private ProgramaRepository $programaRepo
     ) {}
 
-    public function ejecutar(ProgramaContactoDTO $contactoDTO): ResponsePostulaGrado {
+    public function ejecutar(ContactoDTO $contactoDTO): ResponsePostulaGrado {
 
-        $programa = FabricaDeRepositorios::getInstance()->getProgramaRepository()->buscarPorID($contactoDTO->getProgramaID());
+        $programa = $this->programaRepo->buscarPorID($contactoDTO->getProgramaID());
         if (!$programa->existe()) {
             return new ResponsePostulaGrado(404, "Programa no encontrado");
         }
 
-        $contacto = new ProgramaContacto(
-            FabricaDeRepositorios::getInstance()->getProgramaContactoRepository()
-        );
-
+        $contacto = new Contacto();
         $contacto->setNombre($contactoDTO->getNombre());
         $contacto->setTelefono($contactoDTO->getTelefono());
         $contacto->setEmail($contactoDTO->getEmail());
         $contacto->setObservacion($contactoDTO->getObservacion());
-        $contacto->setPrograma($programa);
+        $contacto->setProgramaID($programa->getId());
 
-        $exito = $contacto->crear();
+        $exito = $this->contactoRepo->crear($contacto); 
         if (!$exito) {
             return new ResponsePostulaGrado(500, "Ha ocurrido un error en el sistema");
         }

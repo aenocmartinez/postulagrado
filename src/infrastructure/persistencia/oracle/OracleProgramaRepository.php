@@ -9,12 +9,13 @@ use Src\domain\Jornada;
 use Src\domain\Metodologia;
 use Src\domain\Modalidad;
 use Src\domain\NivelEducativo;
-use Src\domain\Programa;
+
 use Src\domain\UnidadRegional;
 use Src\shared\di\FabricaDeRepositoriosOracle;
 
 use Illuminate\Support\Facades\Cache;
 use Src\domain\Estudiante;
+use Src\domain\programa\Programa;
 use Src\domain\repositories\ProgramaRepository;
 
 class OracleProgramaRepository implements ProgramaRepository
@@ -155,6 +156,7 @@ class OracleProgramaRepository implements ProgramaRepository
                     ->where('UNID.UNID_REGIONAL', '1')
                     ->whereIn('NIED.NIED_ID', [1, 2])
                     ->where('PROG.PROG_ESTADO', 1)
+                    ->distinct()
                     ->orderBy('METO.METO_ID')
                     ->orderBy('NIED.NIED_ID')
                     ->orderBy('MODA.MODA_ID')

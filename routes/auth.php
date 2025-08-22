@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\LaravelActividadController;
+use App\Http\Controllers\LaravelContactoController;
 use App\Http\Controllers\LaravelProcesoController;
 use App\Http\Controllers\LaravelProcesoDocumentoController;
 use App\Http\Controllers\NotificacionController;
@@ -92,20 +93,21 @@ Route::middleware('auth')->group(function () {
         Route::post('/procesos/documentos', 'store')->name('proceso_documentos.store');
         Route::delete('/proceso/{procesoID}/documentos/{documentoID}', 'destroy')->name('procesos.documentos.destroy');
     });
-    
+
+    // Contactos
+    Route::controller(LaravelContactoController::class)->group(function () {
+        Route::get('contactos', 'index')->name('contactos.index');
+        Route::get('contactos/crear', 'create')->name('contactos.create');
+        Route::post('contactos', 'store')->name('contactos.store');
+        Route::get('contactos/{id}', 'show')->name('contactos.show');
+        Route::get('contactos/{id}/editar', 'edit')->name('contactos.edit');     
+        Route::put('contactos/{id}', 'update')->name('contactos.update');    
+        Route::delete('contactos/{id}', 'destroy')->name('contactos.destroy');
+    }); 
 
     // Seguimientos
     Route::get('seguimientos', [SeguimientoController::class, 'index'])->name('seguimientos.index');
     Route::get('procesos/{id}/seguimiento', [SeguimientoController::class, 'show'])->name('seguimientos.show');
-
-    // Contactos
-    Route::get('contactos', [ProgramaContactoController::class, 'index'])->name('contactos.index');
-    Route::get('contactos/crear', [ProgramaContactoController::class, 'create'])->name('contactos.create');
-    Route::get('contactos/{id}/editar', [ProgramaContactoController::class, 'edit'])->name('contactos.edit');
-    Route::get('contactos/{id}', [ProgramaContactoController::class, 'show'])->name('contactos.show');
-    Route::delete('contactos/{id}', [ProgramaContactoController::class, 'destroy'])->name('contactos.destroy');
-    Route::post('contactos', [ProgramaContactoController::class, 'store'])->name('contactos.store');
-    Route::put('contactos/{id}', [ProgramaContactoController::class, 'update'])->name('contactos.update');
     
     
     // Notificaciones

@@ -6,7 +6,7 @@ use Src\domain\Jornada;
 use Src\domain\Metodologia;
 use Src\domain\Modalidad;
 use Src\domain\NivelEducativo;
-use Src\domain\Programa;
+use Src\domain\programa\Programa;
 use Src\domain\UnidadRegional;
 
 interface ProgramaRepository {

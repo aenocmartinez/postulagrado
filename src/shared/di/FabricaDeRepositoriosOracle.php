@@ -3,6 +3,7 @@
 namespace Src\shared\di;
 
 use Src\domain\repositories\ActividadRepository;
+use Src\domain\repositories\ContactoRepository;
 use Src\domain\repositories\EnlaceActualizacionRepository;
 use Src\domain\repositories\EstudianteRepository;
 use Src\domain\repositories\JornadaRepository;
@@ -25,7 +26,7 @@ use Src\infrastructure\persistencia\oracle\OracleNivelEducativoRepository;
 use Src\infrastructure\persistencia\oracle\OracleNotificacionRepository;
 use Src\infrastructure\persistencia\oracle\OracleProcesoDocumentoRepository;
 use Src\infrastructure\persistencia\oracle\OracleProcesoRepository;
-use Src\infrastructure\persistencia\oracle\OracleProgramaContactoRepository;
+use Src\infrastructure\persistencia\oracle\OracleContactoRepository;
 use Src\infrastructure\persistencia\oracle\OracleProgramaRepository;
 use Src\infrastructure\persistencia\oracle\OracleUnidadRegionalRepository;
 
@@ -41,7 +42,7 @@ class FabricaDeRepositoriosOracle
     private JornadaRepository $jornadaRepo;
     private UnidadRegionalRepository $unidadRegionalRepo;
     private ProgramaRepository $programaRepo;
-    private ProgramaContactoRepository $programaContactoRepo;
+    private ContactoRepository $contactoRepo;
     private NotificacionRepository $notificacionRepo;
     private ProcesoDocumentoRepository $procesoDocumentoRepo;
     private EstudianteRepository $estudianteRepo;
@@ -57,7 +58,7 @@ class FabricaDeRepositoriosOracle
         $this->jornadaRepo = new OracleJornadaRepository();
         $this->unidadRegionalRepo = new OracleUnidadRegionalRepository();
         $this->programaRepo = new OracleProgramaRepository();
-        $this->programaContactoRepo = new OracleProgramaContactoRepository();
+        $this->contactoRepo = new OracleContactoRepository();
         $this->notificacionRepo = new OracleNotificacionRepository();
         $this->procesoDocumentoRepo = new OracleProcesoDocumentoRepository();
         $this->estudianteRepo = new OracleEstudianteRepository();
@@ -108,8 +109,8 @@ class FabricaDeRepositoriosOracle
         return $this->programaRepo;
     }
 
-    public function getProgramaContactoRepository(): ProgramaContactoRepository {
-        return $this->programaContactoRepo;
+    public function getContactoRepository(): ContactoRepository {
+        return $this->contactoRepo;
     }
 
     public function getNotificacionRepository(): NotificacionRepository {

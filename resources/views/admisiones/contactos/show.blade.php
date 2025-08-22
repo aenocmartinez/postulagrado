@@ -13,21 +13,21 @@
 
         <!-- Información Principal -->
         <div class="text-center mb-6">
-            <h1 class="text-2xl font-semibold text-gray-900">{{ $contacto->getNombre() }}</h1>
-            <p class="text-lg text-gray-800 mt-1">{{ $contacto->getPrograma()->getNombre() }}</p>
+            <h1 class="text-2xl font-semibold text-gray-900">{{ $contacto['nombre'] }}</h1>
+            <p class="text-lg text-gray-800 mt-1">{{ $contacto['programaNombre'] }}</p>
         </div>
 
         <!-- Contenedor de Información -->
         <div class="mt-6 px-6 text-gray-800">
-            <p><strong>Correo:</strong> {{ $contacto->getEmail() }}</p>
-            <p class="mt-2"><strong>Teléfono:</strong> {{ $contacto->getTelefono() }}</p>
+            <p><strong>Correo:</strong> {{ $contacto['email'] }}</p>
+            <p class="mt-2"><strong>Teléfono:</strong> {{ $contacto['telefono'] }}</p>
         </div>
 
         <!-- Observaciones -->
-        @if($contacto->getObservacion())
+        @if($contacto['observacion'])
             <div class="mt-6 px-6">
                 <h3 class="text-lg font-semibold">Observaciones</h3>
-                <p class="text-base mt-2">{{ $contacto->getObservacion() }}</p>
+                <p class="text-base mt-2">{{ $contacto['observacion'] }}</p>
             </div>
         @endif
 
@@ -35,12 +35,12 @@
 </div>
 
 <div class="flex justify-end space-x-2 mt-3">
-    <a href="{{ route('contactos.edit', $contacto->getId()) }}"
+    <a href="{{ route('contactos.edit', $contacto['id']) }}"
         class="px-4 py-2 border border-gray-400 text-gray-700 rounded-md hover:bg-gray-100 transition">
         Editar
     </a>
 
-    <form action="{{ route('contactos.destroy', $contacto->getId()) }}" method="POST" 
+    <form action="{{ route('contactos.destroy', $contacto['id']) }}" method="POST" 
         onsubmit="return confirmarEliminacion(event)">
         @csrf
         @method('DELETE')
