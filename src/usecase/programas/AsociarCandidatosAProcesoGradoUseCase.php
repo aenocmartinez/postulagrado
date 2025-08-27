@@ -17,6 +17,7 @@ class AsociarCandidatosAProcesoGradoUseCase
     public function ejecutar(int $procesoID, $estudiantes=[], int $anio, int $periodo): ResponsePostulaGrado 
     {
         /** @var App\Models\User $user */
+        $user = auth()->user();
         $programa = $user->programaAcademico();
 
         $programaProceso = $this->procesoRepo->buscarProgramaPorProceso($procesoID, $programa->getId());

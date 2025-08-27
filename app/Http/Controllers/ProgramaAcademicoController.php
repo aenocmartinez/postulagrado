@@ -76,6 +76,7 @@ class ProgramaAcademicoController extends Controller
         );
 
         /** @var App\Models\User $user */
+        $user = Auth::user();
 
         $response = $buscarCantidatosGrado->ejecutar(
             $user->programaAcademico()->getCodigo(), 
