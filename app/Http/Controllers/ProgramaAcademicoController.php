@@ -26,15 +26,15 @@ class ProgramaAcademicoController extends Controller
 
     public function procesos()
     {
-        $listaProcesos = new ListarProcesosUseCase(
-            FabricaDeRepositorios::getInstance()->getProcesoRepository()
-        );
+        // $listaProcesos = new ListarProcesosUseCase(
+        //     FabricaDeRepositorios::getInstance()->getProcesoRepository()
+        // );
 
-        $response = $listaProcesos->ejecutar();
+        // $response = $listaProcesos->ejecutar();
 
-        return view('programa_academico.procesos.index', [
-            'procesos' => $response->getData(),
-        ]);
+        // return view('programa_academico.procesos.index', [
+        //     'procesos' => $response->getData(),
+        // ]);
     }
 
     public function seguimientoProceso($procesoID)

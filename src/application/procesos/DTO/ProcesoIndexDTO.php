@@ -10,4 +10,8 @@ final class ProcesoIndexDTO {
         public string $nivelEducativoNombre,
         public string $estado
     ) {}
+
+    public function estaCerrado(): bool {
+        return $this->estado === 'CERRADO';
+    }
 }

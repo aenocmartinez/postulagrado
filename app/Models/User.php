@@ -7,8 +7,8 @@ use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Src\domain\Programa;
-use Src\shared\di\FabricaDeRepositorios;
+use Src\domain\programa\Programa;
+use Src\shared\di\FabricaDeRepositoriosOracle;
 
 /**
  * Class User
@@ -88,7 +88,7 @@ class User extends Authenticatable
      */
     public function programaAcademico(): Programa
     {
-        $programaRepo = FabricaDeRepositorios::getInstance()->getProgramaRepository();
+        $programaRepo = FabricaDeRepositoriosOracle::getInstance()->getProgramaRepository();
 
         return $programaRepo->buscarPorID($this->prog_id);
     }

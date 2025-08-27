@@ -17,8 +17,8 @@
                 @if($proceso->estaCerrado())
                     @continue
                 @endif
-                <option value="{{ route('programa_academico.procesos.seguimiento', ['id' => $proceso->getId()]) }}">
-                    {{ $proceso->getNombre() . " - " . $proceso->getNivelEducativo()->getNombre() }}
+                <option value="{{ route('programa_academico.procesos.seguimiento', ['id' => $proceso->id]) }}">
+                    {{ $proceso->nombre . " - " . $proceso->nivelEducativoNombre }}
                 </option>
             @endforeach
         </select>

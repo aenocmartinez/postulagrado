@@ -13,6 +13,7 @@ use App\Http\Controllers\LaravelContactoController;
 use App\Http\Controllers\LaravelNotificacionController;
 use App\Http\Controllers\LaravelProcesoController;
 use App\Http\Controllers\LaravelProcesoDocumentoController;
+use App\Http\Controllers\LaravelProgramaController;
 use App\Http\Controllers\LaravelSeguimientoController;
 use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\ProcesoController;
@@ -126,16 +127,15 @@ Route::middleware('auth')->group(function () {
         Route::put('/notificaciones/{id}', 'update')->name('notificaciones.update');
     });
     
-    
-    
-    
     Route::post('/notificaciones/{id}/marcar-leida', [NotificacionController::class, 'marcarComoLeida'])->name('notificaciones.marcar_como_leida');
     
+    Route::controller(LaravelProgramaController::class)->group(function () {
+        Route::get('/programa_academico/procesos', 'procesos')->name('programa_academico.procesos.index');
+        Route::get('/programa_academico/procesos/{id}/seguimiento', 'seguimientoProceso')->name('programa_academico.procesos.seguimiento');
+    });
 
     // Programa Académico
     Route::get('/programa_academico/dashboard', [ProgramaAcademicoController::class, 'dashboard'])->name('programa_academico.dashboard');
-    Route::get('/programa_academico/procesos', [ProgramaAcademicoController::class, 'procesos'])->name('programa_academico.procesos.index');
-    Route::get('/programa_academico/procesos/{id}/seguimiento', [ProgramaAcademicoController::class, 'seguimientoProceso'])->name('programa_academico.procesos.seguimiento');
     Route::get('/programa_academico/estudiantes-candidatos/{codigoPrograma}/{anio}/{periodo}', [ProgramaAcademicoController::class, 'buscarEstudiantesCandidatosAGrado'])->name('programa_academico.candidatos-grado');
     
     Route::post('/programa_academico/asociar-estudiantes', [ProgramaAcademicoController::class, 'asociarEstudiantesCandidatosAProcesoGrado'])->name('programa_academico.asociar-estudiantes-proceso');

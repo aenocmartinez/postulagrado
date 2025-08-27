@@ -3,7 +3,6 @@
 namespace Src\Infrastructure\Controller\Proceso;
 
 use Src\application\procesos\ListarProcesosUseCase;
-use Src\domain\NivelEducativo;
 use Src\domain\repositories\NivelEducativoRepository;
 use Src\domain\repositories\ProcesoRepository;
 use Src\shared\response\ResponsePostulaGrado;
