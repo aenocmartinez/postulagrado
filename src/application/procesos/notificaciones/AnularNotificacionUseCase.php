@@ -1,6 +1,6 @@
 <?php
 
-namespace Src\application\usecase\notificaciones;
+namespace Src\application\procesos\notificaciones;
 
 use Src\domain\repositories\NotificacionRepository;
 use Src\shared\response\ResponsePostulaGrado;
@@ -28,12 +28,16 @@ class AnularNotificacionUseCase
 
         $notificacion->setEstado('ANULADA');
 
-        $resultado = $notificacion->actualizar();
+        $resultado = $this->notificacionRepo->actualizar($notificacion);
+
 
         if (!$resultado) {
             return new ResponsePostulaGrado(500, 'Se ha producido un error al anular la notificación.');
         }
 
-        return new ResponsePostulaGrado(200, 'La notificación se ha anulado exitosamente.', $notificacion);
+        return new ResponsePostulaGrado(200, 'La notificación se ha anulado exitosamente.', [
+            'notificacionID' => $notificacion->getId(),
+            'procesoID' => $notificacion->getProceso()->getId()
+        ]);
     }
 }

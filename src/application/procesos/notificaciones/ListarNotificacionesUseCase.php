@@ -1,6 +1,6 @@
 <?php
 
-namespace Src\application\usecase\notificaciones;
+namespace Src\application\procesos\notificaciones;
 
 use Src\domain\repositories\NotificacionRepository;
 use Src\shared\response\ResponsePostulaGrado;

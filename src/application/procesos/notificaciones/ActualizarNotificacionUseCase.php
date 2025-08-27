@@ -1,11 +1,12 @@
 <?php
 
-namespace Src\application\usecase\notificaciones;
+namespace Src\application\procesos\notificaciones;
 
 use Carbon\Carbon;
+use Src\application\procesos\notificaciones\DTO\NotificacionDTO;
 use Src\domain\repositories\NotificacionRepository;
 use Src\domain\repositories\ProcesoRepository;
-use Src\dto\notificacion\NotificacionDTO;
+
 
 use Src\shared\response\ResponsePostulaGrado;
 
@@ -24,13 +25,13 @@ class ActualizarNotificacionUseCase
     {
 
         /** @var \Src\domain\Notificacion $notificacion */
-        $notificacion = $this->notificacionRepo->buscarPorId($notificacionDTO->getId());
+        $notificacion = $this->notificacionRepo->buscarPorId($notificacionDTO->id);
         if (!$notificacion->existe()) {
             return new ResponsePostulaGrado(404, 'La notificación no existe.');
         }
 
-        /** @var \Src\domain\Proceso $proceso */
-        $proceso = $this->procesoRepo->buscarProcesoPorId($notificacionDTO->getProcesoId());
+        /** @var \Src\domain\proceso\Proceso $proceso */
+        $proceso = $this->procesoRepo->buscarProcesoPorId($notificacionDTO->procesoID);
         if (!$proceso->existe()) {
             return new ResponsePostulaGrado(404, 'El proceso no existe.');
         }
@@ -41,12 +42,12 @@ class ActualizarNotificacionUseCase
 
         $enviarNotifiacionHoy = false;
 
-        $notificacion->setId($notificacionDTO->getId());
-        $notificacion->setAsunto($notificacionDTO->getAsunto());
-        $notificacion->setMensaje($notificacionDTO->getMensaje());
-        $notificacion->setCanal($notificacionDTO->getCanal());
-        $notificacion->setFechaCreacion($notificacionDTO->getFechaCreacion());
-        $notificacion->setDestinatarios($notificacionDTO->getDestinatarios());
+        $notificacion->setId($notificacionDTO->id);
+        $notificacion->setAsunto($notificacionDTO->asunto);
+        $notificacion->setMensaje($notificacionDTO->mensaje);
+        $notificacion->setCanal($notificacionDTO->canal);
+        $notificacion->setFechaCreacion($notificacionDTO->fechaEnvio);
+        $notificacion->setDestinatarios($notificacionDTO->destinatarios);
         $notificacion->setEstado('PROGRAMADA');
         $notificacion->setProceso($proceso);
         
@@ -65,7 +66,7 @@ class ActualizarNotificacionUseCase
 
         if ($enviarNotifiacionHoy) 
         {
-            (new EnviarNotificacionUseCase())->ejecutar($notificacion);
+            // (new EnviarNotificacionUseCase())->ejecutar($notificacion);
         }
 
         return new ResponsePostulaGrado(200, 'La notificación se ha actualizado exitosamente.');

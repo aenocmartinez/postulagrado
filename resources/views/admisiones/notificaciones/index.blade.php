@@ -14,7 +14,7 @@
     <select id="proceso_id" class="select2 w-full border border-gray-300 px-4 py-2 rounded-md text-xs">
         <option value="">-- Seleccione --</option>
         @foreach ($procesos as $proceso)
-            <option value="{{ $proceso->getId() }}">{{ $proceso->getNombre() }}</option>
+            <option value="{{ $proceso->id }}">{{ $proceso->nombre }}</option>
         @endforeach
     </select>
 

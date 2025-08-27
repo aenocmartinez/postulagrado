@@ -3,7 +3,6 @@
 namespace Src\domain;
 
 use Src\domain\proceso\Proceso;
-use Src\shared\di\FabricaDeRepositorios;
 
 class Notificacion
 {

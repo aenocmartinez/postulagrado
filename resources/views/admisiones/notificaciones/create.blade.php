@@ -10,7 +10,7 @@
 
     <form action="{{ route('notificaciones.store') }}" method="POST">
         @csrf
-        <input type="hidden" name="proceso_id" value="{{ $proceso->getId() }}">
+        <input type="hidden" name="proceso_id" value="{{ $procesoNotificacion->procesoID }}">
 
         <!-- Asunto -->
         <div class="mb-6">
@@ -43,7 +43,7 @@
             <label for="destinatarios" class="block text-sm font-medium text-gray-700 mb-2">Destinatarios</label>
             <select name="destinatarios[]" id="destinatarios" multiple required>
                 <option value="__todos__">[Seleccionar Todos]</option>
-                @foreach($contactos as $contacto)
+                @foreach($procesoNotificacion->contactos as $contacto)
                     <option value="{{ $contacto->getEmail() }}">
                         {{ $contacto->getNombre() }} ({{ $contacto->getEmail() }})
                     </option>

@@ -8,11 +8,11 @@
 
 <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200 max-w-5xl mx-auto">
 
-    <form action="{{ route('notificaciones.update', $notificacion->getId()) }}" method="POST">
+    <form action="{{ route('notificaciones.update', $notificacion->notificacionID) }}" method="POST">
         @csrf
         @method('PUT')
 
-        <input type="hidden" name="proceso_id" value="{{ $notificacion->getProceso()->getId() }}">
+        <input type="hidden" name="proceso_id" value="{{ $notificacion->procesoID }}">
 
         <!-- Asunto -->
         <div class="mb-6">
@@ -20,7 +20,7 @@
             <input type="text" 
                     name="asunto" 
                     id="asunto"
-                    value="{{ old('asunto', $notificacion->getAsunto()) }}"
+                    value="{{ old('asunto', $notificacion->asunto) }}"
                 class="border border-gray-300 px-3 py-2 rounded-md text-sm w-full focus:ring focus:ring-gray-400 outline-none"
                 placeholder="Asunto de la notificación" required>
         </div>
@@ -39,7 +39,7 @@
             <label for="fecha_envio" class="block text-sm font-medium text-gray-700 mb-2">Fecha de Envío</label>
             <input type="date" 
                     name="fecha_envio" 
-                    value="{{ old('fecha_envio', $notificacion->getFechaCreacion() ? \Carbon\Carbon::parse($notificacion->getFechaCreacion())->format('Y-m-d') : '') }}"
+                    value="{{ old('fecha_envio', $notificacion->fechaEnvio ? \Carbon\Carbon::parse($notificacion->fechaEnvio)->format('Y-m-d') : '') }}"
                     id="fecha_envio"
                 class="border border-gray-300 px-3 py-2 rounded-md text-sm w-full focus:ring focus:ring-gray-400 outline-none">
             <small class="text-gray-500 mt-1 block">Si no seleccionas una fecha, la notificación se enviará inmediatamente.</small>
@@ -48,7 +48,7 @@
 
         <!-- Destinatarios -->
         @php
-            $destinatariosSeleccionados = collect(explode(',', $notificacion->getDestinatarios() ?? ''))
+            $destinatariosSeleccionados = collect(explode(',', $notificacion->destinatarios ?? ''))
                 ->map(fn($email) => trim($email))
                 ->filter()
                 ->toArray();
@@ -58,7 +58,7 @@
             <label for="destinatarios" class="block text-sm font-medium text-gray-700 mb-2">Destinatarios</label>
             <select name="destinatarios[]" id="destinatarios" multiple required>
                 <option value="__todos__">[Seleccionar Todos]</option>
-                @foreach($contactos as $contacto)
+                @foreach($notificacion->contactos as $contacto)
                     <option value="{{ $contacto->getEmail() }}"
                         {{ in_array($contacto->getEmail(), $destinatariosSeleccionados) ? 'selected' : '' }}>
                         {{ $contacto->getNombre() }} ({{ $contacto->getEmail() }})
@@ -74,7 +74,7 @@
             <textarea name="mensaje" id="mensaje"
                     class="border border-gray-300 rounded-md text-sm w-full focus:ring focus:ring-gray-400 outline-none"
                     rows="10">
-                    {!! old('mensaje', $notificacion->getMensaje()) !!}
+                    {!! old('mensaje', $notificacion->mensaje) !!}
                 </textarea>
         </div>
 

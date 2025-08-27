@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\LaravelActividadController;
 use App\Http\Controllers\LaravelContactoController;
+use App\Http\Controllers\LaravelNotificacionController;
 use App\Http\Controllers\LaravelProcesoController;
 use App\Http\Controllers\LaravelProcesoDocumentoController;
 use App\Http\Controllers\LaravelSeguimientoController;
@@ -112,17 +113,22 @@ Route::middleware('auth')->group(function () {
         Route::get('seguimientos', 'index')->name('seguimientos.index');
         Route::get('procesos/{id}/seguimiento', 'show')->name('seguimientos.show');
     });
-    
-    
+
     // Notificaciones
-    Route::get('/notificaciones', [NotificacionController::class, 'index'])->name('notificaciones.index');
-    Route::get('notificaciones/proceso/{id}/crear', [NotificacionController::class, 'create'])->name('notificaciones.create');
-    Route::post('/notificaciones', [NotificacionController::class, 'store'])->name('notificaciones.store');
-    Route::get('/notificaciones/{id}', [NotificacionController::class, 'show'])->name('notificaciones.show');
-    Route::patch('/notificaciones/{id}/anular', [NotificacionController::class, 'anular'])->name('notificaciones.anular');
-    Route::get('notificaciones/proceso/{id}', [NotificacionController::class, 'indexPorProceso'])->name('notificaciones.por_proceso');
-    Route::get('/notificaciones/{id}/editar', [NotificacionController::class, 'edit'])->name('notificaciones.edit');
-    Route::put('/notificaciones/{id}', [NotificacionController::class, 'update'])->name('notificaciones.update');
+    Route::controller(LaravelNotificacionController::class)->group(function () {
+        Route::get('/notificaciones', 'index')->name('notificaciones.index');
+        Route::get('/notificaciones/proceso/{id}', 'notificacionesDeUnProceso')->name('notificaciones.por_proceso');
+        Route::get('/notificaciones/proceso/{id}/crear', 'create')->name('notificaciones.create');
+        Route::post('/notificaciones', 'store')->name('notificaciones.store');
+        Route::patch('/notificaciones/{id}/anular', 'anular')->name('notificaciones.anular');
+        Route::get('/notificaciones/{id}', 'show')->name('notificaciones.show');
+        Route::get('/notificaciones/{id}/editar', 'edit')->name('notificaciones.edit');
+        Route::put('/notificaciones/{id}', 'update')->name('notificaciones.update');
+    });
+    
+    
+    
+    
     Route::post('/notificaciones/{id}/marcar-leida', [NotificacionController::class, 'marcarComoLeida'])->name('notificaciones.marcar_como_leida');
     
 

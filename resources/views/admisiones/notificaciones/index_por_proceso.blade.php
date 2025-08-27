@@ -11,10 +11,10 @@
     <!-- Encabezado del proceso y botón nueva notificación -->
     <div class="flex justify-between items-center mb-4">
         <h2 class="text-lg font-semibold text-gray-800">
-            {{ $proceso->getNombre() }}
+            {{ $procesoNotificacion->procesoNombre }}
         </h2>
 
-        <a href="{{ route('notificaciones.create', ['id' => $proceso->getId()]) }}" 
+        <a href="{{ route('notificaciones.create', ['id' => $procesoNotificacion->procesoID]) }}" 
            class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition">
             + Nueva Notificación
         </a>
@@ -33,10 +33,10 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($proceso->getNotificaciones() as $notificacion)
+                @forelse($procesoNotificacion->notificaciones as $notificacion)
                     @php
-                        $estado = \Src\shared\formato\FormatoString::capital($notificacion->getEstado());
-                        $clase = match($notificacion->getEstado()) {
+                        $estado = \Src\shared\formato\FormatoString::capital($notificacion['estado']);
+                        $clase = match($notificacion['estado']) {
                             'PROGRAMADA' => 'text-yellow-500',
                             'ENVIADA' => 'text-green-600',
                             'ANULADA' => 'text-red-600',
@@ -44,10 +44,10 @@
                         };
                     @endphp
                     <tr class="border-b border-gray-300 bg-white hover:bg-gray-100 transition">
-                        <td class="px-4 py-2 text-gray-900 break-words">{{ $notificacion->getAsunto() }}</td>
-                        <td class="px-4 py-2 text-gray-900 break-words">{{ $notificacion->getCanal() }}</td>
+                        <td class="px-4 py-2 text-gray-900 break-words">{{ $notificacion['asunto'] }}</td>
+                        <td class="px-4 py-2 text-gray-900 break-words">{{ $notificacion['canal'] }}</td>
                         <td class="px-4 py-2 text-gray-900 break-words">
-                            {{ \Carbon\Carbon::parse($notificacion->getFechaCreacion())->format('d/m/Y') }}
+                            {{ \Carbon\Carbon::parse($notificacion['fecha_creacion'])->format('d/m/Y') }}
                         </td>
                         <td class="px-4 py-2 text-gray-900 break-words">
                             <span class="font-semibold {{ $clase }}">
@@ -56,7 +56,7 @@
                         </td>
                         <td class="px-4 py-2 text-center">
                             <button class="menu-btn text-gray-600 hover:text-gray-800"
-                                    data-id="{{ $notificacion->getId() }}"
+                                    data-id="{{ $notificacion['id'] }}"
                                     data-estado="{{ $estado }}">
                                 <i class="fas fa-ellipsis-v"></i>
                             </button>

@@ -20,35 +20,35 @@ class NotificacionController extends Controller
     
     public function index()
     {
-        $listarProcesos = new ListarProcesosUseCase(
-            FabricaDeRepositorios::getInstance()->getProcesoRepository(),
-        );
+        // $listarProcesos = new ListarProcesosUseCase(
+        //     FabricaDeRepositorios::getInstance()->getProcesoRepository(),
+        // );
 
-        $response = $listarProcesos->ejecutar();
+        // $response = $listarProcesos->ejecutar();
     
-        return view('admisiones.notificaciones.index', [
-            'procesos' => $response->getData(),
-        ]);
+        // return view('admisiones.notificaciones.index', [
+        //     'procesos' => $response->getData(),
+        // ]);
     }
 
     public function indexPorProceso($procesoID)
     {
-        $buscarProceso = new BuscarProcesoUseCase(
-            FabricaDeRepositorios::getInstance()->getProcesoRepository()
-        );
+        // $buscarProceso = new BuscarProcesoUseCase(
+        //     FabricaDeRepositorios::getInstance()->getProcesoRepository()
+        // );
     
-        $response = $buscarProceso->ejecutar($procesoID);
+        // $response = $buscarProceso->ejecutar($procesoID);
 
-        /** @var \Src\admisiones\domain\Proceso $proceso */
-        $proceso = $response->getData();
+        // /** @var \Src\admisiones\domain\Proceso $proceso */
+        // $proceso = $response->getData();
         
-        if (!$proceso->existe()) {
-            return redirect()->route('notificaciones.index')->with($response->getCode(), $response->getMessage());
-        }
+        // if (!$proceso->existe()) {
+        //     return redirect()->route('notificaciones.index')->with($response->getCode(), $response->getMessage());
+        // }
     
-        return view('admisiones.notificaciones.index_por_proceso', [
-            'proceso' => $proceso,
-        ]);
+        // return view('admisiones.notificaciones.index_por_proceso', [
+        //     'proceso' => $proceso,
+        // ]);
     }    
 
     public function create($procesoID)
@@ -80,119 +80,119 @@ class NotificacionController extends Controller
     
     public function store(GuardarNotificacion $request)
     {
-        $crearNotificacion = new CrearNotificacionUseCase(
-            FabricaDeRepositorios::getInstance()->getNotificacionRepository(),
-            FabricaDeRepositorios::getInstance()->getProcesoRepository(),
-        );
+        // $crearNotificacion = new CrearNotificacionUseCase(
+        //     FabricaDeRepositorios::getInstance()->getNotificacionRepository(),
+        //     FabricaDeRepositorios::getInstance()->getProcesoRepository(),
+        // );
     
-        $notificacionDTO = new NotificacionDTO();
-        $notificacionDTO->setAsunto($request->input('asunto'));
-        $notificacionDTO->setMensaje($request->input('mensaje'));
-        $notificacionDTO->setFechaCreacion($request->input('fecha_envio'));
-        $notificacionDTO->setCanal($request->input('canal'));
-        $notificacionDTO->setDestinatarios(implode(',', $request->input('destinatarios')));
-        $notificacionDTO->setProcesoId($request->input('proceso_id'));
+        // $notificacionDTO = new NotificacionDTO();
+        // $notificacionDTO->setAsunto($request->input('asunto'));
+        // $notificacionDTO->setMensaje($request->input('mensaje'));
+        // $notificacionDTO->setFechaCreacion($request->input('fecha_envio'));
+        // $notificacionDTO->setCanal($request->input('canal'));
+        // $notificacionDTO->setDestinatarios(implode(',', $request->input('destinatarios')));
+        // $notificacionDTO->setProcesoId($request->input('proceso_id'));
     
-        $response = $crearNotificacion->ejecutar($notificacionDTO);
+        // $response = $crearNotificacion->ejecutar($notificacionDTO);
     
-        if ($response->getCode() !== 201) {
-            return redirect()->back()->with('error', $response->getMessage());
-        }
+        // if ($response->getCode() !== 201) {
+        //     return redirect()->back()->with('error', $response->getMessage());
+        // }
     
-        return redirect()->route('notificaciones.por_proceso', ['id' => $notificacionDTO->getProcesoId()])
-                        ->with($response->getCode(), $response->getMessage());
+        // return redirect()->route('notificaciones.por_proceso', ['id' => $notificacionDTO->getProcesoId()])
+        //                 ->with($response->getCode(), $response->getMessage());
     }
 
     public function show($id)
     {
-        $buscarNotificacion = new BuscarNotificacionUseCase(
-            FabricaDeRepositorios::getInstance()->getNotificacionRepository()
-        );
+        // $buscarNotificacion = new BuscarNotificacionUseCase(
+        //     FabricaDeRepositorios::getInstance()->getNotificacionRepository()
+        // );
         
-        $response = $buscarNotificacion->ejecutar($id);
-        $notificacion = $response->getData();
+        // $response = $buscarNotificacion->ejecutar($id);
+        // $notificacion = $response->getData();
 
-        if ($response->getCode() !== 200) {
-            return redirect()->route('notificaciones.index')->with($response->getCode(), $response->getMessage());
-        }
+        // if ($response->getCode() !== 200) {
+        //     return redirect()->route('notificaciones.index')->with($response->getCode(), $response->getMessage());
+        // }
     
-        return view('admisiones.notificaciones.show', [
-            'notificacion' => $notificacion,
-        ]);
+        // return view('admisiones.notificaciones.show', [
+        //     'notificacion' => $notificacion,
+        // ]);
     }
 
     public function anular($id)
     {
         
-        $anularNotificacion = new AnularNotificacionUseCase(
-            FabricaDeRepositorios::getInstance()->getNotificacionRepository()
-        );
+        // $anularNotificacion = new AnularNotificacionUseCase(
+        //     FabricaDeRepositorios::getInstance()->getNotificacionRepository()
+        // );
     
-        $response = $anularNotificacion->ejecutar((int) $id);
+        // $response = $anularNotificacion->ejecutar((int) $id);
     
-        if ($response->getCode() !== 200) 
-        {
-            return redirect()->route('notificaciones.index')->with($response->getCode(), $response->getMessage());
-        }
+        // if ($response->getCode() !== 200) 
+        // {
+        //     return redirect()->route('notificaciones.index')->with($response->getCode(), $response->getMessage());
+        // }
 
 
-        /** @var \Src\admisiones\domain\Notificacion $notificacion */
-        $notificacion = $response->getData();
+        // /** @var \Src\admisiones\domain\Notificacion $notificacion */
+        // $notificacion = $response->getData();
 
-        return redirect()->route('notificaciones.por_proceso', ['id' => $notificacion->getProceso()->getId()])
-                        ->with($response->getCode(), $response->getMessage());
+        // return redirect()->route('notificaciones.por_proceso', ['id' => $notificacion->getProceso()->getId()])
+        //                 ->with($response->getCode(), $response->getMessage());
     }
     
     public function edit($id)
     {
-        $buscarNotificacion = new BuscarNotificacionUseCase(
-            FabricaDeRepositorios::getInstance()->getNotificacionRepository()
-        );
+        // $buscarNotificacion = new BuscarNotificacionUseCase(
+        //     FabricaDeRepositorios::getInstance()->getNotificacionRepository()
+        // );
         
-        $response = $buscarNotificacion->ejecutar($id);
-        if ($response->getCode() !== 200) {
-            return redirect()->route('notificaciones.index')->with($response->getCode(), $response->getMessage());
-        }
+        // $response = $buscarNotificacion->ejecutar($id);
+        // if ($response->getCode() !== 200) {
+        //     return redirect()->route('notificaciones.index')->with($response->getCode(), $response->getMessage());
+        // }
 
-        /** @var \Src\admisiones\domain\Notificacion $notificacion */
-        $notificacion = $response->getData();
+        // /** @var \Src\admisiones\domain\Notificacion $notificacion */
+        // $notificacion = $response->getData();
 
-        $listarContactos = new ListarContactosUseCase(
-            FabricaDeRepositorios::getInstance()->getProgramaContactoRepository()
-        );
-        $response = $listarContactos->ejecutar();
-        $contactos = $response->getData();        
+        // $listarContactos = new ListarContactosUseCase(
+        //     FabricaDeRepositorios::getInstance()->getProgramaContactoRepository()
+        // );
+        // $response = $listarContactos->ejecutar();
+        // $contactos = $response->getData();        
     
-        return view('admisiones.notificaciones.edit', [
-            'notificacion' => $notificacion,
-            'contactos' => $contactos,
-        ]);
+        // return view('admisiones.notificaciones.edit', [
+        //     'notificacion' => $notificacion,
+        //     'contactos' => $contactos,
+        // ]);
     }
 
     public function update(GuardarNotificacion $request, $id)
     {
-        $actualizarNotificacion = new ActualizarNotificacionUseCase(
-            FabricaDeRepositorios::getInstance()->getNotificacionRepository(),
-            FabricaDeRepositorios::getInstance()->getProcesoRepository(),
-        );
+        // $actualizarNotificacion = new ActualizarNotificacionUseCase(
+        //     FabricaDeRepositorios::getInstance()->getNotificacionRepository(),
+        //     FabricaDeRepositorios::getInstance()->getProcesoRepository(),
+        // );
 
-        $notificacionDTO = new NotificacionDTO();
-        $notificacionDTO->setId($id);
-        $notificacionDTO->setAsunto($request->input('asunto'));
-        $notificacionDTO->setMensaje($request->input('mensaje'));
-        $notificacionDTO->setFechaCreacion($request->input('fecha_envio'));
-        $notificacionDTO->setCanal($request->input('canal'));
-        $notificacionDTO->setDestinatarios(implode(',', $request->input('destinatarios')));
-        $notificacionDTO->setProcesoId($request->input('proceso_id'));
+        // $notificacionDTO = new NotificacionDTO();
+        // $notificacionDTO->setId($id);
+        // $notificacionDTO->setAsunto($request->input('asunto'));
+        // $notificacionDTO->setMensaje($request->input('mensaje'));
+        // $notificacionDTO->setFechaCreacion($request->input('fecha_envio'));
+        // $notificacionDTO->setCanal($request->input('canal'));
+        // $notificacionDTO->setDestinatarios(implode(',', $request->input('destinatarios')));
+        // $notificacionDTO->setProcesoId($request->input('proceso_id'));
 
-        $response = $actualizarNotificacion->ejecutar($notificacionDTO);
+        // $response = $actualizarNotificacion->ejecutar($notificacionDTO);
 
-        if ($response->getCode() !== 200) {
-            return redirect()->back()->with($response->getCode(), $response->getMessage());
-        }
+        // if ($response->getCode() !== 200) {
+        //     return redirect()->back()->with($response->getCode(), $response->getMessage());
+        // }
 
-        return redirect()->route('notificaciones.por_proceso', ['id' => $notificacionDTO->getProcesoId()])
-                        ->with($response->getCode(), $response->getMessage());
+        // return redirect()->route('notificaciones.por_proceso', ['id' => $notificacionDTO->getProcesoId()])
+        //                 ->with($response->getCode(), $response->getMessage());
     }
 
     public function marcarComoLeida($id)
