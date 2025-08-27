@@ -89,33 +89,41 @@ class OracleProcesoRepository extends Model implements ProcesoRepository
 
     public static function buscarProcesoPorId(int $id): Proceso
     {
-        return Cache::remember('proceso_' . $id, now()->addHours(4), function () use ($id) {
+        $cacheKey = "proceso_{$id}";
+
+        return Cache::remember($cacheKey, now()->addHours(4), function () use ($id) {
             $proceso = new Proceso();
-    
-            try 
-            {
-                $registro = DB::connection('oracle_academpostulgrado')
-                    ->table('ACADEMPOSTULGRADO.PROCESO')
-                    ->select('PROC_ID', 'PROC_NOMBRE', 'NIED_ID', 'PROC_ESTADO')
-                    ->where('PROC_ID', $id)
+
+            try {
+                $r = DB::connection('oracle_academpostulgrado')
+                    ->table('ACADEMPOSTULGRADO.PROCESO AS P')
+                    ->leftJoin('ACADEMICO.NIVELEDUCATIVO AS NIED', 'NIED.NIED_ID', '=', 'P.NIED_ID')
+                    ->select(
+                        'P.PROC_ID            AS proc_id',
+                        'P.PROC_NOMBRE        AS proc_nombre',
+                        'P.NIED_ID            AS nied_id',
+                        'P.PROC_ESTADO        AS proc_estado',
+                        'NIED.NIED_DESCRIPCION AS nied_nombre'
+                    )
+                    ->where('P.PROC_ID', $id)
                     ->first();
-    
-                if ($registro) {    
-                    $proceso->setId($registro->proc_id);
-                    $proceso->setNombre($registro->proc_nombre);
-                    $proceso->setNivelEducativoID($registro->nied_id);
-                    $proceso->setEstado($registro->proc_estado);
+
+                if (!$r) {
+                    return $proceso; 
                 }
-            } 
-            catch (Exception $e) 
-            {
-                Log::error("Error en buscarProcesoPorId({$id}): " . $e->getMessage());
+
+                $proceso->setId((int)($r->proc_id ?? 0));
+                $proceso->setNombre(trim((string)($r->proc_nombre ?? '')));
+                $proceso->setNivelEducativoID((int)($r->nied_id ?? 0));
+                $proceso->setEstado((string)($r->proc_estado ?? ''));
+                $proceso->setNivelEducativoNombre(trim((string)($r->nied_nombre ?? '')));
+            } catch (\Throwable $e) {
+                Log::error("Error en buscarProcesoPorId({$id}): " . $e->getMessage(), ['exception' => $e]);
             }
-    
+
             return $proceso;
         });
     }
-    
     
     public function crearProceso(Proceso $proceso): bool
     {
@@ -264,45 +272,45 @@ class OracleProcesoRepository extends Model implements ProcesoRepository
         }
     }    
 
-    public function listarProgramas(int $procesoID): array
-    {
-        return Cache::remember('programas_proceso_' . $procesoID, now()->addHours(4), function () use ($procesoID) {
-            $programasProceso = [];
+    // public function listarProgramas(int $procesoID): array
+    // {
+    //     return Cache::remember('programas_proceso_' . $procesoID, now()->addHours(4), function () use ($procesoID) {
+    //         $programasProceso = [];
     
-            try {
-                $procesoProgramas = DB::connection('oracle_academpostulgrado')
-                    ->table('ACADEMPOSTULGRADO.PROCESO_PROGRAMA')
-                    ->where('PROC_ID', $procesoID)
-                    ->select('PROGR_ID AS proceso_programa_id', 'PROG_ID AS programa_id')
-                    ->get()
-                    ->keyBy('programa_id');
+    //         try {
+    //             $procesoProgramas = DB::connection('oracle_academpostulgrado')
+    //                 ->table('ACADEMPOSTULGRADO.PROCESO_PROGRAMA')
+    //                 ->where('PROC_ID', $procesoID)
+    //                 ->select('PROGR_ID AS proceso_programa_id', 'PROG_ID AS programa_id')
+    //                 ->get()
+    //                 ->keyBy('programa_id');
     
-                if ($procesoProgramas->isEmpty()) {
-                    return $programasProceso;
-                }
+    //             if ($procesoProgramas->isEmpty()) {
+    //                 return $programasProceso;
+    //             }
     
-                $programaRepository = FabricaDeRepositoriosOracle::getInstance()->getProgramaRepository();
+    //             $programaRepository = FabricaDeRepositoriosOracle::getInstance()->getProgramaRepository();
     
-                foreach ($procesoProgramas as $programaID => $procesoPrograma) {
-                    $programa = $programaRepository->buscarPorId($programaID);
+    //             foreach ($procesoProgramas as $programaID => $procesoPrograma) {
+    //                 $programa = $programaRepository->buscarPorId($programaID);
     
-                    if (!$programa || !$programa->existe()) {
-                        continue;
-                    }
+    //                 if (!$programa || !$programa->existe()) {
+    //                     continue;
+    //                 }
     
-                    $programaProceso = new ProgramaProceso();
-                    $programaProceso->setId($procesoPrograma->proceso_programa_id);
-                    $programaProceso->setPrograma($programa);
+    //                 $programaProceso = new ProgramaProceso();
+    //                 $programaProceso->setId($procesoPrograma->proceso_programa_id);
+    //                 $programaProceso->setPrograma($programa);
     
-                    $programasProceso[] = $programaProceso;
-                }
-            } catch (\Exception $e) {
-                Log::error("Error al listar programas del proceso ID {$procesoID}: " . $e->getMessage());
-            }
+    //                 $programasProceso[] = $programaProceso;
+    //             }
+    //         } catch (\Exception $e) {
+    //             Log::error("Error al listar programas del proceso ID {$procesoID}: " . $e->getMessage());
+    //         }
     
-            return $programasProceso;
-        });
-    }
+    //         return $programasProceso;
+    //     });
+    // }
 
     public function buscarProgramaPorProceso(int $procesoID, int $programaID): ProgramaProceso
     {
@@ -339,44 +347,6 @@ class OracleProcesoRepository extends Model implements ProcesoRepository
     
             return $programaProceso;
         // });
-    }
-      
-    public function listarNotificaciones(int $procesoID): array
-    {
-        return Cache::remember("notificaciones_listado_{$procesoID}", now()->addHours(4), function () use ($procesoID) {
-            $notificaciones = [];
-    
-            try {
-                $procesoDao = FabricaDeRepositoriosOracle::getInstance()->getProcesoRepository();
-    
-                $registros = DB::connection('oracle_academpostulgrado')
-                    ->table('ACADEMPOSTULGRADO.NOTIFICACION')
-                    ->select('NOTI_ID', 'NOTI_FECHA', 'NOTI_ASUNTO', 'NOTI_CANAL', 'NOTI_MENSAJE', 'NOTI_DESTINATARIOS', 'NOTI_ESTADO', 'PROC_ID')
-                    ->where('PROC_ID', $procesoID)
-                    ->orderBy('NOTI_FECHA', 'desc')
-                    ->get();
-    
-                foreach ($registros as $registro) {
-                    $notificacion = new Notificacion();
-                    $notificacion->setId($registro->noti_id);
-                    $notificacion->setFechaCreacion($registro->noti_fecha);
-                    $notificacion->setAsunto($registro->noti_asunto);
-                    $notificacion->setCanal($registro->noti_canal);
-                    $notificacion->setMensaje($registro->noti_mensaje);
-                    $notificacion->setDestinatarios($registro->noti_destinatarios);
-                    $notificacion->setEstado($registro->noti_estado);
-    
-                    $proceso = $procesoDao->buscarProcesoPorId($registro->proc_id);
-                    $notificacion->setProceso($proceso);
-    
-                    $notificaciones[] = $notificacion;
-                }
-            } catch (\Exception $e) {
-                Log::error("Error en listar notificaciones: " . $e->getMessage());
-            }
-    
-            return $notificaciones;
-        });
     }
 
     public function agregarCandidatoAProceso(int $programaProcesoID, int $codigoEstudiante, int $anio, int $periodo): bool 

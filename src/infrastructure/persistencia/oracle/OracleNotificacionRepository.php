@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 use Src\domain\Notificacion;
+use Src\domain\proceso\Proceso;
 use Src\domain\repositories\NotificacionRepository;
 use Src\shared\di\FabricaDeRepositoriosOracle;
 
@@ -252,5 +253,65 @@ class OracleNotificacionRepository extends Model implements NotificacionReposito
             }
         }
     }
+
+public function listarNotificacionesPorProceso(int $procesoID): array
+{
+    $cacheKey = "notificaciones_listado_{$procesoID}";
+
+    return Cache::remember($cacheKey, now()->addHours(4), function () use ($procesoID) {
+        $notificaciones = [];
+
+        try {
+            $rows = DB::connection('oracle_academpostulgrado')
+                ->table('ACADEMPOSTULGRADO.NOTIFICACION AS N')
+                ->leftJoin('ACADEMPOSTULGRADO.PROCESO AS P', 'P.PROC_ID', '=', 'N.PROC_ID')
+                ->leftJoin('ACADEMICO.NIVELEDUCATIVO AS NIED', 'NIED.NIED_ID', '=', 'P.NIED_ID')
+                ->where('N.PROC_ID', $procesoID)
+                ->select(
+                    'N.NOTI_ID             AS noti_id',
+                    'N.NOTI_FECHA          AS noti_fecha',
+                    'N.NOTI_ASUNTO         AS noti_asunto',
+                    'N.NOTI_CANAL          AS noti_canal',
+                    'N.NOTI_MENSAJE        AS noti_mensaje',
+                    'N.NOTI_DESTINATARIOS  AS noti_destinatarios',
+                    'N.NOTI_ESTADO         AS noti_estado',
+                    'N.PROC_ID             AS proc_id',
+                    'P.PROC_NOMBRE         AS proc_nombre',
+                    'P.PROC_ESTADO         AS proc_estado',
+                    'P.NIED_ID             AS nied_id',
+                    'NIED.NIED_DESCRIPCION AS nied_nombre'
+                )
+                ->orderBy('N.NOTI_FECHA', 'desc')
+                ->get();
+
+            foreach ($rows as $r) {
+
+                $n = new Notificacion();
+                $n->setId((int)($r->noti_id ?? 0));
+                $n->setFechaCreacion($r->noti_fecha); 
+                // $n->setFechaCreacion(new \DateTimeImmutable((string)$r->noti_fecha));
+
+                $n->setAsunto((string)($r->noti_asunto ?? ''));
+                $n->setCanal((string)($r->noti_canal ?? ''));
+                $n->setMensaje((string)($r->noti_mensaje ?? ''));
+                $n->setDestinatarios((string)($r->noti_destinatarios ?? ''));
+                $n->setEstado((string)($r->noti_estado ?? ''));
+                $p = new Proceso();
+                $p->setId((int)($r->proc_id ?? 0));
+                $p->setNombre((string)($r->proc_nombre ?? ''));
+                $p->setEstado((string)($r->proc_estado ?? ''));
+                $p->setNivelEducativoID((int)($r->nied_id ?? 0));
+                $p->setNivelEducativoNombre((string)($r->nied_nombre ?? ''));
+
+                $n->setProceso($p);
+                $notificaciones[] = $n;
+            }
+        } catch (\Throwable $e) {
+            Log::error("Error en listar notificaciones para proceso {$procesoID}: ".$e->getMessage(), ['exception' => $e]);
+        }
+
+        return $notificaciones;
+    });
+} 
 
 }

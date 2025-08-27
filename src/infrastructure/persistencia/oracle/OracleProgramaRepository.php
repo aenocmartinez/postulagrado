@@ -16,6 +16,7 @@ use Src\shared\di\FabricaDeRepositoriosOracle;
 use Illuminate\Support\Facades\Cache;
 use Src\domain\Estudiante;
 use Src\domain\programa\Programa;
+use Src\domain\ProgramaProceso;
 use Src\domain\repositories\ProgramaRepository;
 
 class OracleProgramaRepository implements ProgramaRepository
@@ -120,8 +121,7 @@ class OracleProgramaRepository implements ProgramaRepository
     
             return $programa;
         });
-    }
-      
+    }      
 
     public function listarProgramas(): array
     {
@@ -205,6 +205,107 @@ class OracleProgramaRepository implements ProgramaRepository
             }
     
             return $programas;
+        });
+    }
+
+    public function listarProgramasPorProceso(int $procesoID): array
+    {
+        $cacheKey = "programas_proceso_{$procesoID}";
+
+        return Cache::remember($cacheKey, now()->addHours(6), function () use ($procesoID) {
+            $programasProceso = [];
+
+            try {
+                $registros = DB::connection('oracle_academpostulgrado')
+                    ->table('ACADEMPOSTULGRADO.PROCESO_PROGRAMA AS PP')
+                    ->join('ACADEMICO.PROGRAMA AS PROG', 'PROG.PROG_ID', '=', 'PP.PROG_ID')
+                    ->join('ACADEMICO.UNIDADPROGRAMA AS UNPR', 'PROG.PROG_ID', '=', 'UNPR.PROG_ID')
+                    ->join('ACADEMICO.UNIDAD AS UNID', 'UNID.UNID_ID', '=', 'UNPR.UNID_ID')
+                    ->join('ACADEMICO.JORNADA AS JORN', 'PROG.JORN_ID', '=', 'JORN.JORN_ID')
+                    ->join('ACADEMICO.MODALIDAD AS MODA', 'PROG.MODA_ID', '=', 'MODA.MODA_ID')
+                    ->join('ACADEMICO.NIVELEDUCATIVO AS NIED', 'MODA.NIED_ID', '=', 'NIED.NIED_ID')
+                    ->join('ACADEMICO.METODOLOGIA AS METO', 'METO.METO_ID', '=', 'PROG.METO_ID')
+                    ->where('PP.PROC_ID', $procesoID)
+                    ->where('PROG.PROG_ESTADO', 1)
+                    ->where('UNID.UNID_REGIONAL', '1')
+                    ->whereIn('NIED.NIED_ID', [1, 2])
+                    ->select(
+                        'PP.PROGR_ID                   AS proceso_programa_id',
+                        'PROG.PROG_ID                  AS id',
+                        'PROG.PROG_CODIGOSNIES         AS snies',
+                        'PROG.PROG_CODIGOPROGRAMA      AS codigo',
+                        'PROG.PROG_NOMBRE              AS nombre',
+                        'JORN.JORN_ID                  AS jornada_id',
+                        'JORN.JORN_DESCRIPCION         AS jornada',
+                        'UNID.UNID_ID                  AS unidad_id',
+                        'UNID.UNID_NOMBRE              AS unidad_regional',
+                        'MODA.MODA_ID                  AS modalidad_id',
+                        DB::raw('UPPER(MODA.MODA_DESCRIPCION) AS modalidad'),
+                        'METO.METO_ID                  AS metodologia_id',
+                        'METO.METO_DESCRIPCION         AS metodologia',
+                        'NIED.NIED_ID                  AS nivel_id',
+                        'NIED.NIED_DESCRIPCION         AS nivel_educativo'
+                    )
+                    ->distinct()
+                    ->orderBy('METO.METO_ID')
+                    ->orderBy('NIED.NIED_ID')
+                    ->orderBy('MODA.MODA_ID')
+                    ->orderBy('PROG.PROG_NOMBRE')
+                    ->orderBy('UNID.UNID_NOMBRE')
+                    ->get();
+
+                foreach ($registros as $r) {
+                    // Programa
+                    $programa = new \Src\domain\programa\Programa();
+                    $programa->setId((int) $r->id);
+                    $programa->setNombre((string) $r->nombre);
+                    $programa->setCodigo((string) $r->codigo);
+                    $programa->setSnies((string) $r->snies);
+
+                    // Modalidad
+                    $modalidad = new Modalidad();
+                    $modalidad->setId((int) $r->modalidad_id);
+                    $modalidad->setNombre((string) $r->modalidad);
+
+                    // Metodología
+                    $metodologia = new Metodologia();
+                    $metodologia->setId((int) $r->metodologia_id);
+                    $metodologia->setNombre((string) $r->metodologia);
+
+                    // Nivel Educativo
+                    $nivel = new NivelEducativo();
+                    $nivel->setId((int) $r->nivel_id);
+                    $nivel->setNombre((string) $r->nivel_educativo);
+
+                    // Jornada
+                    $jornada = new Jornada();
+                    $jornada->setId((int) $r->jornada_id);
+                    $jornada->setNombre((string) $r->jornada);
+
+                    // Unidad Regional
+                    $unidad = new UnidadRegional();
+                    $unidad->setId((int) $r->unidad_id);
+                    $unidad->setNombre((string) $r->unidad_regional);
+
+                    // Ensamble de Programa
+                    $programa->setModalidad($modalidad);
+                    $programa->setMetodologia($metodologia);
+                    $programa->setNivelEducativo($nivel);
+                    $programa->setJornada($jornada);
+                    $programa->setUnidadRegional($unidad);
+
+                    // ProgramaProceso
+                    $pp = new ProgramaProceso();
+                    $pp->setId((int) $r->proceso_programa_id);
+                    $pp->setPrograma($programa);
+
+                    $programasProceso[] = $pp;
+                }
+            } catch (\Throwable $e) {
+                Log::error("Error al listar programas del proceso ID {$procesoID}: " . $e->getMessage(), ['exception' => $e]);
+            }
+
+            return $programasProceso;
         });
     }
         

@@ -12,6 +12,7 @@ use App\Http\Controllers\LaravelActividadController;
 use App\Http\Controllers\LaravelContactoController;
 use App\Http\Controllers\LaravelProcesoController;
 use App\Http\Controllers\LaravelProcesoDocumentoController;
+use App\Http\Controllers\LaravelSeguimientoController;
 use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\ProcesoController;
 use App\Http\Controllers\ProgramaAcademicoController;
@@ -74,10 +75,11 @@ Route::middleware('auth')->group(function () {
         Route::get('procesos/{id}/edit', 'edit')->name('procesos.edit');
         Route::put('procesos/{id}', 'update')->name('procesos.update');
         Route::delete('procesos/{id}', 'destroy')->name('procesos.destroy');
+        Route::delete('procesos/{procesoID}/programas/{programaID}', 'quitarPrograma')->name('procesos.quitar-programa');
 
     });
 
-    Route::delete('procesos/{procesoID}/programas/{programaID}', [ProcesoController::class, 'quitarPrograma'])->name('procesos.quitar-programa');
+    
     Route::get('procesos/{procesoID}/programas/{programaID}', [ProcesoController::class, 'consultarAvancePrograma'])->name('seguimiento.programa-avance');    
     
     // Actividades
@@ -106,8 +108,10 @@ Route::middleware('auth')->group(function () {
     }); 
 
     // Seguimientos
-    Route::get('seguimientos', [SeguimientoController::class, 'index'])->name('seguimientos.index');
-    Route::get('procesos/{id}/seguimiento', [SeguimientoController::class, 'show'])->name('seguimientos.show');
+    Route::controller(LaravelSeguimientoController::class)->group(function () {
+        Route::get('seguimientos', 'index')->name('seguimientos.index');
+        Route::get('procesos/{id}/seguimiento', 'show')->name('seguimientos.show');
+    });
     
     
     // Notificaciones

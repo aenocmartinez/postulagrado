@@ -11,5 +11,6 @@ interface NotificacionRepository
     public function crear(Notificacion $notificacion): bool;
     public function actualizar(Notificacion $notificacion): bool;
     public function listarPorUsuario(string $email): array;
+    public function listarNotificacionesPorProceso(int $procesoID): array;
     public function marcarComoLeida(int $notificacionID, string $emailUsuario): bool;
 }

@@ -2,7 +2,6 @@
 
 namespace Src\domain\proceso;
 
-use Carbon\Carbon;
 use Src\domain\proceso\valueObject\EstadoProceso;
 use Src\domain\proceso\valueObject\NivelEducativoId;
 use Src\domain\proceso\valueObject\NombreProceso;
@@ -14,6 +13,7 @@ class Proceso
     private NombreProceso $nombreProceso;
     private EstadoProceso $estadoProceso;
     private NivelEducativoId $nivelEducativoID;
+    private string $nivelEducativoNombre;
 
     
     /** @var Actividades[] $actividades */
@@ -46,8 +46,16 @@ class Proceso
         $this->nivelEducativoID = new NivelEducativoId($nivelEducativoID);
     }
 
+    public function setNivelEducativoNombre(string $nombre): void {
+        $this->nivelEducativoNombre = $nombre;
+    }
+
     public function getNivelEducativoID(): int {
         return $this->nivelEducativoID->value();
+    }
+
+    public function getNivelEducativoNombre(): string {
+        return $this->nivelEducativoNombre;
     }
 
     public function setEstado(string $estado): void {
@@ -70,48 +78,48 @@ class Proceso
         return $this->procesoID->exists();
     }
 
-    public function getActividadesPorEstadoTemporal(): array 
-    {
-        $actividadesClasificadas = [
-            'EnCurso' => [],
-            'Finalizadas' => [],
-            'Programadas' => [],
-            'ProximasIniciar' => []
-        ];
+    // public function getActividadesPorEstadoTemporal(): array 
+    // {
+    //     $actividadesClasificadas = [
+    //         'EnCurso' => [],
+    //         'Finalizadas' => [],
+    //         'Programadas' => [],
+    //         'ProximasIniciar' => []
+    //     ];
 
-        $fechaActual = Carbon::now();
+    //     $fechaActual = Carbon::now();
 
-        // foreach ($this->getActividades() as $actividad) 
-        // {
-        //     $fechaInicio = FormatoFecha::ConvertirStringAObjetoCarbon($actividad->getFechaInicio());
+    //     foreach ($this->getActividades() as $actividad) 
+    //     {
+    //         $fechaInicio = FormatoFecha::ConvertirStringAObjetoCarbon($actividad->getFechaInicio());
 
-        //     $fechaFin = FormatoFecha::ConvertirStringAObjetoCarbon($actividad->getFechaFin());
+    //         $fechaFin = FormatoFecha::ConvertirStringAObjetoCarbon($actividad->getFechaFin());
 
-        //     if ($fechaInicio->lessThanOrEqualTo($fechaActual) && $fechaFin->greaterThanOrEqualTo($fechaActual)) 
-        //     {
-        //         $actividadesClasificadas['EnCurso'][] = $actividad;
-        //     } 
-        //     elseif ($fechaFin->lessThan($fechaActual)) 
-        //     {
-        //         $actividadesClasificadas['Finalizadas'][] = $actividad;
-        //     } 
-        //     elseif ($fechaInicio->greaterThan($fechaActual)) 
-        //     {
-        //         $diasParaIniciar = $fechaInicio->greaterThan($fechaActual) ? $fechaActual->diffInDays($fechaInicio) : 0;
+    //         if ($fechaInicio->lessThanOrEqualTo($fechaActual) && $fechaFin->greaterThanOrEqualTo($fechaActual)) 
+    //         {
+    //             $actividadesClasificadas['EnCurso'][] = $actividad;
+    //         } 
+    //         elseif ($fechaFin->lessThan($fechaActual)) 
+    //         {
+    //             $actividadesClasificadas['Finalizadas'][] = $actividad;
+    //         } 
+    //         elseif ($fechaInicio->greaterThan($fechaActual)) 
+    //         {
+    //             $diasParaIniciar = $fechaInicio->greaterThan($fechaActual) ? $fechaActual->diffInDays($fechaInicio) : 0;
 
-        //         if ($diasParaIniciar <= 7) 
-        //         {
-        //             $actividadesClasificadas['ProximasIniciar'][] = $actividad;
-        //         } 
-        //         else 
-        //         {
-        //             $actividadesClasificadas['Programadas'][] = $actividad;
-        //         }
-        //     }
-        // }
+    //             if ($diasParaIniciar <= 7) 
+    //             {
+    //                 $actividadesClasificadas['ProximasIniciar'][] = $actividad;
+    //             } 
+    //             else 
+    //             {
+    //                 $actividadesClasificadas['Programadas'][] = $actividad;
+    //             }
+    //         }
+    //     }
 
-        return $actividadesClasificadas;
-    }
+    //     return $actividadesClasificadas;
+    // }
 
     // public function agregarPrograma(Programa $programa): bool {
     //     return $this->repository->agregarPrograma($this->id, $programa->getId());

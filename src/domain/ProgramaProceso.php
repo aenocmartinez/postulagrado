@@ -2,6 +2,9 @@
 
 namespace Src\domain;
 
+use Src\domain\proceso\Proceso;
+use Src\domain\programa\Programa;
+
 class ProgramaProceso
 {
     private Programa $programa;

@@ -14,11 +14,8 @@
         <select id="proceso-select" class="border border-gray-300 px-3 py-2 rounded-md text-sm w-full focus:ring focus:ring-gray-400 outline-none">
             <option value="">Seleccione un proceso</option>
             @foreach($procesos as $proceso)
-                @if($proceso->estaCerrado())
-                    @continue
-                @endif
-                <option value="{{ route('seguimientos.show', ['id' => $proceso->getId()]) }}">
-                    {{ $proceso->getNombre() . " - " . $proceso->getNivelEducativo()->getNombre() }}
+                <option value="{{ route('seguimientos.show', ['id' => $proceso->id]) }}">
+                    {{ $proceso->nombre . " - " . $proceso->nivelEducativoNombre }}
                 </option>
             @endforeach
         </select>

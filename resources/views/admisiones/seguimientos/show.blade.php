@@ -8,7 +8,7 @@
 
 
 @php
-    $actividadesPorEstado = $proceso->getActividadesPorEstadoTemporal();
+    $actividadesPorEstado = $proceso->actividadesPorEstado;
 
     $conteo = collect($actividadesPorEstado)->map(fn($items) => count($items));
 
@@ -28,10 +28,10 @@
     <!-- 📌 Información del Proceso -->
     <div class="mb-6 flex justify-between">
         <div>
-            <h2 class="text-lg font-semibold text-gray-800">Proceso: {{ $proceso->getNombre() }}</h2>
-            <p class="text-sm text-gray-600">Nivel Educativo: <strong>{{ $proceso->getNivelEducativo()->getNombre() }}</strong></p>
+            <h2 class="text-lg font-semibold text-gray-800">Proceso: {{ $proceso->nombreProceso }}</h2>
+            <p class="text-sm text-gray-600">Nivel Educativo: <strong>{{ $proceso->nombreNivelEducativo }}</strong></p>
             <p class="text-sm text-gray-600">Estado: 
-                <span class="text-green-600">{{ $proceso->getEstado() }}</span>
+                <span class="text-green-600">{{ $proceso->estadoProceso }}</span>
             </p>
         </div>
     </div>
@@ -56,14 +56,14 @@
             'Próximas a Iniciar' => ['color' => 'orange-200', 'text' => 'text-orange-800', 'items' => []],
         ];
 
-        foreach($proceso->getActividadesPorEstadoTemporal() as $index => $actividad) {
+        foreach($actividadesPorEstado as $index => $actividad) {
 
             if ($index == "EnCurso") {
                 foreach($actividad as $item) {
                     $actividades['En Curso']['items'][] = [
-                        $item->getDescripcion(),
-                        $item->getFechaInicio(),
-                        $item->getFechaFin(),
+                        $item->descripcion(),
+                        $item->inicio(),
+                        $item->fin(),
                         'finalizará el ',
                     ];
                 }
@@ -73,9 +73,9 @@
             if ($index == "Finalizadas") {
                 foreach($actividad as $item) {
                     $actividades['Finalizadas']['items'][] = [
-                        $item->getDescripcion(),
-                        $item->getFechaInicio(),
-                        $item->getFechaFin(),
+                        $item->descripcion(),
+                        $item->inicio(),
+                        $item->fin(),
                         'finalizó el ',
                     ];
                 }
@@ -85,9 +85,9 @@
             if ($index == "Programadas") {
                 foreach($actividad as $item) {
                     $actividades['Programadas']['items'][] = [
-                        $item->getDescripcion(),
-                        $item->getFechaInicio(),
-                        $item->getFechaFin(),
+                        $item->descripcion(),
+                        $item->inicio(),
+                        $item->fin(),
                         'iniciará el ',
                     ];
                 }
@@ -97,9 +97,9 @@
             if ($index == "ProximasIniciar") {
                 foreach($actividad as $item) {
                     $actividades['Próximas a Iniciar']['items'][] = [
-                        $item->getDescripcion(),
-                        $item->getFechaInicio(),
-                        $item->getFechaFin(),
+                        $item->descripcion(),
+                        $item->inicio(),
+                        $item->fin(),
                         'iniciará el ',
                     ];
                 }
@@ -161,7 +161,7 @@
             </tr>
         </thead>
         <tbody id="tabla-programas">
-            @foreach ($proceso->getProgramas() as $index => $programaProceso)
+            @foreach ($proceso->programas as $index => $programaProceso)
             <tr class="border-b border-gray-300 bg-white hover:bg-gray-100 transition  text-xs 
                     {{ $index >= 10 ? 'programa-oculto hidden' : '' }}">
                 <!-- Nombre con Tooltip -->
@@ -184,9 +184,9 @@
                 <td class="px-4 py-2 text-center">
                     <div class="flex justify-center space-x-2">
                         <button class="text-sm px-3 py-1 rounded border border-gray-400 text-gray-700 hover:bg-gray-100 transition btn-ver-mas"
-                                data-proceso-id="{{ $proceso->getId() }}" 
+                                data-proceso-id="{{ $proceso->procesoID }}" 
                                 data-programa-id="{{ $programaProceso->getPrograma()->getId() }}"
-                                onclick="cargarVistaProgramaAvance({{ $proceso->getId() }}, {{ $programaProceso->getPrograma()->getId() }})">
+                                onclick="cargarVistaProgramaAvance({{ $proceso->procesoID }}, {{ $programaProceso->getPrograma()->getId() }})">
                             Más información
                         </button>
 
@@ -252,7 +252,7 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($proceso->getNotificaciones() as $notificacion)
+            @forelse($proceso->notificaciones as $notificacion)
 
                 @php
                     $estado = \Src\shared\formato\FormatoString::capital($notificacion->getEstado());
@@ -461,7 +461,7 @@
 
     function toggleOmitirPrograma(programaId) {
         let boton = $(`button[data-id="${programaId}"]`);
-        let procesoId = "{{ $proceso->getId() }}";
+        let procesoId = "{{ $proceso->procesoID }}";
         let url = `/procesos/${procesoId}/programas/${programaId}`;
 
         if (typeof Swal === "undefined") {

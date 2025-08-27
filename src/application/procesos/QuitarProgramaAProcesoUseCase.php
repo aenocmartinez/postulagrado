@@ -1,6 +1,6 @@
 <?php
 
-namespace Src\application\usecase\procesos;
+namespace Src\application\procesos;
 
 use Illuminate\Support\Facades\Log;
 use Src\domain\repositories\ProcesoRepository;
@@ -28,7 +28,7 @@ class QuitarProgramaAProcesoUseCase
             return new ResponsePostulaGrado(404, "Programa no encontrado");
         }
 
-        $exito = $proceso->$this->procesoRepo->quitarPrograma($proceso->getId(), $programa->getId());
+        $exito = $this->procesoRepo->quitarPrograma($proceso->getId(), $programa->getId());
         if (!$exito) {
             Log::error("Ha ocurrido un error en el sistema al quitar el programa del proceso.");
             return new ResponsePostulaGrado(500, "Ha ocurrido un error en el sistema al quitar el programa del proceso.");

@@ -15,6 +15,7 @@ use Src\infrastructure\controller\proceso\BuscarProcesoPorIDController;
 use Src\infrastructure\controller\proceso\CrearProcesoController;
 use Src\Infrastructure\Controller\Proceso\EliminarProcesoController;
 use Src\Infrastructure\Controller\Proceso\ListarProcesoController;
+use Src\infrastructure\controller\proceso\QuitarProgramaAProcesoController;
 use Src\shared\di\FabricaDeRepositoriosOracle;
 
 class LaravelProcesoController extends Controller
@@ -104,4 +105,13 @@ class LaravelProcesoController extends Controller
         $response = (new EliminarProcesoController($this->procesoRepository))($procesoID);
         return redirect()->route('procesos.index')->with($response->getCode(), $response->getMessage());
     }
+
+    public function quitarPrograma($procesoID, $programaID)
+    {
+        (new QuitarProgramaAProcesoController(
+            $this->procesoRepository,
+            $this->programaRepository
+        ))($procesoID, $programaID);
+
+    }    
 }
