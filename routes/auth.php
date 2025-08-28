@@ -128,8 +128,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/notificaciones/{id}/marcar-leida', 'marcarComoLeida')->name('notificaciones.marcar_como_leida');
     });
     
-    
+    // Programa Académico
     Route::controller(LaravelProgramaController::class)->group(function () {
+        Route::get('/programa_academico/dashboard', 'dashboard')->name('programa_academico.dashboard');
         Route::get('/programa_academico/procesos', 'procesos')->name('programa_academico.procesos.index');
         Route::get('/programa_academico/procesos/{id}/seguimiento', 'seguimientoProceso')->name('programa_academico.procesos.seguimiento');
         Route::get('/programa_academico/estudiantes-candidatos/{codigoPrograma}/{anio}/{periodo}', 'buscarEstudiantesCandidatosAGrado')->name('programa_academico.candidatos-grado');
@@ -138,16 +139,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/proceso-estudiante/buscar', 'buscarEstudiante');
         Route::post('/proceso-estudiante/agregar', 'agregarUnEstudianteAProceso');
         Route::get('/programa-academico/estudiantes/{procesoId}/{codigo}', 'detalleEstudianteProceso')->name('programa_academico.estudiantes.detalle');
+        Route::post('/programa_academico/enviar-enlace-actualizacion', 'enviarEnlaceActualizacionAEstudiantes')->name('programa_academico.enviar-enlace-actualizacion');
     });
 
-    // Programa Académico
-    Route::get('/programa_academico/dashboard', [ProgramaAcademicoController::class, 'dashboard'])->name('programa_academico.dashboard');
+    
     
     
 
-    Route::post('/programa_academico/enviar-enlace-actualizacion',
-        [ProgramaAcademicoController::class, 'enviarEnlaceActualizacionAEstudiantes']
-    )->name('programa_academico.enviar-enlace-actualizacion');
 
 
 

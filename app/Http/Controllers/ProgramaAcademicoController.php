@@ -222,20 +222,20 @@ class ProgramaAcademicoController extends Controller
 
     public function enviarEnlaceActualizacionAEstudiantes(Request $request)
     {
-        $procesoID = $request->get('proceso_id');
+        // $procesoID = $request->get('proceso_id');
 
-        $enviarEnlace = new EnviarEnlaceActualizacionUseCase(
-            FabricaDeRepositorios::getInstance()->getProgramaRepository(),
-            FabricaDeRepositorios::getInstance()->getProcesoRepository(),
-            FabricaDeRepositorios::getInstance()->getEnlaceActualizacionRepository(),
-        );
+        // $enviarEnlace = new EnviarEnlaceActualizacionUseCase(
+        //     FabricaDeRepositorios::getInstance()->getProgramaRepository(),
+        //     FabricaDeRepositorios::getInstance()->getProcesoRepository(),
+        //     FabricaDeRepositorios::getInstance()->getEnlaceActualizacionRepository(),
+        // );
 
-        $response = $enviarEnlace->ejecutar($procesoID);
+        // $response = $enviarEnlace->ejecutar($procesoID);
 
-        return response()->json([
-            'code' => $response->getCode(),
-            'message' => $response->getMessage(),
-        ], $response->getCode());
+        // return response()->json([
+        //     'code' => $response->getCode(),
+        //     'message' => $response->getMessage(),
+        // ], $response->getCode());
     }
 
     /**

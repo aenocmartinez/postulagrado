@@ -1,14 +1,14 @@
 <?php
 
-namespace Src\usecase\programas;
+namespace Src\application\programas;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Src\domain\EnlaceActualizacion;
-use Src\repositories\EnlaceActualizacionRepository;
-use Src\repositories\ProcesoRepository;
-use Src\repositories\ProgramaRepository;
+use Src\domain\repositories\EnlaceActualizacionRepository;
+use Src\domain\repositories\ProcesoRepository;
+use Src\domain\repositories\ProgramaRepository;
 use Src\Shared\Notifications\GestorNotificaciones;
 use Src\Shared\Notifications\MensajesPersonalizados;
 use Src\Shared\Notifications\NotificacionDTO;
@@ -17,15 +17,12 @@ use Src\shared\response\ResponsePostulaGrado;
 class EnviarEnlaceActualizacionUseCase
 {
     protected GestorNotificaciones $gestorNotificaciones;
-    private ProgramaRepository $programaRepo;
-    private ProcesoRepository $procesoRepo;
-    private EnlaceActualizacionRepository $enlaceRepo;
-    private int $diasExpiracion = 7;
+    private int $diasExpiracion = 15;
 
     public function __construct(
-        ProgramaRepository $programaRepo,
-        ProcesoRepository $procesoRepo,
-        EnlaceActualizacionRepository $enlaceRepo
+        private ProgramaRepository $programaRepo,
+        private ProcesoRepository $procesoRepo,
+        private EnlaceActualizacionRepository $enlaceRepo
     ) {
         $this->gestorNotificaciones = new GestorNotificaciones();
         $this->programaRepo = $programaRepo;
@@ -44,7 +41,7 @@ class EnviarEnlaceActualizacionUseCase
             return new ResponsePostulaGrado(404, "Programa no asociado al proceso.");
         }
 
-        $estudiantes = $programa->listarEstudiantesCandidatos($procesoID);
+        $estudiantes = $this->programaRepo->listarEstudiantesCandidatos($programa->getId(), $procesoID);
 
         $total = count($estudiantes);
         $enviados = 0;
@@ -52,9 +49,11 @@ class EnviarEnlaceActualizacionUseCase
         $fallidos = [];
 
         foreach ($estudiantes as $estudiante) {
-            $codigo = (string) ($estudiante['estu_codigo'] ?? '');
-            $email  = (string) ($estudiante['detalle']->email_institucional ?? '');
-            $nombre = (string) ($estudiante['detalle']->nombres ?? 'Estudiante');
+
+            $datosEstudiante = (object)$estudiante['detalle'];
+            $codigo = (string) ($datosEstudiante->estp_codigomatricula ?? '');
+            $email  = (string) ($datosEstudiante->email_institucional ?? '');
+            $nombre = (string) ($datosEstudiante->nombres ?? 'Estudiante');
 
             if (!$codigo || !$email) {
                 $errores++;

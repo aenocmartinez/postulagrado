@@ -538,6 +538,7 @@ class OracleProgramaRepository implements ProgramaRepository
                     PEGE.PEGE_DOCUMENTOIDENTIDAD   AS DOCUMENTO,
                     PENG.PENG_PRIMERAPELLIDO || ' ' || PENG.PENG_SEGUNDOAPELLIDO || ' ' ||
                     PENG.PENG_PRIMERNOMBRE  || ' ' || PENG.PENG_SEGUNDONOMBRE  AS NOMBRES,
+                    PENG.PENG_EMAILINSTITUCIONAL AS EMAIL_INSTITUCIONAL,
                     ROW_NUMBER() OVER (
                         PARTITION BY ESTP.ESTP_CODIGOMATRICULA
                         ORDER BY ESTP.ESTP_ID DESC
@@ -580,7 +581,8 @@ class OracleProgramaRepository implements ProgramaRepository
                 D.CATEGORIA,
                 D.CRED_PENDIENTES,
                 D.DOCUMENTO,
-                D.NOMBRES
+                D.NOMBRES,
+                D.EMAIL_INSTITUCIONAL
             FROM CANDIDATOS C
             LEFT JOIN DETALLE D
             ON D.ESTP_CODIGOMATRICULA = C.ESTU_CODIGO
@@ -606,6 +608,7 @@ class OracleProgramaRepository implements ProgramaRepository
                     'cred_pendientes'      => $r->cred_pendientes,
                     'documento'            => $r->documento,
                     'nombres'              => $r->nombres,
+                    'email_institucional'  => $r->email_institucional,
                 ],
             ];
         }, $rows);

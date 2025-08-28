@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Src\domain\repositories\ActividadRepository;
+use Src\domain\repositories\EnlaceActualizacionRepository;
 use Src\domain\repositories\EstudianteRepository;
 use Src\domain\repositories\NivelEducativoRepository;
 use Src\domain\repositories\NotificacionRepository;
@@ -14,6 +15,7 @@ use Src\Infrastructure\Controller\Proceso\ListarProcesoController;
 use Src\infrastructure\controller\programa\AgregarCandidatosController;
 use Src\infrastructure\controller\programa\BuscarCandidatosController;
 use Src\infrastructure\controller\programa\BuscarEstudianteController;
+use Src\infrastructure\controller\programa\EnviarEnlaceActualizacionDatosEstudiantesController;
 use Src\infrastructure\controller\programa\ObtenerDetalleEstudianteController;
 use Src\infrastructure\controller\programa\QuitarEstudianteController;
 use Src\infrastructure\controller\programa\SeguimientoProgramaProcesoController;
@@ -28,6 +30,7 @@ class LaravelProgramaController extends Controller
     private ActividadRepository $actividadRepo;
     private ProgramaRepository $programaRepo;
     private EstudianteRepository $estudianteRepo;
+    private EnlaceActualizacionRepository $enlaceActualizacionRepo;
 
     public function __construct()
     {
@@ -37,7 +40,13 @@ class LaravelProgramaController extends Controller
         $this->actividadRepo = FabricaDeRepositoriosOracle::getInstance()->getActividadRepository();
         $this->programaRepo = FabricaDeRepositoriosOracle::getInstance()->getProgramaRepository();
         $this->estudianteRepo = FabricaDeRepositoriosOracle::getInstance()->getEstudianteRepository();
+        $this->enlaceActualizacionRepo = FabricaDeRepositoriosOracle::getInstance()->getEnlaceActualizacionRepository();
     }
+
+    public function dashboard()
+    {               
+        return view('programa_academico.dashboard.index');
+    }    
 
     public function procesos()
     {
@@ -224,6 +233,22 @@ class LaravelProgramaController extends Controller
                 'message' => 'Error al obtener el detalle del estudiante.',
             ], 500);
         }
+    }
+    
+    public function enviarEnlaceActualizacionAEstudiantes()
+    {
+        $procesoID = request()->get('proceso_id');
+
+        $response = (new EnviarEnlaceActualizacionDatosEstudiantesController(
+            $this->programaRepo,
+            $this->procesoRepo,
+            $this->enlaceActualizacionRepo
+        ))->__invoke($procesoID);
+
+        return response()->json([
+            'code' => $response->getCode(),
+            'message' => $response->getMessage(),
+        ], $response->getCode());
     }    
   
 }
