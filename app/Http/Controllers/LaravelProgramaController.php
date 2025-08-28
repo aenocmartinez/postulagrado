@@ -3,21 +3,29 @@
 namespace App\Http\Controllers;
 
 use Src\domain\NivelEducativo;
+use Src\domain\repositories\ActividadRepository;
 use Src\domain\repositories\NivelEducativoRepository;
+use Src\domain\repositories\NotificacionRepository;
 use Src\domain\repositories\ProcesoRepository;
 use Src\Infrastructure\Controller\Proceso\ListarProcesoController;
+use Src\infrastructure\controller\programa\SeguimientoProgramaProcesoController;
 use Src\shared\di\FabricaDeRepositoriosOracle;
+use Src\Shared\Notifications\Notificacion;
 
 class LaravelProgramaController extends Controller
 {
 
     private ProcesoRepository $procesoRepo;
     private NivelEducativoRepository $nivelEducativoRepo;
+    private NotificacionRepository $notificacionRepo;
+    private ActividadRepository $actividadRepo;
 
     public function __construct()
     {
         $this->procesoRepo = FabricaDeRepositoriosOracle::getInstance()->getProcesoRepository();
         $this->nivelEducativoRepo = FabricaDeRepositoriosOracle::getInstance()->getNivelEducativoRepository();
+        $this->notificacionRepo = FabricaDeRepositoriosOracle::getInstance()->getNotificacionRepository();
+        $this->actividadRepo = FabricaDeRepositoriosOracle::getInstance()->getActividadRepository();
     }
 
     public function procesos()
@@ -30,6 +38,18 @@ class LaravelProgramaController extends Controller
 
     public function seguimientoProceso($procesoID)
     {
+        $response = (new SeguimientoProgramaProcesoController(
+            $this->procesoRepo, 
+            $this->nivelEducativoRepo, 
+            $this->notificacionRepo,
+            $this->actividadRepo
+            ))
+            ->__invoke($procesoID);
+
+
+        return view('programa_academico.procesos.seguimiento', [
+            'seguimiento' => $response->getData()
+        ]);            
 
         // $buscarProceso = new BuscarProcesoUseCase(
         //     FabricaDeRepositorios::getInstance()->getProcesoRepository()

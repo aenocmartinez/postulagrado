@@ -199,7 +199,7 @@
                     <p>
                         <strong>Total vinculados:</strong>
                         <span id="total-vinculados">
-                            {{ count(auth()->user()->programaAcademico()->listarEstudiantesCandidatos($proceso->getId())) }}
+                            {{ count(auth()->user()->programaAcademico()->listarEstudiantesCandidatos($seguimiento->procesoID)) }}
                         </span>
                     </p>
                 </div>
@@ -234,7 +234,7 @@
                     </tr>
                 </thead>
                 <tbody class="text-gray-800">
-                    @foreach(auth()->user()->programaAcademico()->listarEstudiantesCandidatos($proceso->getId()) as $est)
+                    @foreach(auth()->user()->programaAcademico()->listarEstudiantesCandidatos($seguimiento->procesoID) as $est)
                         <tr class="border-b hover:bg-gray-50">
                             <td class="px-4 py-2">{{ $est['detalle']->pensum_estud ?? '-' }}</td>
                             <td class="px-4 py-2">{{ $est['estu_codigo'] }}</td>
@@ -561,7 +561,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<span id="proceso" data-id="{{ $proceso->getId() }}"></span>
+<span id="proceso" data-id="{{ $seguimiento->procesoID }}"></span>
 <script>
     const PROCESO_ID = document.getElementById('proceso').dataset.id;
 </script>

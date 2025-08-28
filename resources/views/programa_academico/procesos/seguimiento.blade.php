@@ -7,7 +7,7 @@
 @section('content')
 
 @php
-    $actividadesPorEstado = $proceso->getActividadesPorEstadoTemporal();
+    $actividadesPorEstado = $seguimiento->actividadesPorEstadoTemporal;
 
     $conteo = collect($actividadesPorEstado)->map(fn($items) => count($items));
 
@@ -30,7 +30,7 @@
         <h2 class="text-xl font-semibold text-blue-900">{{ auth()->user()->programaAcademico()->getNombre() }}</h2>
         <p class="text-sm text-gray-600">Unidad Regional: <strong>{{ auth()->user()->programaAcademico()->getUnidadRegional()->getNombre() }}</strong></p>
         <p class="text-sm text-gray-600">Código SNIES: <strong>{{ auth()->user()->programaAcademico()->getSnies() }}</strong></p>
-        <p class="text-sm text-gray-600">Estado del Proceso: <span class="text-green-600">{{ $proceso->getEstado() }}</span></p>
+        <p class="text-sm text-gray-600">Estado del Proceso: <span class="text-green-600">{{ $seguimiento->procesoEstado }}</span></p>
     </div>
 
     <!-- 📊 Avance del Programa -->
@@ -81,8 +81,8 @@
             <ul class="list-disc pl-4 text-xs">
                 @forelse($finalizadas as $actividad)
                     <li class="mb-2 text-xs">
-                        {{ $actividad->getDescripcion() }} <br> 
-                        <span class="text-blue-700">Finalizó el {{ \Src\shared\formato\FormatoFecha::formatearFechaLarga($actividad->getFechaFin()) }} </span>
+                        {{ $actividad->descripcion() }} <br> 
+                        <span class="text-blue-700">Finalizó el {{ $actividad->finStr() }} </span>
                     </li>
                 @empty
                     <li>No hay actividades finalizadas.</li>
@@ -96,9 +96,9 @@
             <ul class="list-disc pl-4 text-xs">
                 @forelse($programadas as $actividad)
                     <li class="mb-2 text-xs">
-                        {{ $actividad->getDescripcion() }} <br>
+                        {{ $actividad->descripcion() }} <br>
                         <span class="text-blue-700">
-                        Periodo: {{ \Src\shared\formato\FormatoFecha::formatearFechaLarga($actividad->getFechaInicio()) }} al {{ \Src\shared\formato\FormatoFecha::formatearFechaLarga($actividad->getFechaFin()) }}
+                        Periodo: {{ \Src\shared\formato\FormatoFecha::formatearFechaLarga($actividad->inicioStr()) }} al {{ \Src\shared\formato\FormatoFecha::formatearFechaLarga($actividad->finStr()) }}
                         </span>
                     </li>
                 @empty
@@ -113,9 +113,9 @@
             <ul class="list-disc pl-4 text-xs">
                 @forelse($proximas as $actividad)
                     <li class="mb-2 text-xs">
-                        {{ $actividad->getDescripcion() }} <br>
+                        {{ $actividad->descripcion() }} <br>
                         <span class="text-blue-700">
-                        Periodo: {{ \Src\shared\formato\FormatoFecha::formatearFechaLarga($actividad->getFechaInicio()) }} al {{ \Src\shared\formato\FormatoFecha::formatearFechaLarga($actividad->getFechaFin()) }}
+                        Periodo: {{ \Src\shared\formato\FormatoFecha::formatearFechaLarga($actividad->inicioStr()) }} al {{ \Src\shared\formato\FormatoFecha::formatearFechaLarga($actividad->finStr()) }}
                         </span>
                     </li>
                 @empty
@@ -131,11 +131,11 @@
     <!-- 👥 Gestión de Estudiantes -->
     <h3 class="text-md font-semibold text-gray-700 mb-2">Estudiantes Candidatos a Grado</h3>
     <div class="border border-gray-300 p-6 rounded-md bg-gray-50 text-center mb-6" id="seccion-estudiantes-vinculados">
-        @include('programa_academico.procesos.seccion-boton-estudiantes', ['proceso' => $proceso])
+        @include('programa_academico.procesos.seccion-boton-estudiantes', ['proceso' => $seguimiento])
     </div>
 
     <template id="template-boton-estudiantes">
-        @include('programa_academico.procesos.seccion-boton-estudiantes', ['proceso' => $proceso])
+        @include('programa_academico.procesos.seccion-boton-estudiantes', ['proceso' => $seguimiento])
     </template>
 
     <hr class="my-8 border-t border-gray-300">
@@ -182,7 +182,7 @@
         <div class="mb-5">
             <h4 class="text-[12px] font-semibold text-blue-800 mb-2 border-b pb-1 text-right">Recientes</h4>
             <ul id="lista-no-leidas" class="space-y-3 text-xs text-gray-800">
-                @forelse($notificaciones as $notificacion)
+                @forelse($seguimiento->notificaciones as $notificacion)
                     @if(!$notificacion->fueLeida())
                         <li class="flex justify-between items-center border-b pb-2 cursor-pointer"
                             onclick="mostrarContenido(this)"
@@ -213,7 +213,7 @@
         <div>
             <h4 class="text-[12px] font-semibold text-blue-800 mb-2 border-b pb-1 text-right">Notificaciones revisadas</h4>
             <ul id="lista-leidas" class="space-y-3 text-xs text-gray-700">
-                @foreach($notificaciones as $notificacion)
+                @foreach($seguimiento->notificaciones as $notificacion)
                     @if($notificacion->fueLeida())
                         <li class="flex justify-between items-center border-b pb-2 cursor-pointer"
                             onclick="mostrarContenido(this)"

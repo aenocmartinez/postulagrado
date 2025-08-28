@@ -191,6 +191,8 @@ class OracleNotificacionRepository extends Model implements NotificacionReposito
                     ->orderBy('N.NOTI_FECHA', 'desc')
                     ->get();
 
+                    // $registros->dd();
+                
                 foreach ($registros as $registro) {
                     $notificacion = new Notificacion($this);
                     $notificacion->setId($registro->noti_id);

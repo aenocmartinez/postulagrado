@@ -117,4 +117,12 @@ class Programa
     public function existe(): bool {
         return $this->id > 0;
     }
+
+    public function tieneCandidatosAsocidos($procesoID): bool {
+        return false;
+    }
+
+    public function listarEstudiantesCandidatos($procesoID): array {
+        return [];
+    }
 }
