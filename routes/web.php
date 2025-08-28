@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\ActualizacionDatosController;
+use App\Http\Controllers\LaravelActualizacionDatosController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,7 +19,7 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::get('/actualizar-datos/{token}', [ActualizacionDatosController::class, 'mostrarFormularioActualizacion'])
+Route::get('/actualizar-datos/{token}', [LaravelActualizacionDatosController::class, 'mostrarFormularioActualizacion'])
      ->name('actualizacion.form.token');
 
 

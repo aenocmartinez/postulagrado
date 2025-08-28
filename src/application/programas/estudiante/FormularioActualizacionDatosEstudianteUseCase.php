@@ -1,22 +1,19 @@
 <?php
 
-namespace Src\application\usecase\enlaceActualizacion;
+namespace Src\application\programas\estudiante;
 
 use Carbon\Carbon;
 use Src\domain\repositories\EnlaceActualizacionRepository;
 use Src\domain\repositories\ProgramaRepository;
 use Src\shared\response\ResponsePostulaGrado;
 
-class ObtenerDatosFormularioActualizacionUseCase
+class FormularioActualizacionDatosEstudianteUseCase
 {
-    private EnlaceActualizacionRepository $enlaceRepo;
-    private ProgramaRepository $programaRepo;
 
-    public function __construct(EnlaceActualizacionRepository $enlaceRepo, ProgramaRepository $programaRepo)
-    {
-        $this->enlaceRepo = $enlaceRepo;
-        $this->programaRepo = $programaRepo;
-    }
+    public function __construct(
+        private EnlaceActualizacionRepository $enlaceRepo, 
+        private ProgramaRepository $programaRepo
+    ){}
 
     public function ejecutar(string $token): ResponsePostulaGrado
     {
