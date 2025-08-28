@@ -126,18 +126,18 @@ class ProgramaAcademicoController extends Controller
 
     public function quitarEstudiante(int $estudianteProcesoProgramaID)
     {   
-        $quitarEstudiante = new QuitarEstudianteDeProcesoUseCase(
-            FabricaDeRepositorios::getInstance()->getProgramaRepository(),
-            FabricaDeRepositorios::getInstance()->getProcesoRepository(),                
-        );
+        // $quitarEstudiante = new QuitarEstudianteDeProcesoUseCase(
+        //     FabricaDeRepositorios::getInstance()->getProgramaRepository(),
+        //     FabricaDeRepositorios::getInstance()->getProcesoRepository(),                
+        // );
 
-        $response = $quitarEstudiante->ejecutar($estudianteProcesoProgramaID);
+        // $response = $quitarEstudiante->ejecutar($estudianteProcesoProgramaID);
 
-        return response()->json([
-            'code' => $response->getCode(),
-            'message' => $response->getMessage(),
-            'data' => $response->getData()
-        ], $response->getCode());
+        // return response()->json([
+        //     'code' => $response->getCode(),
+        //     'message' => $response->getMessage(),
+        //     'data' => $response->getData()
+        // ], $response->getCode());
         
     }  
     

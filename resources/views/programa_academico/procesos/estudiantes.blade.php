@@ -199,7 +199,7 @@
                     <p>
                         <strong>Total vinculados:</strong>
                         <span id="total-vinculados">
-                            {{ count(auth()->user()->programaAcademico()->listarEstudiantesCandidatos($seguimiento->procesoID)) }}
+                            {{ count($seguimiento->estudiantesCandidatos) }}
                         </span>
                     </p>
                 </div>
@@ -223,7 +223,7 @@
             <table class="min-w-full text-sm text-left border-collapse" id="tabla-estudiantes-vinculados-proceso">
                 <thead class="bg-green-100 text-green-900 text-xs uppercase tracking-wide">
                     <tr>
-                        <th class="px-4 py-3">Pensum</th>
+                        <th class="px-4 py-3">Tot. cr. pensum</th>
                         <th class="px-4 py-3">Código</th>
                         <th class="px-4 py-3">Documento</th>
                         <th class="px-4 py-3">Nombre</th>
@@ -234,19 +234,19 @@
                     </tr>
                 </thead>
                 <tbody class="text-gray-800">
-                    @foreach(auth()->user()->programaAcademico()->listarEstudiantesCandidatos($seguimiento->procesoID) as $est)
+                    @foreach($seguimiento->estudiantesCandidatos as $est)
                         <tr class="border-b hover:bg-gray-50">
-                            <td class="px-4 py-2">{{ $est['detalle']->pensum_estud ?? '-' }}</td>
-                            <td class="px-4 py-2">{{ $est['estu_codigo'] }}</td>
-                            <td class="px-4 py-2">{{ $est['detalle']->documento ?? '-' }}</td>
-                            <td class="px-4 py-2">{{ $est['detalle']->nombres ?? '-' }}</td>
-                            <td class="px-4 py-2">{{ $est['detalle']->categoria ?? '-' }}</td>
+                            <td class="px-4 py-2">{{ $est['detalle']['pensum_estud'] ?? '-' }}</td>
+                            <td class="px-4 py-2">{{ $est['detalle']['estp_codigomatricula'] ?? '-' }}</td>
+                            <td class="px-4 py-2">{{ $est['detalle']['documento'] ?? '-' }}</td>
+                            <td class="px-4 py-2">{{ $est['detalle']['nombres'] ?? '-' }}</td>
+                            <td class="px-4 py-2">{{ $est['detalle']['categoria'] ?? '-' }}</td>
                             <td class="px-4 py-2">
                                 <span class="inline-block px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">
-                                    {{ $est['detalle']->situacion ?? '-' }}
+                                    {{ $est['detalle']['situacion'] ?? '-' }}
                                 </span>
                             </td>
-                            <td class="px-2 py-2 text-center">{{ $est['detalle']->cred_pendientes ?? '-' }}</td>
+                            <td class="px-2 py-2 text-center">{{ $est['detalle']['cred_pendientes'] ?? '-' }}</td>
                             <td class="px-4 py-2 text-center">
                                 <div class="flex justify-center gap-2">
                                     <!-- Botón Ver -->

@@ -516,20 +516,99 @@ class OracleProgramaRepository implements ProgramaRepository
     public function listarEstudiantesCandidatos(int $programaID, int $procesoID): array
     {
         $sql = "
-            SELECT 
-                ppes.PPES_ID,
-                ppes.ESTU_CODIGO
-            FROM ACADEMPOSTULGRADO.PROCESO_PROGRAMA_ESTUDIANTES ppes
-            INNER JOIN ACADEMPOSTULGRADO.PROCESO_PROGRAMA pp
-                ON pp.PROGR_ID = ppes.PROGR_ID
-            WHERE pp.PROC_ID = :proceso_id
-            AND pp.PROG_ID = :programa_id
+            WITH CANDIDATOS AS (
+                SELECT 
+                    ppes.PPES_ID,
+                    ppes.ESTU_CODIGO
+                FROM ACADEMPOSTULGRADO.PROCESO_PROGRAMA_ESTUDIANTES ppes
+                INNER JOIN ACADEMPOSTULGRADO.PROCESO_PROGRAMA pp
+                    ON pp.PROGR_ID = ppes.PROGR_ID
+                WHERE pp.PROC_ID = :proceso_id
+                AND pp.PROG_ID = :programa_id
+            ),
+            DETALLE AS (
+                SELECT
+                    ESTP.ESTP_CODIGOMATRICULA,
+                    ESTP.ESTP_ID,
+                    CLAVE2.TOTALCREDITOSPENSUM     AS PENSUM_ESTUD,
+                    ESTP.ESTP_PERIODOACADEMICO     AS UBICACION_SEMESTRAL,
+                    SITE.SITE_DESCRIPCION          AS SITUACION,
+                    CATE.CATE_DESCRIPCION          AS CATEGORIA,
+                    (CLAVE2.TOTALCREDITOSPENSUM - ESTP.ESTP_CREDITOSAPROBADOS) AS CRED_PENDIENTES,
+                    PEGE.PEGE_DOCUMENTOIDENTIDAD   AS DOCUMENTO,
+                    PENG.PENG_PRIMERAPELLIDO || ' ' || PENG.PENG_SEGUNDOAPELLIDO || ' ' ||
+                    PENG.PENG_PRIMERNOMBRE  || ' ' || PENG.PENG_SEGUNDONOMBRE  AS NOMBRES,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY ESTP.ESTP_CODIGOMATRICULA
+                        ORDER BY ESTP.ESTP_ID DESC
+                    ) AS RN
+                FROM ACADEMICO.ESTUDIANTEPENSUM ESTP
+                INNER JOIN ACADEMICO.PERSONAGENERAL PEGE ON ESTP.PEGE_ID = PEGE.PEGE_ID
+                INNER JOIN GENERAL.PERSONANATURALGENERAL PENG ON PEGE.PEGE_ID = PENG.PEGE_ID
+                INNER JOIN ACADEMICO.CATEGORIA CATE ON ESTP.CATE_ID = CATE.CATE_ID
+                INNER JOIN ACADEMICO.SITUACIONESTUDIANTE SITE ON ESTP.SITE_ID = SITE.SITE_ID
+                LEFT JOIN (
+                    SELECT ESTP_ID, PENS_TOTALCREDITOS AS TOTALCREDITOSPENSUM,
+                        SUM(MATE_PONDERACIONACADEMICA) AS CLAVE2PONDERA,
+                        PENS_PONMINMATNOR AS PONDERACIONBASICA
+                    FROM (
+                        SELECT ESTP.ESTP_ID, PENS.PENS_TOTALCREDITOS, MATE.MATE_PONDERACIONACADEMICA,
+                            PENS.PENS_PONMINMATNOR
+                        FROM ACADEMICO.ESTUDIANTEPENSUM ESTP
+                        JOIN ACADEMICO.PENSUM PENS            ON ESTP.PENS_ID = PENS.PENS_ID
+                        JOIN ACADEMICO.PENSUMMATERIA PEMA     ON PENS.PENS_ID = PEMA.PENS_ID
+                        JOIN ACADEMICO.MATERIA MATE           ON PEMA.MATE_CODIGOMATERIA = MATE.MATE_CODIGOMATERIA
+                        JOIN ACADEMICO.REGISTROACADEMICO REAC 
+                            ON REAC.MATE_CODIGOMATERIA = MATE.MATE_CODIGOMATERIA
+                            AND REAC.ESTP_ID = ESTP.ESTP_ID
+                        WHERE PEMA.CICU_ID = 4
+                        AND REAC.REAC_APROBADO = 1
+                        AND PENS.TIPA_ID = 2
+                        AND (ESTP.ESTP_PERIODOACADEMICO = PENS.PENS_NUMPERIODOS - 1
+                            OR ESTP.ESTP_PERIODOACADEMICO = PENS.PENS_NUMPERIODOS)
+                    )
+                    GROUP BY ESTP_ID, PENS_TOTALCREDITOS, PENS_PONMINMATNOR
+                ) CLAVE2 ON ESTP.ESTP_ID = CLAVE2.ESTP_ID
+            )
+            SELECT
+                C.PPES_ID,
+                C.ESTU_CODIGO,
+                D.ESTP_CODIGOMATRICULA,
+                D.PENSUM_ESTUD,
+                D.UBICACION_SEMESTRAL,
+                D.SITUACION,
+                D.CATEGORIA,
+                D.CRED_PENDIENTES,
+                D.DOCUMENTO,
+                D.NOMBRES
+            FROM CANDIDATOS C
+            LEFT JOIN DETALLE D
+            ON D.ESTP_CODIGOMATRICULA = C.ESTU_CODIGO
+            AND D.RN = 1
+            ORDER BY C.PPES_ID
         ";
 
-        return DB::connection('oracle_academpostulgrado')->select($sql, [
-            'proceso_id' => $procesoID,
+        $rows = DB::connection('oracle_academpostulgrado')->select($sql, [
+            'proceso_id'  => $procesoID,
             'programa_id' => $programaID,
         ]);
+
+        return array_map(function ($r) {
+            return [
+                'ppes_id'     => $r->ppes_id,
+                'estu_codigo' => $r->estu_codigo,
+                'detalle'     => $r->estp_codigomatricula === null ? null : [
+                    'estp_codigomatricula' => $r->estp_codigomatricula,
+                    'pensum_estud'         => $r->pensum_estud,
+                    'ubicacion_semestral'  => $r->ubicacion_semestral,
+                    'situacion'            => $r->situacion,
+                    'categoria'            => $r->categoria,
+                    'cred_pendientes'      => $r->cred_pendientes,
+                    'documento'            => $r->documento,
+                    'nombres'              => $r->nombres,
+                ],
+            ];
+        }, $rows);
     }
 
     public function obtenerEstudiantePorCodigo(string|array $codigosEstudiante): array

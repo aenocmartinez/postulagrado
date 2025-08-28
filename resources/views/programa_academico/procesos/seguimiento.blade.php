@@ -134,10 +134,6 @@
         @include('programa_academico.procesos.seccion-boton-estudiantes', ['proceso' => $seguimiento])
     </div>
 
-    <template id="template-boton-estudiantes">
-        @include('programa_academico.procesos.seccion-boton-estudiantes', ['proceso' => $seguimiento])
-    </template>
-
     <hr class="my-8 border-t border-gray-300">
 
 <!-- 🧾 Estado por Área -->

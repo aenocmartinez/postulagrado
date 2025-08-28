@@ -132,6 +132,7 @@ Route::middleware('auth')->group(function () {
     Route::controller(LaravelProgramaController::class)->group(function () {
         Route::get('/programa_academico/procesos', 'procesos')->name('programa_academico.procesos.index');
         Route::get('/programa_academico/procesos/{id}/seguimiento', 'seguimientoProceso')->name('programa_academico.procesos.seguimiento');
+        Route::delete('/programa-academico/estudiantes/{estudianteProcesoProgramaID}', 'quitarEstudiante')->name('programa_academico.estudiantes.quitar');        
     });
 
     // Programa Académico
@@ -148,9 +149,6 @@ Route::middleware('auth')->group(function () {
     )->name('programa_academico.enviar-enlace-actualizacion');
 
 
-
-    Route::delete('/programa-academico/estudiantes/{estudianteProcesoProgramaID}', [ProgramaAcademicoController::class, 'quitarEstudiante'])
-        ->name('programa_academico.estudiantes.quitar');
 
     Route::get('/proceso-estudiante/buscar', [ProgramaAcademicoController::class, 'buscarEstudiante']);
     Route::post('/proceso-estudiante/agregar', [ProgramaAcademicoController::class, 'agregarUnEstudianteAProceso']);

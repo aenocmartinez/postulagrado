@@ -4,12 +4,12 @@ namespace Src\infrastructure\controller\programa;
 
 use Illuminate\Support\Facades\Auth;
 use Src\application\programas\DTO\SeguimientoProcesoProgramaDTO;
-use Src\domain\proceso\actividad\Actividad;
 use Src\domain\proceso\actividad\service\ClasificarActividadesPorEstadoTemporal;
 use Src\domain\repositories\ActividadRepository;
 use Src\domain\repositories\NivelEducativoRepository;
 use Src\domain\repositories\NotificacionRepository;
 use Src\domain\repositories\ProcesoRepository;
+use Src\domain\repositories\ProgramaRepository;
 use Src\shared\response\ResponsePostulaGrado;
 
 class SeguimientoProgramaProcesoController
@@ -18,7 +18,8 @@ class SeguimientoProgramaProcesoController
         private ProcesoRepository $procesoRepository,
         private NivelEducativoRepository $nivelEducativoRepository,
         private NotificacionRepository $notificacionRepo,
-        private ActividadRepository $actividadRepo
+        private ActividadRepository $actividadRepo,
+        private ProgramaRepository $programaRepo
     ) {}
 
     public function __invoke(int $procesoID): ResponsePostulaGrado
@@ -41,6 +42,7 @@ class SeguimientoProgramaProcesoController
         $seguimiento->procesoEstado = $proceso->getEstado();
         $seguimiento->notificaciones = $notificaciones;
         $seguimiento->actividadesPorEstadoTemporal = ClasificarActividadesPorEstadoTemporal::ejecutar($actividades);
+        $seguimiento->estudiantesCandidatos = $this->programaRepo->listarEstudiantesCandidatos($user->programaAcademico()->getId(), $proceso->getId());
 
         return new ResponsePostulaGrado(200, "Proceso encontrado.", $seguimiento);
     }

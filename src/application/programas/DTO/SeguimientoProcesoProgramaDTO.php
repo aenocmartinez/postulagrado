@@ -9,4 +9,5 @@ class SeguimientoProcesoProgramaDTO
     public string $procesoEstado;
     public array $notificaciones = [];
     public array $actividadesPorEstadoTemporal = [];
+    public array $estudiantesCandidatos = [];
 }

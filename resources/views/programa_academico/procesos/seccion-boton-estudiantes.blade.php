@@ -1,4 +1,4 @@
-@if (auth()->user()->programaAcademico()->tieneCandidatosAsocidos($seguimiento->procesoID))
+@if (count($seguimiento->estudiantesCandidatos) > 0)
     <p class="text-sm text-gray-600 mb-3">
         Haz clic en el botón para ver los estudiantes vinculados al proceso.
     </p>
