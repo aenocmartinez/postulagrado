@@ -125,9 +125,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/notificaciones/{id}', 'show')->name('notificaciones.show');
         Route::get('/notificaciones/{id}/editar', 'edit')->name('notificaciones.edit');
         Route::put('/notificaciones/{id}', 'update')->name('notificaciones.update');
+        Route::post('/notificaciones/{id}/marcar-leida', 'marcarComoLeida')->name('notificaciones.marcar_como_leida');
     });
     
-    Route::post('/notificaciones/{id}/marcar-leida', [NotificacionController::class, 'marcarComoLeida'])->name('notificaciones.marcar_como_leida');
     
     Route::controller(LaravelProgramaController::class)->group(function () {
         Route::get('/programa_academico/procesos', 'procesos')->name('programa_academico.procesos.index');

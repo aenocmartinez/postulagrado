@@ -40,34 +40,34 @@ class ProgramaAcademicoController extends Controller
     public function seguimientoProceso($procesoID)
     {
 
-        $buscarProceso = new BuscarProcesoUseCase(
-            FabricaDeRepositorios::getInstance()->getProcesoRepository()
-        );
+        // $buscarProceso = new BuscarProcesoUseCase(
+        //     FabricaDeRepositorios::getInstance()->getProcesoRepository()
+        // );
 
-        $listaNotificaciones = new ListarNotificacionesPorUsuarioUseCase(
-            FabricaDeRepositorios::getInstance()->getNotificacionRepository()
-        );
+        // $listaNotificaciones = new ListarNotificacionesPorUsuarioUseCase(
+        //     FabricaDeRepositorios::getInstance()->getNotificacionRepository()
+        // );
 
-        $responseBuscarProceso = $buscarProceso->ejecutar($procesoID);
-        if ($responseBuscarProceso->getCode() != 200) {
-            return redirect()->route('programa_academico.procesos.index')
-                                ->with($responseBuscarProceso->getCode(), $responseBuscarProceso->getMessage());
-        }
+        // $responseBuscarProceso = $buscarProceso->ejecutar($procesoID);
+        // if ($responseBuscarProceso->getCode() != 200) {
+        //     return redirect()->route('programa_academico.procesos.index')
+        //                         ->with($responseBuscarProceso->getCode(), $responseBuscarProceso->getMessage());
+        // }
 
-        $listaNotificacionesResponse = $listaNotificaciones->ejecutar(Auth::user()->email);
-        if ($listaNotificacionesResponse->getCode() != 200) {
-            return redirect()->route('programa_academico.procesos.index')
-                                ->with($listaNotificacionesResponse->getCode(), $listaNotificacionesResponse->getMessage());
-        }
+        // $listaNotificacionesResponse = $listaNotificaciones->ejecutar(Auth::user()->email);
+        // if ($listaNotificacionesResponse->getCode() != 200) {
+        //     return redirect()->route('programa_academico.procesos.index')
+        //                         ->with($listaNotificacionesResponse->getCode(), $listaNotificacionesResponse->getMessage());
+        // }
 
-        /** @var \Src\admisiones\domain\Proceso $proceso */
-        $proceso = $responseBuscarProceso->getData();
+        // /** @var \Src\admisiones\domain\Proceso $proceso */
+        // $proceso = $responseBuscarProceso->getData();
         
 
-        return view('programa_academico.procesos.seguimiento', [
-            'proceso' => $proceso,
-            'notificaciones' => $listaNotificacionesResponse->getData(),        
-        ]);
+        // return view('programa_academico.procesos.seguimiento', [
+        //     'proceso' => $proceso,
+        //     'notificaciones' => $listaNotificacionesResponse->getData(),        
+        // ]);
     }    
 
     public function buscarEstudiantesCandidatosAGrado(int $codigoPrograma, int $anio, int $periodo)
@@ -178,46 +178,46 @@ class ProgramaAcademicoController extends Controller
 
     private function asociarCandidato(int $procesoId, string $codigo, int $anio, int $periodo): array
     {
-        $uc = new AsociarCandidatosAProcesoGradoUseCase(
-            FabricaDeRepositorios::getInstance()->getProgramaRepository(),
-            FabricaDeRepositorios::getInstance()->getProcesoRepository(),
-        );
+        // $uc = new AsociarCandidatosAProcesoGradoUseCase(
+        //     FabricaDeRepositorios::getInstance()->getProgramaRepository(),
+        //     FabricaDeRepositorios::getInstance()->getProcesoRepository(),
+        // );
 
-        $resp = $uc->ejecutar($procesoId, [$codigo], $anio, $periodo);
-        return [(int)$resp->getCode(), $resp->getMessage()];
+        // $resp = $uc->ejecutar($procesoId, [$codigo], $anio, $periodo);
+        // return [(int)$resp->getCode(), $resp->getMessage()];
     }
 
     private function construirEstParaFila(int $procesoId, string $codigo): array
     {        
-        /** @var Models\User $user */
-        $user = Auth::user();
-        $lista = $user->programaAcademico()->listarEstudiantesCandidatos($procesoId);
-        $est   = collect($lista)->firstWhere('estu_codigo', $codigo);
+        // /** @var Models\User $user */
+        // $user = Auth::user();
+        // $lista = $user->programaAcademico()->listarEstudiantesCandidatos($procesoId);
+        // $est   = collect($lista)->firstWhere('estu_codigo', $codigo);
 
-        if (!$est || empty($est['detalle'])) {
-            $buscarUc = new BuscarEstudianteUseCase(
-                FabricaDeRepositorios::getInstance()->getEstudianteRepository(),
-            );
-            $resp = $buscarUc->ejecutar($codigo);
+        // if (!$est || empty($est['detalle'])) {
+        //     $buscarUc = new BuscarEstudianteUseCase(
+        //         FabricaDeRepositorios::getInstance()->getEstudianteRepository(),
+        //     );
+        //     $resp = $buscarUc->ejecutar($codigo);
 
-            if ((int)$resp->getCode() === 200) {
-                $det = (array) $resp->getData();
-                $est = [
-                    'ppes_id'     => $est['ppes_id'] ?? null,
-                    'estu_codigo' => $codigo,
-                    'detalle'     => (object)[
-                        'pensum_estud'    => $det['pensum_estud']    ?? ($det['pensum'] ?? '-'),
-                        'documento'       => $det['documento']       ?? '-',
-                        'nombres'         => $det['nombres']         ?? ($det['nombre'] ?? '-'),
-                        'categoria'       => $det['categoria']       ?? '-',
-                        'situacion'       => $det['situacion']       ?? '-',
-                        'cred_pendientes' => $det['cred_pendientes'] ?? ($det['numeroCreditosPendientes'] ?? '-'),
-                    ],
-                ];
-            }
-        }
+        //     if ((int)$resp->getCode() === 200) {
+        //         $det = (array) $resp->getData();
+        //         $est = [
+        //             'ppes_id'     => $est['ppes_id'] ?? null,
+        //             'estu_codigo' => $codigo,
+        //             'detalle'     => (object)[
+        //                 'pensum_estud'    => $det['pensum_estud']    ?? ($det['pensum'] ?? '-'),
+        //                 'documento'       => $det['documento']       ?? '-',
+        //                 'nombres'         => $det['nombres']         ?? ($det['nombre'] ?? '-'),
+        //                 'categoria'       => $det['categoria']       ?? '-',
+        //                 'situacion'       => $det['situacion']       ?? '-',
+        //                 'cred_pendientes' => $det['cred_pendientes'] ?? ($det['numeroCreditosPendientes'] ?? '-'),
+        //             ],
+        //         ];
+        //     }
+        // }
 
-        return $est;
+        // return $est;
     }
 
     public function enviarEnlaceActualizacionAEstudiantes(Request $request)
@@ -244,27 +244,27 @@ class ProgramaAcademicoController extends Controller
      */
     public function detalleEstudianteProceso(int $procesoId, string $codigo)
     {
-        try {
-            $useCase = new ObtenerDetalleEstudianteProcesoUseCase(
-                FabricaDeRepositorios::getInstance()->getProgramaRepository(),
-                FabricaDeRepositorios::getInstance()->getProcesoRepository(),
-            );
+        // try {
+        //     $useCase = new ObtenerDetalleEstudianteProcesoUseCase(
+        //         FabricaDeRepositorios::getInstance()->getProgramaRepository(),
+        //         FabricaDeRepositorios::getInstance()->getProcesoRepository(),
+        //     );
 
-            $resp = $useCase->ejecutar($procesoId, $codigo);
+        //     $resp = $useCase->ejecutar($procesoId, $codigo);
 
-            return response()->json([
-                'code'    => $resp->getCode(),
-                'message' => $resp->getMessage(),
-                'data'    => $resp->getData(),
-            ], $resp->getCode());
-        } catch (\Throwable $e) {
-            report($e);
+        //     return response()->json([
+        //         'code'    => $resp->getCode(),
+        //         'message' => $resp->getMessage(),
+        //         'data'    => $resp->getData(),
+        //     ], $resp->getCode());
+        // } catch (\Throwable $e) {
+        //     report($e);
 
-            return response()->json([
-                'code'    => 500,
-                'message' => 'Error al obtener el detalle del estudiante.',
-            ], 500);
-        }
+        //     return response()->json([
+        //         'code'    => 500,
+        //         'message' => 'Error al obtener el detalle del estudiante.',
+        //     ], 500);
+        // }
     }
 
 }

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GuardarNotificacion;
+use Illuminate\Support\Facades\Auth;
 use Src\application\procesos\notificaciones\DTO\NotificacionDTO;
-use Src\domain\Notificacion;
 use Src\domain\repositories\ContactoRepository;
 use Src\domain\repositories\NivelEducativoRepository;
 use Src\domain\repositories\NotificacionRepository;
@@ -15,6 +15,7 @@ use Src\infrastructure\controller\proceso\notificacion\AnularNotificacionControl
 use Src\infrastructure\controller\proceso\notificacion\CrearNotificacionController;
 use Src\infrastructure\controller\proceso\notificacion\FormularioCrearNotificacionController;
 use Src\infrastructure\controller\proceso\notificacion\FormularioEditarNotificacionController;
+use Src\infrastructure\controller\proceso\notificacion\MarcarNotificacionComoLeidaController;
 use Src\infrastructure\controller\proceso\notificacion\NotifiacionesDeUnProcesoController;
 use Src\infrastructure\controller\proceso\notificacion\VerNotificacionController;
 use Src\shared\di\FabricaDeRepositoriosOracle;
@@ -153,6 +154,18 @@ class LaravelNotificacionController extends Controller
 
         return redirect()->route('notificaciones.por_proceso', ['id' => $data['procesoID']])
                         ->with($response->getCode(), $response->getMessage());        
-
     }    
+
+    public function marcarComoLeida($id)
+    {
+        /** @var App\Models\User $user */
+        $user = Auth::user();
+        $email = $user->email;
+
+        (new MarcarNotificacionComoLeidaController(
+            $this->notificacionRepo,
+        ))->__invoke($id, $email);
+
+        return response()->json(['success' => true]);
+    }
 }
