@@ -136,6 +136,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/programa_academico/asociar-estudiantes', 'asociarEstudiantesCandidatosAProcesoGrado')->name('programa_academico.asociar-estudiantes-proceso');
         Route::delete('/programa-academico/estudiantes/{estudianteProcesoProgramaID}', 'quitarEstudiante')->name('programa_academico.estudiantes.quitar');        
         Route::get('/proceso-estudiante/buscar', 'buscarEstudiante');
+        Route::post('/proceso-estudiante/agregar', 'agregarUnEstudianteAProceso');
     });
 
     // Programa Académico
@@ -151,6 +152,5 @@ Route::middleware('auth')->group(function () {
 
 
 
-    Route::post('/proceso-estudiante/agregar', [ProgramaAcademicoController::class, 'agregarUnEstudianteAProceso']);
 
 });

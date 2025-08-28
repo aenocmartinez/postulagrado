@@ -159,21 +159,21 @@ class ProgramaAcademicoController extends Controller
 
     public function agregarUnEstudianteAProceso(Request $request)
     {
-        [$code, $message] = $this->asociarCandidato(
-            (int)$request->proceso_id,
-            (string)$request->codigo,
-            2024,
-            1
-        );
+        // [$code, $message] = $this->asociarCandidato(
+        //     (int)$request->proceso_id,
+        //     (string)$request->codigo,
+        //     2024,
+        //     1
+        // );
 
-        $payload = ['code' => $code, 'message' => $message];
+        // $payload = ['code' => $code, 'message' => $message];
 
-        if ($code === 200) {
-            $est     = $this->construirEstParaFila((int)$request->proceso_id, (string)$request->codigo);
-            $payload['row_html'] = view('programa_academico.procesos.partials.fila_estudiante_vinculado', compact('est'))->render();
-        }
+        // if ($code === 200) {
+        //     $est     = $this->construirEstParaFila((int)$request->proceso_id, (string)$request->codigo);
+        //     $payload['row_html'] = view('programa_academico.procesos.partials.fila_estudiante_vinculado', compact('est'))->render();
+        // }
 
-        return response()->json($payload, $code);
+        // return response()->json($payload, $code);
     }
 
     private function asociarCandidato(int $procesoId, string $codigo, int $anio, int $periodo): array

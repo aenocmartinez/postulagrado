@@ -7,7 +7,7 @@ use Src\domain\repositories\EstudianteRepository;
 
 class OracleEstudianteRepository implements EstudianteRepository 
 {
-   public function buscarEstudiantePorCodigo(string|array $parametros): array
+    public function buscarEstudiantePorCodigo(string|array $parametros): array
     {
         if (empty($parametros)) {
             return [];
@@ -90,6 +90,27 @@ class OracleEstudianteRepository implements EstudianteRepository
         ";
 
         return DB::connection('oracle_academico')->select($sql, $bindings);
+    }
+
+    public function findPpesId(int $procesoId, int $programaId, string $codigo): ?int
+    {
+        $sql = "
+            SELECT ppes.PPES_ID
+            FROM ACADEMPOSTULGRADO.PROCESO_PROGRAMA_ESTUDIANTES ppes
+            JOIN ACADEMPOSTULGRADO.PROCESO_PROGRAMA pp
+            ON pp.PROGR_ID = ppes.PROGR_ID
+            WHERE pp.PROC_ID = :proceso_id
+            AND pp.PROG_ID = :programa_id
+            AND ppes.ESTU_CODIGO = :codigo
+        ";
+
+        $row = DB::connection('oracle_academpostulgrado')->selectOne($sql, [
+            'proceso_id'  => $procesoId,
+            'programa_id' => $programaId,
+            'codigo'      => $codigo,
+        ]);
+
+        return $row?->ppes_id !== null ? (int)$row->ppes_id : null;
     }
 
 }

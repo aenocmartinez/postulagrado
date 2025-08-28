@@ -130,8 +130,69 @@ class LaravelProgramaController extends Controller
     {
         $documentoOrCodigo = $request->get('termino');
 
-        $response = (new BuscarEstudianteController($this->estudianteRepo))->__invoke($documentoOrCodigo);                
+        $response = (new BuscarEstudianteController($this->estudianteRepo))->__invoke($documentoOrCodigo);
 
         return response()->json($response->getData());
-    }    
+    } 
+    
+    public function agregarUnEstudianteAProceso(Request $request)
+    {
+        [$code, $message] = $this->asociarCandidato(
+            (int)$request->proceso_id,
+            (string)$request->codigo,
+            2024,
+            1
+        );
+
+        $payload = ['code' => $code, 'message' => $message];
+
+        if ($code === 200) {
+            
+            /** @var App\Models\User $user */
+            $user = Auth::user();
+            $programa = $user->programaAcademico();
+
+            $est     = $this->construirEstParaFila((int)$request->proceso_id, $programa->getId(), (string)$request->codigo);
+            $payload['row_html'] = view('programa_academico.procesos.partials.fila_estudiante_vinculado', compact('est'))->render();
+        }
+
+        return response()->json($payload, $code);
+    }   
+    
+    private function asociarCandidato(int $procesoId, string $codigo, int $anio, int $periodo): array
+    {
+        $response = (new AgregarCandidatosController($this->programaRepo, $this->procesoRepo))->__invoke(
+            [$codigo],
+            $procesoId,
+            $anio,
+            $periodo
+        );
+
+        return [(int)$response->getCode(), $response->getMessage()];
+    }  
+    
+    private function construirEstParaFila(int $procesoId, int $programaId, string $codigo): array
+    {
+        $ppesId = $this->estudianteRepo->findPpesId($procesoId, $programaId, $codigo);
+        if (!$ppesId) {
+            throw new \RuntimeException("No existe PPES_ID para {$codigo} en proceso {$procesoId}/programa {$programaId}");
+        }
+
+        $fila = $this->estudianteRepo->buscarEstudiantePorCodigo($codigo)[0] ?? [];
+        $det  = (array) $fila;
+
+        return [
+            'ppes_id'     => $ppesId,              
+            'estu_codigo' => (string) $codigo,
+            'detalle'     => (object)[
+                'pensum_estud'    => $det['pensum_estud']    ?? ($det['pensum'] ?? '-'),
+                'documento'       => $det['documento']       ?? '-',
+                'nombres'         => $det['nombres']         ?? ($det['nombre'] ?? '-'),
+                'categoria'       => $det['categoria']       ?? '-',
+                'situacion'       => $det['situacion']       ?? '-',
+                'cred_pendientes' => $det['cred_pendientes'] ?? ($det['numeroCreditosPendientes'] ?? '-'),
+            ],
+        ];
+    }
+  
 }

@@ -14,8 +14,8 @@ class BuscarEstudianteUseCase
     public function ejecutar(string $documentoOrCodigo): ResponsePostulaGrado 
     {
 
-        $estududiantes = $this->estudianteRepo->buscarEstudiantePorCodigo($documentoOrCodigo);
+        $estudiantes = $this->estudianteRepo->buscarEstudiantePorCodigo($documentoOrCodigo);
 
-        return new ResponsePostulaGrado(200, "Estudiantes retirado exitosamente.", $estududiantes);
+        return new ResponsePostulaGrado(200, "Estudiantes retirado exitosamente.", $estudiantes);
     }
 }
