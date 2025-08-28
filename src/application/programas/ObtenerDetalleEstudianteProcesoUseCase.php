@@ -1,22 +1,20 @@
 <?php
 
-namespace Src\usecase\programas;
+namespace Src\application\programas;
 
 use Illuminate\Support\Facades\Auth;
-use Src\repositories\ProgramaRepository;
-use Src\repositories\ProcesoRepository;
+use Src\domain\repositories\EstudianteRepository;
+use Src\domain\repositories\ProcesoRepository;
+use Src\domain\repositories\ProgramaRepository;
 use Src\shared\response\ResponsePostulaGrado;
 
 class ObtenerDetalleEstudianteProcesoUseCase
-{
-    private ProgramaRepository $programaRepo;
-    private ProcesoRepository $procesoRepo;
-
-    public function __construct(ProgramaRepository $programaRepo, ProcesoRepository $procesoRepo)
-    {
-        $this->programaRepo = $programaRepo;
-        $this->procesoRepo  = $procesoRepo;
-    }
+{    
+    public function __construct(
+        private ProgramaRepository $programaRepo, 
+        private ProcesoRepository $procesoRepo,
+        private EstudianteRepository $estudianteRepo
+        ){}
 
     /**
      * Retorna el detalle de un estudiante (por código) dentro de un proceso,
@@ -33,32 +31,22 @@ class ObtenerDetalleEstudianteProcesoUseCase
             return new ResponsePostulaGrado(404, 'Programa no asociado al proceso.');
         }
 
-        $candidatos = $programa->listarEstudiantesCandidatos($procesoID);
-
-        $encontrado = null;
-        foreach ($candidatos as $row) {
-            $codTop     = $row['estu_codigo'] ?? null;
-            $codDetalle = data_get($row, 'detalle.estp_codigomatricula');
-
-            if ((string)$codTop === (string)$codigo || (string)$codDetalle === (string)$codigo) {
-                $encontrado = $row;
-                break;
-            }
+        $resultado = $this->estudianteRepo->buscarEstudiantePorCodigo($codigo);
+        if (!$resultado) {
+            return new ResponsePostulaGrado(404, 'Estudiante no encontrado.');
         }
 
-        if (!$encontrado) {
-            return new ResponsePostulaGrado(404, 'Estudiante no vinculado a este proceso.');
-        }
+        $estudiante = $resultado[0];
 
         $det = $encontrado['detalle'] ?? (object)[];
 
-        $primerNombre = trim((string) data_get($det, 'primer_nombre', ''));
-        $segundoNombre = trim((string) data_get($det, 'segundo_nombre', ''));
-        $primerApellido = trim((string) data_get($det, 'primer_apellido', ''));
-        $segundoApellido = trim((string) data_get($det, 'segundo_apellido', ''));
+        $primerNombre = $estudiante->primer_nombre;
+        $segundoNombre = $estudiante->segundo_nombre;
+        $primerApellido = $estudiante->primer_apellido;
+        $segundoApellido = $estudiante->segundo_apellido;
         $nombreCompuesto = trim(implode(' ', array_filter([$primerNombre, $segundoNombre, $primerApellido, $segundoApellido])));
 
-        $generoCode = strtoupper((string) data_get($det, 'genero', ''));
+        $generoCode = strtoupper((string) $estudiante->genero);
         $generoTxt  = match ($generoCode) {
             'F' => 'Femenino',
             'M' => 'Masculino',
@@ -66,7 +54,7 @@ class ObtenerDetalleEstudianteProcesoUseCase
             default => $generoCode,
         };
 
-        $creditosAprobados = (int) data_get($det, 'cred_aprobados', 0);
+        $creditosAprobados = (int) data_get($estudiante, 'cred_aprobados', 0);
         // Si quisieras derivar a partir de pensum y pendientes:
         // $pensum  = (int) data_get($det, 'creditos_pensum', 0);
         // $pend    = (int) data_get($det, 'cred_pendientes', 0);
@@ -74,37 +62,37 @@ class ObtenerDetalleEstudianteProcesoUseCase
 
         // Estado paz y salvo (si no existe, todos "Pendiente")
         $paz = [
-            'financiera' => data_get($det, 'paz_salvo.financiera', 'Pendiente'),
-            'admisiones' => data_get($det, 'paz_salvo.admisiones', 'Pendiente'),
-            'biblioteca' => data_get($det, 'paz_salvo.biblioteca', 'Pendiente'),
-            'recursos'   => data_get($det, 'paz_salvo.recursos', 'Pendiente'),
-            'idiomas'    => data_get($det, 'paz_salvo.idiomas', 'Pendiente'),
+            'financiera' => data_get($estudiante, 'paz_salvo.financiera', 'Pendiente'),
+            'admisiones' => data_get($estudiante, 'paz_salvo.admisiones', 'Pendiente'),
+            'biblioteca' => data_get($estudiante, 'paz_salvo.biblioteca', 'Pendiente'),
+            'recursos'   => data_get($estudiante, 'paz_salvo.recursos', 'Pendiente'),
+            'idiomas'    => data_get($estudiante, 'paz_salvo.idiomas', 'Pendiente'),
         ];
 
         $payload = [
             'nombre'                    => $nombreCompuesto,
-            'primerNombre'              => (string) data_get($det, 'primer_nombre', false),
-            'segundoNombre'             => (string) data_get($det, 'segundo_nombre', false),
-            'primerApellido'            => (string) data_get($det, 'primer_apellido', false),
-            'segundoApellido'           => (string) data_get($det, 'segundo_apellido', false),
+            'primerNombre'              => (string) data_get($estudiante, 'primer_nombre', false),
+            'segundoNombre'             => (string) data_get($estudiante, 'segundo_nombre', false),
+            'primerApellido'            => (string) data_get($estudiante, 'primer_apellido', false),
+            'segundoApellido'           => (string) data_get($estudiante, 'segundo_apellido', false),
             'programa'                  => mb_strtoupper($programa->getNombre(), 'UTF-8'),
             'creditos'                  => $creditosAprobados,
-            'formularioActualizado'     => (bool) data_get($det, 'formulario_actualizado', false),
-            'esEgresado'                => (bool) data_get($det, 'es_egresado', false),
-            'representante'             => (bool) data_get($det, 'representante', false),
+            'formularioActualizado'     => (bool) data_get($estudiante, 'formulario_actualizado', false),
+            'esEgresado'                => (bool) data_get($estudiante, 'es_egresado', false),
+            'representante'             => (bool) data_get($estudiante, 'representante', false),
             'genero'                    => $generoTxt,
-            'hijoFuncionario'           => (bool) data_get($det, 'hijo_funcionario', false),
-            'universidadPregrado'       => (string) data_get($det, 'universidad_pregrado', ''),
-            'correo'                    => (string) (data_get($det, 'correo') ?? data_get($det, 'email_institucional', '')),
-            'telefono'                  => (string) data_get($det, 'telefono', ''),
-            'documento'                 => (string) (data_get($det, 'documento', '') ?: data_get($det, 'numero_documento', '')),
-            'tipoDocumento'             => (string) data_get($det, 'tipo_documento_nombre', false),
-            'lugarExpedicion'           => (string) data_get($det, 'lugar_expedicion', false),
+            'hijoFuncionario'           => (bool) data_get($estudiante, 'hijo_funcionario', false),
+            'universidadPregrado'       => (string) data_get($estudiante, 'universidad_pregrado', ''),
+            'correo'                    => (string) (data_get($estudiante, 'correo') ?? data_get($estudiante, 'email_institucional', '')),
+            'telefono'                  => (string) data_get($estudiante, 'telefono', ''),
+            'documento'                 => (string) (data_get($estudiante, 'documento', '') ?: data_get($estudiante, 'numero_documento', '')),
+            'tipoDocumento'             => (string) data_get($estudiante, 'tipo_documento_nombre', false),
+            'lugarExpedicion'           => (string) data_get($estudiante, 'lugar_expedicion', false),
             'esHijoFuncionario'         => false,
             'esHijoDocente'             => false,
             'esFuncionarioUniversidad'  => false,
-            'documentoURL'              => (string) data_get($det, 'documento_url', '#'),
-            'esPostgrado'               => (bool) data_get($det, 'es_postgrado', false),
+            'documentoURL'              => (string) data_get($estudiante, 'documento_url', '#'),
+            'esPostgrado'               => (bool) data_get($estudiante, 'es_postgrado', false),
             'pazSalvo'                  => $paz,
         ];
 

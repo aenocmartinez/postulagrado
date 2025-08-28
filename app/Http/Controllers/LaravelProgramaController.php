@@ -14,6 +14,7 @@ use Src\Infrastructure\Controller\Proceso\ListarProcesoController;
 use Src\infrastructure\controller\programa\AgregarCandidatosController;
 use Src\infrastructure\controller\programa\BuscarCandidatosController;
 use Src\infrastructure\controller\programa\BuscarEstudianteController;
+use Src\infrastructure\controller\programa\ObtenerDetalleEstudianteController;
 use Src\infrastructure\controller\programa\QuitarEstudianteController;
 use Src\infrastructure\controller\programa\SeguimientoProgramaProcesoController;
 use Src\shared\di\FabricaDeRepositoriosOracle;
@@ -147,7 +148,7 @@ class LaravelProgramaController extends Controller
         $payload = ['code' => $code, 'message' => $message];
 
         if ($code === 200) {
-            
+
             /** @var App\Models\User $user */
             $user = Auth::user();
             $programa = $user->programaAcademico();
@@ -194,5 +195,35 @@ class LaravelProgramaController extends Controller
             ],
         ];
     }
+
+    /**
+     * GET /programa-academico/estudiantes/{procesoId}/{codigo}
+     * Retorna el detalle de un estudiante vinculado a un proceso.
+     */
+    public function detalleEstudianteProceso(int $procesoId, string $codigo)
+    {
+        try {
+
+            $response = (new ObtenerDetalleEstudianteController(
+                $this->programaRepo,
+                $this->procesoRepo,
+                $this->estudianteRepo,
+            ))->__invoke($procesoId, $codigo);
+
+            return response()->json([
+                'code'    => $response->getCode(),
+                'message' => $response->getMessage(),
+                'data'    => $response->getData(),
+            ], $response->getCode());
+
+        } catch (\Throwable $e) {
+            report($e);
+
+            return response()->json([
+                'code'    => 500,
+                'message' => 'Error al obtener el detalle del estudiante.',
+            ], 500);
+        }
+    }    
   
 }

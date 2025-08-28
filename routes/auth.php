@@ -137,14 +137,13 @@ Route::middleware('auth')->group(function () {
         Route::delete('/programa-academico/estudiantes/{estudianteProcesoProgramaID}', 'quitarEstudiante')->name('programa_academico.estudiantes.quitar');        
         Route::get('/proceso-estudiante/buscar', 'buscarEstudiante');
         Route::post('/proceso-estudiante/agregar', 'agregarUnEstudianteAProceso');
+        Route::get('/programa-academico/estudiantes/{procesoId}/{codigo}', 'detalleEstudianteProceso')->name('programa_academico.estudiantes.detalle');
     });
 
     // Programa Académico
     Route::get('/programa_academico/dashboard', [ProgramaAcademicoController::class, 'dashboard'])->name('programa_academico.dashboard');
     
     
-    Route::get('/programa-academico/estudiantes/{procesoId}/{codigo}',[ProgramaAcademicoController::class, 'detalleEstudianteProceso']
-    )->name('programa_academico.estudiantes.detalle');
 
     Route::post('/programa_academico/enviar-enlace-actualizacion',
         [ProgramaAcademicoController::class, 'enviarEnlaceActualizacionAEstudiantes']
