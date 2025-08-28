@@ -1,11 +1,11 @@
 <?php
 
-namespace Src\usecase\programas;
+namespace Src\application\programas;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Src\repositories\ProcesoRepository;
-use Src\repositories\ProgramaRepository;
+use Src\domain\repositories\ProcesoRepository;
+use Src\domain\repositories\ProgramaRepository;
 use Src\shared\response\ResponsePostulaGrado;
 
 class AsociarCandidatosAProcesoGradoUseCase

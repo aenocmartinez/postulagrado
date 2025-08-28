@@ -1,8 +1,8 @@
 <?php
 
-namespace Src\usecase\programas;
+namespace Src\application\programas;
 
-use Src\repositories\EstudianteRepository;
+use Src\domain\repositories\EstudianteRepository;
 use Src\shared\response\ResponsePostulaGrado;
 
 class BuscarEstudianteUseCase

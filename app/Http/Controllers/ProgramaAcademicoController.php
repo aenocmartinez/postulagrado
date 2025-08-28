@@ -95,33 +95,33 @@ class ProgramaAcademicoController extends Controller
 
     public function asociarEstudiantesCandidatosAProcesoGrado(Request $request)
     {
-        $validated = $request->validate([
-            'estudiantes'   => ['required', 'array', 'min:1'],
-            'estudiantes.*' => ['required', 'string', 'max:20'],
-            'proc_id'      => ['required', 'integer'],
-            'anio'      => ['required', 'integer'],
-            'periodo'      => ['required', 'integer'],
-        ]);
+        // $validated = $request->validate([
+        //     'estudiantes'   => ['required', 'array', 'min:1'],
+        //     'estudiantes.*' => ['required', 'string', 'max:20'],
+        //     'proc_id'      => ['required', 'integer'],
+        //     'anio'      => ['required', 'integer'],
+        //     'periodo'      => ['required', 'integer'],
+        // ]);
 
-        $estudiantes   = $validated['estudiantes'];
-        $procesoID     = $validated['proc_id'];
-        $anio          = $validated['anio'];
-        $periodo       = $validated['periodo'];
-
-
-        $asociarCandidatos = new AsociarCandidatosAProcesoGradoUseCase(
-            FabricaDeRepositorios::getInstance()->getProgramaRepository(),
-            FabricaDeRepositorios::getInstance()->getProcesoRepository(),
-        );
+        // $estudiantes   = $validated['estudiantes'];
+        // $procesoID     = $validated['proc_id'];
+        // $anio          = $validated['anio'];
+        // $periodo       = $validated['periodo'];
 
 
-        $response = $asociarCandidatos->ejecutar($procesoID, $estudiantes, $anio, $periodo);
+        // $asociarCandidatos = new AsociarCandidatosAProcesoGradoUseCase(
+        //     FabricaDeRepositorios::getInstance()->getProgramaRepository(),
+        //     FabricaDeRepositorios::getInstance()->getProcesoRepository(),
+        // );
+
+
+        // $response = $asociarCandidatos->ejecutar($procesoID, $estudiantes, $anio, $periodo);
         
-        return response()->json([
-            'code' => $response->getCode(),
-            'message' => $response->getMessage(),
-            'data' => $response->getData()
-        ], $response->getCode());
+        // return response()->json([
+        //     'code' => $response->getCode(),
+        //     'message' => $response->getMessage(),
+        //     'data' => $response->getData()
+        // ], $response->getCode());
     }
 
     public function quitarEstudiante(int $estudianteProcesoProgramaID)
@@ -143,18 +143,18 @@ class ProgramaAcademicoController extends Controller
     
     public function buscarEstudiante(Request $request)
     {
-        $documentoOrCodigo = $request->get('termino');
+        // $documentoOrCodigo = $request->get('termino');
 
-        $buscarEstudiante = new BuscarEstudianteUseCase(
-            FabricaDeRepositorios::getInstance()->getEstudianteRepository(),
-        );
+        // $buscarEstudiante = new BuscarEstudianteUseCase(
+        //     FabricaDeRepositorios::getInstance()->getEstudianteRepository(),
+        // );
         
-        /** @var \Src\shared\response\ResponsePostulaGrado $response */
-        $response = $buscarEstudiante->ejecutar($documentoOrCodigo);
-        $estudiantes = $response->getData();
+        // /** @var \Src\shared\response\ResponsePostulaGrado $response */
+        // $response = $buscarEstudiante->ejecutar($documentoOrCodigo);
+        // $estudiantes = $response->getData();
                 
 
-        return response()->json($estudiantes);
+        // return response()->json($estudiantes);
     }
 
     public function agregarUnEstudianteAProceso(Request $request)

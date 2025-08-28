@@ -133,13 +133,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/programa_academico/procesos', 'procesos')->name('programa_academico.procesos.index');
         Route::get('/programa_academico/procesos/{id}/seguimiento', 'seguimientoProceso')->name('programa_academico.procesos.seguimiento');
         Route::get('/programa_academico/estudiantes-candidatos/{codigoPrograma}/{anio}/{periodo}', 'buscarEstudiantesCandidatosAGrado')->name('programa_academico.candidatos-grado');
+        Route::post('/programa_academico/asociar-estudiantes', 'asociarEstudiantesCandidatosAProcesoGrado')->name('programa_academico.asociar-estudiantes-proceso');
         Route::delete('/programa-academico/estudiantes/{estudianteProcesoProgramaID}', 'quitarEstudiante')->name('programa_academico.estudiantes.quitar');        
+        Route::get('/proceso-estudiante/buscar', 'buscarEstudiante');
     });
 
     // Programa Académico
     Route::get('/programa_academico/dashboard', [ProgramaAcademicoController::class, 'dashboard'])->name('programa_academico.dashboard');
     
-    Route::post('/programa_academico/asociar-estudiantes', [ProgramaAcademicoController::class, 'asociarEstudiantesCandidatosAProcesoGrado'])->name('programa_academico.asociar-estudiantes-proceso');
     
     Route::get('/programa-academico/estudiantes/{procesoId}/{codigo}',[ProgramaAcademicoController::class, 'detalleEstudianteProceso']
     )->name('programa_academico.estudiantes.detalle');
@@ -150,7 +151,6 @@ Route::middleware('auth')->group(function () {
 
 
 
-    Route::get('/proceso-estudiante/buscar', [ProgramaAcademicoController::class, 'buscarEstudiante']);
     Route::post('/proceso-estudiante/agregar', [ProgramaAcademicoController::class, 'agregarUnEstudianteAProceso']);
 
 });
