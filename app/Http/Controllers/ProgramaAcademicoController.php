@@ -73,23 +73,23 @@ class ProgramaAcademicoController extends Controller
     public function buscarEstudiantesCandidatosAGrado(int $codigoPrograma, int $anio, int $periodo)
     {
     
-        $buscarCantidatosGrado = new BuscarEstudiantesCandidatosGradoUseCase(
-            FabricaDeRepositorios::getInstance()->getProgramaRepository(),
-        );
+        // $buscarCantidatosGrado = new BuscarEstudiantesCandidatosGradoUseCase(
+        //     FabricaDeRepositorios::getInstance()->getProgramaRepository(),
+        // );
 
-        /** @var App\Models\User $user */
+        // /** @var App\Models\User $user */
 
-        $response = $buscarCantidatosGrado->ejecutar(
-            $user->programaAcademico()->getCodigo(), 
-            $anio, 
-            $periodo);
+        // $response = $buscarCantidatosGrado->ejecutar(
+        //     $user->programaAcademico()->getCodigo(), 
+        //     $anio, 
+        //     $periodo);
 
 
-        return response()->json([
-                'code' => $response->getCode(),
-                'message' => $response->getMessage(),
-                'data' => $response->getData()
-            ], $response->getCode());
+        // return response()->json([
+        //         'code' => $response->getCode(),
+        //         'message' => $response->getMessage(),
+        //         'data' => $response->getData()
+        //     ], $response->getCode());
 
     }
 

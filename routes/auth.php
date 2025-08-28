@@ -132,12 +132,12 @@ Route::middleware('auth')->group(function () {
     Route::controller(LaravelProgramaController::class)->group(function () {
         Route::get('/programa_academico/procesos', 'procesos')->name('programa_academico.procesos.index');
         Route::get('/programa_academico/procesos/{id}/seguimiento', 'seguimientoProceso')->name('programa_academico.procesos.seguimiento');
+        Route::get('/programa_academico/estudiantes-candidatos/{codigoPrograma}/{anio}/{periodo}', 'buscarEstudiantesCandidatosAGrado')->name('programa_academico.candidatos-grado');
         Route::delete('/programa-academico/estudiantes/{estudianteProcesoProgramaID}', 'quitarEstudiante')->name('programa_academico.estudiantes.quitar');        
     });
 
     // Programa Académico
     Route::get('/programa_academico/dashboard', [ProgramaAcademicoController::class, 'dashboard'])->name('programa_academico.dashboard');
-    Route::get('/programa_academico/estudiantes-candidatos/{codigoPrograma}/{anio}/{periodo}', [ProgramaAcademicoController::class, 'buscarEstudiantesCandidatosAGrado'])->name('programa_academico.candidatos-grado');
     
     Route::post('/programa_academico/asociar-estudiantes', [ProgramaAcademicoController::class, 'asociarEstudiantesCandidatosAProcesoGrado'])->name('programa_academico.asociar-estudiantes-proceso');
     
