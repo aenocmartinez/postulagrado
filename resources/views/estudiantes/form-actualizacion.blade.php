@@ -62,7 +62,6 @@
   .section-muted .field-note{font-size:12px;color:#9ca3af;margin-top:6px}
   .section-emphasis{border:1px solid #bfdbfe;background:#eff6ff;box-shadow:0 1px 0 rgba(59,130,246,.15)}
   .badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:9999px;background:#3b82f6;color:#fff;margin-left:8px}
-
   select.ts-hidden-accessible{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;overflow:hidden!important;padding:0!important;margin:0!important;border:0!important;display:block!important;opacity:0!important}
   .ts-wrapper{position:relative}
   .ts-control{display:flex;align-items:center;flex-wrap:wrap;gap:6px;min-height:42px;padding:6px 10px;border:1px solid #d1d5db;border-radius:8px;background:#fff}
@@ -74,7 +73,6 @@
   .ts-dropdown .option{padding:8px 10px}
   .ts-dropdown .option.active{background:#eff6ff}
   .ts-dropdown .no-results{padding:8px 10px;color:#6b7280}
-
   .file-drop{border:2px dashed #bfdbfe;background:#eff6ff;border-radius:14px;padding:18px;transition:.15s ease-in-out}
   .file-drop:hover{background:#e9f1ff}
   .file-drop.is-drag{background:#dbeafe;border-color:#60a5fa}
@@ -171,18 +169,16 @@
             <input id="correo_institucional" name="correo_institucional" value="{{ old('correo_institucional', $get('email_institucional')) }}" readonly>
           </div>
         </div>
-        <div class="field-note">
-          Estos datos están bloqueados porque se validarán y actualizarán según el documento de identificación que adjuntes. Si observas alguna inconsistencia, comunícate con Soporte Académico.
-        </div>
+        <div class="field-note">Estos datos están bloqueados porque se validarán y actualizarán según el documento de identificación que adjuntes. Si observas alguna inconsistencia, comunícate con Soporte Académico.</div>
       </div>
 
       <div class="divider"></div>
 
       <div class="section section-emphasis">
         <div class="section-title">Anexos prioritarios <span class="badge">PRIORITARIO</span></div>
-        <div class="grid" style="margin-bottom: 40px; margin-top:20px;">
+        <div class="grid" style="margin-bottom: 40px;">
           <div>
-            <label class="req file-drop__title" for="doc_identificacion" style="text-align: center; font-size:medium;">Documento de identificación (PDF/JPG/PNG)</label>
+            <label class="req file-drop__title" for="doc_identificacion" style="text-align: center; font-size:medium">Documento de identificación (PDF/JPG/PNG)</label>
             <div class="file-drop" id="doc_drop" data-max="3145728">
               <div class="file-drop__click" id="doc_click">
                 <svg class="file-drop__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -216,7 +212,7 @@
             <input id="codigo_saber" name="codigo_saber" value="{{ old('codigo_saber', $get('codigo_saber')) }}">
           </div>
         </div>
-        <div class="help" style="margin-top:6px">Estos documentos pueden anexarse más adelante, antes de la fecha de graduación.</div>
+        <div class="help" style="margin-top:6px; text-align: center;">Estos documentos pueden anexarse más adelante, antes de la fecha de graduación.</div>
       </div>
 
       <div class="divider"></div>
@@ -240,6 +236,37 @@
           <div>
             <label for="correo_personal">Correo electrónico personal</label>
             <input id="correo_personal" name="correo_personal" value="{{ old('correo_personal', $get('correo_personal', $get('correo'))) }}">
+          </div>
+        </div>
+
+        <div class="grid grid-3" style="margin-top:12px">
+          @php
+            $departamentoOld = old('departamento', $get('departamento'));
+            $ciudadOld = old('ciudad', $get('ciudad'));
+            $direccionOld = old('direccion', $get('direccion'));
+          @endphp
+          <div>
+            <label class="req" for="departamento">Departamento</label>
+            <select id="departamento" name="departamento" required>
+              <option value="">Seleccione…</option>
+              @php
+                $departamentos = [
+                  'Amazonas','Antioquia','Arauca','Atlántico','Bogotá D.C.','Bolívar','Boyacá','Caldas','Caquetá','Casanare','Cauca','Cesar','Chocó','Córdoba','Cundinamarca','Guainía','Guaviare','Huila','La Guajira','Magdalena','Meta','Nariño','Norte de Santander','Putumayo','Quindío','Risaralda','San Andrés y Providencia','Santander','Sucre','Tolima','Valle del Cauca','Vaupés','Vichada'
+                ];
+              @endphp
+              @foreach($departamentos as $dep)
+                <option value="{{ $dep }}" {{ $departamentoOld===$dep ? 'selected' : '' }}>{{ $dep }}</option>
+              @endforeach
+            </select>
+          </div>
+          <div>
+            <label class="req" for="ciudad">Ciudad o Municipio</label>
+            <input id="ciudad" name="ciudad" list="ciudad_list" value="{{ $ciudadOld }}" required autocomplete="address-level2">
+            <datalist id="ciudad_list"></datalist>
+          </div>
+          <div>
+            <label class="req" for="direccion">Dirección</label>
+            <input id="direccion" name="direccion" value="{{ $direccionOld }}" placeholder="Ej: Calle 10 # 5-23 Apto 301" required autocomplete="street-address">
           </div>
         </div>
 
@@ -380,6 +407,58 @@
 })();
 </script>
 
+<script>
+(function(){
+  const dep=document.getElementById('departamento');
+  const dl=document.getElementById('ciudad_list');
+  const ciudad=document.getElementById('ciudad');
+  const data={
+    'Amazonas':['Leticia'],
+    'Antioquia':['Medellín','Bello','Envigado','Itagüí','Rionegro'],
+    'Arauca':['Arauca'],
+    'Atlántico':['Barranquilla','Soledad','Puerto Colombia'],
+    'Bogotá D.C.':['Bogotá'],
+    'Bolívar':['Cartagena','Turbaco'],
+    'Boyacá':['Tunja','Duitama','Sogamoso'],
+    'Caldas':['Manizales','Villamaría'],
+    'Caquetá':['Florencia'],
+    'Casanare':['Yopal'],
+    'Cauca':['Popayán'],
+    'Cesar':['Valledupar'],
+    'Chocó':['Quibdó'],
+    'Córdoba':['Montería'],
+    'Cundinamarca':['Bogotá','Soacha','Chía','Zipaquirá','Funza'],
+    'Guainía':['Inírida'],
+    'Guaviare':['San José del Guaviare'],
+    'Huila':['Neiva'],
+    'La Guajira':['Riohacha'],
+    'Magdalena':['Santa Marta'],
+    'Meta':['Villavicencio'],
+    'Nariño':['Pasto'],
+    'Norte de Santander':['Cúcuta'],
+    'Putumayo':['Mocoa'],
+    'Quindío':['Armenia'],
+    'Risaralda':['Pereira','Dosquebradas'],
+    'San Andrés y Providencia':['San Andrés'],
+    'Santander':['Bucaramanga','Floridablanca','Girón','Piedecuesta'],
+    'Sucre':['Sincelejo'],
+    'Tolima':['Ibagué'],
+    'Valle del Cauca':['Cali','Palmira','Buenaventura','Tuluá','Yumbo'],
+    'Vaupés':['Mitú'],
+    'Vichada':['Puerto Carreño']
+  };
+  function fill(){
+    const d=dep?.value||'';
+    dl.innerHTML='';
+    (data[d]||[]).forEach(c=>{
+      const o=document.createElement('option');o.value=c;dl.appendChild(o);
+    });
+  }
+  dep?.addEventListener('change',fill);
+  fill();
+})();
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <script>
 (function(){
@@ -389,58 +468,20 @@
   const wrapOtro=document.getElementById('wrap_universidad_otro');
   const inputOtro=document.getElementById('universidad_pregrado_otro');
   const form=document.querySelector('form');
-
   const tituloInp=document.getElementById('titulo_pregrado');
   const fechaInp=document.getElementById('fecha_grado_pregrado');
   const tituloLab=document.querySelector('label[for="titulo_pregrado"]');
   const fechaLab=document.querySelector('label[for="fecha_grado_pregrado"]');
   const TARGET='universidad colegio mayor de cundinamarca';
-
   if(!sel) return;
   if(sel.tomselect){sel.tomselect.destroy();}
-
-  const ts=new TomSelect(sel,{
-    create:false,
-    allowEmptyOption:true,
-    maxOptions:10000,
-    searchField:['text','value'],
-    sortField:{field:'text',direction:'asc'},
-    placeholder:sel.getAttribute('placeholder')||'Seleccione…',
-    plugins:['dropdown_input']
-  });
-
-  function toggleOtra(val){
-    const es=val===OTRA;
-    if(wrapOtro) wrapOtro.style.display=es?'':'none';
-    if(inputOtro) inputOtro.required=es;
-  }
-  function currentUni(){
-    const v=ts.getValue();
-    return v===OTRA ? (inputOtro?.value||'').trim() : (v||'');
-  }
-  function enforceRequired(){
-    const isUCMC=currentUni().trim().toLowerCase()===TARGET;
-    if(tituloInp) tituloInp.required=isUCMC;
-    if(fechaInp) fechaInp.required=isUCMC;
-    if(tituloLab) tituloLab.classList.toggle('req',isUCMC);
-    if(fechaLab) fechaLab.classList.toggle('req',isUCMC);
-  }
-  function sync(){
-    const v=ts.getValue();
-    hid.value=(v===OTRA)?(inputOtro?.value||'').trim():(v||'');
-    toggleOtra(v);enforceRequired();
-  }
-  ts.on('change',sync);
-  inputOtro?.addEventListener('input',sync);
-  sync();
-
-  form?.addEventListener('submit',function(e){
-    if(ts.getValue()===OTRA){
-      const t=(inputOtro?.value||'').trim();
-      if(!t){e.preventDefault();inputOtro?.focus();alert('Por favor escribe el nombre de la universidad.');return;}
-      hid.value=t;
-    }
-  });
+  const ts=new TomSelect(sel,{create:false,allowEmptyOption:true,maxOptions:10000,searchField:['text','value'],sortField:{field:'text',direction:'asc'},placeholder:sel.getAttribute('placeholder')||'Seleccione…',plugins:['dropdown_input']});
+  function toggleOtra(val){const es=val===OTRA;if(wrapOtro) wrapOtro.style.display=es?'':'none';if(inputOtro) inputOtro.required=es}
+  function currentUni(){const v=ts.getValue();return v===OTRA?(inputOtro?.value||'').trim():(v||'')}
+  function enforceRequired(){const isUCMC=currentUni().trim().toLowerCase()===TARGET;if(tituloInp) tituloInp.required=isUCMC;if(fechaInp) fechaInp.required=isUCMC;if(tituloLab) tituloLab.classList.toggle('req',isUCMC);if(fechaLab) fechaLab.classList.toggle('req',isUCMC)}
+  function sync(){const v=ts.getValue();hid.value=(v===OTRA)?(inputOtro?.value||'').trim():(v||'');toggleOtra(v);enforceRequired()}
+  ts.on('change',sync);inputOtro?.addEventListener('input',sync);sync();
+  form?.addEventListener('submit',function(e){if(ts.getValue()===OTRA){const t=(inputOtro?.value||'').trim();if(!t){e.preventDefault();inputOtro?.focus();alert('Por favor escribe el nombre de la universidad.');return;}hid.value=t;}})
 })();
 </script>
 
@@ -456,29 +497,14 @@
   const rm=document.getElementById('doc_remove');
   const MAX=parseInt(drop?.dataset?.max||(3*1024*1024),10);
   if(!drop||!input)return;
-
-  function bytes(n){return n<1024*1024? (n/1024).toFixed(0)+' KB' : (n/1024/1024).toFixed(2)+' MB'}
-  function show(file){
-    nameEl.textContent=file.name; sizeEl.textContent=bytes(file.size);
-    if(/image\/(png|jpe?g)/i.test(file.type)){
-      const url=URL.createObjectURL(file); thumb.src=url; thumb.style.objectFit='cover';
-    }else{
-      thumb.src='data:image/svg+xml;utf8,<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36"><rect width="36" height="36" rx="6" fill="%23f3f4f6"/><text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="12" fill="%236b7280">PDF</text></svg>';
-      thumb.style.objectFit='contain';
-    }
-    prev.style.display='';
-  }
-  function clear(){input.value=''; prev.style.display='none'}
-  function handle(files){
-    const f=files?.[0]; if(!f)return;
-    if(f.size>MAX){alert('El archivo supera los 3 MB. Por favor adjunta un archivo de máximo 3 MB.'); clear(); return;}
-    input.files=files; show(f);
-  }
-
+  function bytes(n){return n<1024*1024?(n/1024).toFixed(0)+' KB':(n/1024/1024).toFixed(2)+' MB'}
+  function show(file){nameEl.textContent=file.name;sizeEl.textContent=bytes(file.size);if(/image\/(png|jpe?g)/i.test(file.type)){const url=URL.createObjectURL(file);thumb.src=url;thumb.style.objectFit='cover'}else{thumb.src='data:image/svg+xml;utf8,<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36"><rect width="36" height="36" rx="6" fill="%23f3f4f6"/><text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="12" fill="%236b7280">PDF</text></svg>';thumb.style.objectFit='contain'}prev.style.display=''}
+  function clear(){input.value='';prev.style.display='none'}
+  function handle(files){const f=files?.[0];if(!f)return;if(f.size>MAX){alert('El archivo supera los 3 MB. Por favor adjunta un archivo de máximo 3 MB.');clear();return;}input.files=files;show(f)}
   click?.addEventListener('click',()=>input.click());
   input?.addEventListener('change',()=>handle(input.files));
-  ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();e.stopPropagation();drop.classList.add('is-drag')}))
-  ;['dragleave','dragend','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();e.stopPropagation();drop.classList.remove('is-drag')}))
+  ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();e.stopPropagation();drop.classList.add('is-drag')}));
+  ['dragleave','dragend','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();e.stopPropagation();drop.classList.remove('is-drag')}));
   drop.addEventListener('drop',e=>{const files=e.dataTransfer?.files;if(files?.length)handle(files)});
   rm?.addEventListener('click',clear);
 })();
@@ -486,7 +512,7 @@
 
 <script>
 document.querySelector('form')?.addEventListener('submit',function(){
-  const btn=this.querySelector('button[type="submit"]'); if(btn){btn.disabled=true; btn.textContent='Guardando...'}
+  const btn=this.querySelector('button[type="submit"]');if(btn){btn.disabled=true;btn.textContent='Guardando...'}
 });
 </script>
 @endpush
