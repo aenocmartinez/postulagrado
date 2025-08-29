@@ -260,9 +260,10 @@
             </select>
           </div>
           <div>
-            <label class="req" for="ciudad">Ciudad o Municipio</label>
-            <input id="ciudad" name="ciudad" list="ciudad_list" value="{{ $ciudadOld }}" required autocomplete="address-level2">
-            <datalist id="ciudad_list"></datalist>
+<label class="req" for="ciudad">Ciudad o Municipio</label>
+<select id="ciudad" name="ciudad" required>
+  <option value="">Seleccione…</option>
+</select>
           </div>
           <div>
             <label class="req" for="direccion">Dirección</label>
@@ -397,6 +398,9 @@
 @endsection
 
 @push('scripts')
+
+<script src="{{ asset('js/colombia-geo.js') }}"></script>
+
 <script>
 (function(){
   const selGrupo=document.getElementById('grupo_investigacion');
@@ -408,55 +412,144 @@
 </script>
 
 <script>
-(function(){
-  const dep=document.getElementById('departamento');
-  const dl=document.getElementById('ciudad_list');
-  const ciudad=document.getElementById('ciudad');
-  const data={
-    'Amazonas':['Leticia'],
-    'Antioquia':['Medellín','Bello','Envigado','Itagüí','Rionegro'],
-    'Arauca':['Arauca'],
-    'Atlántico':['Barranquilla','Soledad','Puerto Colombia'],
-    'Bogotá D.C.':['Bogotá'],
-    'Bolívar':['Cartagena','Turbaco'],
-    'Boyacá':['Tunja','Duitama','Sogamoso'],
-    'Caldas':['Manizales','Villamaría'],
-    'Caquetá':['Florencia'],
-    'Casanare':['Yopal'],
-    'Cauca':['Popayán'],
-    'Cesar':['Valledupar'],
-    'Chocó':['Quibdó'],
-    'Córdoba':['Montería'],
-    'Cundinamarca':['Bogotá','Soacha','Chía','Zipaquirá','Funza'],
-    'Guainía':['Inírida'],
-    'Guaviare':['San José del Guaviare'],
-    'Huila':['Neiva'],
-    'La Guajira':['Riohacha'],
-    'Magdalena':['Santa Marta'],
-    'Meta':['Villavicencio'],
-    'Nariño':['Pasto'],
-    'Norte de Santander':['Cúcuta'],
-    'Putumayo':['Mocoa'],
-    'Quindío':['Armenia'],
-    'Risaralda':['Pereira','Dosquebradas'],
-    'San Andrés y Providencia':['San Andrés'],
-    'Santander':['Bucaramanga','Floridablanca','Girón','Piedecuesta'],
-    'Sucre':['Sincelejo'],
-    'Tolima':['Ibagué'],
-    'Valle del Cauca':['Cali','Palmira','Buenaventura','Tuluá','Yumbo'],
-    'Vaupés':['Mitú'],
-    'Vichada':['Puerto Carreño']
-  };
-  function fill(){
-    const d=dep?.value||'';
-    dl.innerHTML='';
-    (data[d]||[]).forEach(c=>{
-      const o=document.createElement('option');o.value=c;dl.appendChild(o);
+document.addEventListener('DOMContentLoaded', function () {
+  (function () {
+    const dep    = document.getElementById('departamento');
+    const dl     = document.getElementById('ciudad_list');
+    const ciudad = document.getElementById('ciudad');
+    if (!dep || !dl) return;
+
+    let DATA = window.CO_DEPARTAMENTOS || {};
+    const coll = new Intl.Collator('es', { sensitivity: 'base' });
+
+    // Normaliza para comparar: sin acentos, sin comas/puntos/espacios y minúsculas
+    const strip = s => (s||'')
+      .normalize('NFD').replace(/\p{Diacritic}/gu,'')
+      .replace(/[,\.\s]/g,'').toLowerCase();
+
+    function resolveKey(k) {
+      if (DATA[k]) return k;
+      const nk = strip(k);
+      // búsqueda exacta por forma normalizada
+      for (const key of Object.keys(DATA)) {
+        if (strip(key) === nk) return key;
+      }
+      // fallback: contiene (por si hay nombres muy largos)
+      for (const key of Object.keys(DATA)) {
+        if (strip(key).includes(nk) || nk.includes(strip(key))) return key;
+      }
+      return k; // si no hay match, devolvemos tal cual
+    }
+
+    function fill() {
+      const key = resolveKey(dep.value || '');
+      const listado = Array.isArray(DATA[key]) ? DATA[key] : [];
+
+      const uniq = [...new Set(listado)].sort((a,b)=>a.localeCompare(b,'es'));
+      dl.innerHTML = '';
+      const frag = document.createDocumentFragment();
+      uniq.forEach(c => {
+        const o = document.createElement('option');
+        o.value = c;
+        frag.appendChild(o);
+      });
+      dl.appendChild(frag);
+
+      if (ciudad) {
+        // Sugerencia: muestra cuántas opciones hay
+        ciudad.placeholder = uniq.length ? `Escribe para ver ${uniq.length} opciones` : 'Escribe la ciudad…';
+        const existe = uniq.some(c => coll.compare(c, ciudad.value) === 0);
+        if (!existe) ciudad.value = '';
+      }
+
+      // Debug útil (puedes comentar si ya todo ok)
+      // console.debug('Dept seleccionado:', dep.value, '-> key usada:', key, 'municipios:', uniq.length);
+    }
+
+    dep.addEventListener('change', fill);
+
+    window.addEventListener('co-departamentos:ready', () => {
+      DATA = window.CO_DEPARTAMENTOS || {};
+      fill();
     });
-  }
-  dep?.addEventListener('change',fill);
-  fill();
-})();
+
+    fill();
+  })();
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  (function () {
+    const dep = document.getElementById('departamento');
+    const sel = document.getElementById('ciudad');
+    if (!dep || !sel) return;
+
+    let DATA = window.CO_DEPARTAMENTOS || {};
+
+    // normalización para comparar nombres (ignora acentos, comas, puntos y espacios)
+    const strip = s => (s||'')
+      .normalize('NFD').replace(/\p{Diacritic}/gu,'')
+      .replace(/[,\.\s]/g,'').toLowerCase();
+
+    function resolveKey(k){
+      if (DATA[k]) return k;
+      const nk = strip(k);
+      for (const key of Object.keys(DATA)) if (strip(key) === nk) return key;
+      for (const key of Object.keys(DATA)) if (strip(key).includes(nk) || nk.includes(strip(key))) return key;
+      return k;
+    }
+
+    // Title Case en ES (respeta preposiciones comunes; capitaliza cada segmento con guión)
+    const LOWER = new Set(['de','del','la','las','los','y','e','o','u','al']);
+    function toTitle(s){
+      return s.toLowerCase().split(/\s+/).map((w,i)=>{
+        if (i>0 && LOWER.has(w)) return w;
+        return w.split('-').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join('-');
+      }).join(' ');
+    }
+
+    function fill() {
+      const deptoSel = dep.value || '';
+
+      // Regla 1: “San Andrés y Providencia” → sin ciudades
+      if (strip(deptoSel) === strip('San Andrés y Providencia')) {
+        sel.innerHTML = '<option value="">No aplica</option>';
+        sel.value = '';
+        sel.disabled = true;
+        sel.required = false; // evita bloquear el envío del form
+        return;
+      } else {
+        sel.disabled = false;
+        sel.required = true;
+      }
+
+      const key = resolveKey(deptoSel);
+      const listado = Array.isArray(DATA[key]) ? DATA[key] : [];
+      const uniq = [...new Set(listado)].sort((a,b)=>a.localeCompare(b,'es'));
+
+      sel.innerHTML = '<option value="">Seleccione…</option>';
+      const frag = document.createDocumentFragment();
+      uniq.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;                 // valor oficial (puede estar en mayúsculas)
+        opt.textContent = toTitle(c);  // texto visible en Title Case
+        frag.appendChild(opt);
+      });
+      sel.appendChild(frag);
+
+      // Si tienes un valor previo (viejo), intenta seleccionarlo
+      if (sel.dataset.old && uniq.includes(sel.dataset.old)) {
+        sel.value = sel.dataset.old;
+      }
+    }
+
+    dep.addEventListener('change', fill);
+    window.addEventListener('co-departamentos:ready', () => { DATA = window.CO_DEPARTAMENTOS || {}; fill(); });
+
+    fill();
+  })();
+});
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
@@ -496,23 +589,75 @@
   const sizeEl=document.getElementById('doc_size');
   const rm=document.getElementById('doc_remove');
   const MAX=parseInt(drop?.dataset?.max||(3*1024*1024),10);
+
   if(!drop||!input)return;
+
   function bytes(n){return n<1024*1024?(n/1024).toFixed(0)+' KB':(n/1024/1024).toFixed(2)+' MB'}
-  function show(file){nameEl.textContent=file.name;sizeEl.textContent=bytes(file.size);if(/image\/(png|jpe?g)/i.test(file.type)){const url=URL.createObjectURL(file);thumb.src=url;thumb.style.objectFit='cover'}else{thumb.src='data:image/svg+xml;utf8,<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36"><rect width="36" height="36" rx="6" fill="%23f3f4f6"/><text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="12" fill="%236b7280">PDF</text></svg>';thumb.style.objectFit='contain'}prev.style.display=''}
-  function clear(){input.value='';prev.style.display='none'}
-  function handle(files){const f=files?.[0];if(!f)return;if(f.size>MAX){alert('El archivo supera los 3 MB. Por favor adjunta un archivo de máximo 3 MB.');clear();return;}input.files=files;show(f)}
+
+  function show(file){
+    nameEl.textContent=file.name;
+    sizeEl.textContent=bytes(file.size);
+    if(/image\/(png|jpe?g)/i.test(file.type)){
+      const url=URL.createObjectURL(file);
+      thumb.src=url; thumb.style.objectFit='cover';
+    }else{
+      thumb.src='data:image/svg+xml;utf8,<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36"><rect width="36" height="36" rx="6" fill="%23f3f4f6"/><text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="12" fill="%236b7280">PDF</text></svg>';
+      thumb.style.objectFit='contain';
+    }
+    prev.style.display='';
+  }
+
+  function clear(){ input.value=''; prev.style.display='none'; }
+
+  function setInputFile(file){
+    const dt=new DataTransfer();
+    dt.items.add(file);
+    input.files=dt.files;
+  }
+
+  function handleFile(file, setIntoInput){
+    if(!file) return;
+    if(file.size>MAX){ alert('El archivo supera los 3 MB. Por favor adjunta un archivo de máximo 3 MB.'); clear(); return; }
+    if(setIntoInput) setInputFile(file);
+    show(file);
+  }
+
   click?.addEventListener('click',()=>input.click());
-  input?.addEventListener('change',()=>handle(input.files));
-  ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();e.stopPropagation();drop.classList.add('is-drag')}));
-  ['dragleave','dragend','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();e.stopPropagation();drop.classList.remove('is-drag')}));
-  drop.addEventListener('drop',e=>{const files=e.dataTransfer?.files;if(files?.length)handle(files)});
+  input?.addEventListener('change',()=>handleFile(input.files?.[0], false));
+
+  ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{
+    e.preventDefault(); e.stopPropagation(); drop.classList.add('is-drag');
+  }));
+  ['dragleave','dragend','drop'].forEach(ev=>drop.addEventListener(ev,e=>{
+    e.preventDefault(); e.stopPropagation(); drop.classList.remove('is-drag');
+  }));
+  drop.addEventListener('drop',e=>{
+    const f=e.dataTransfer?.files?.[0];
+    if(f) handleFile(f, true);
+  });
+
   rm?.addEventListener('click',clear);
 })();
 </script>
+
 
 <script>
 document.querySelector('form')?.addEventListener('submit',function(){
   const btn=this.querySelector('button[type="submit"]');if(btn){btn.disabled=true;btn.textContent='Guardando...'}
 });
 </script>
+
+<script>
+(function(){
+  const cert=document.getElementById('cert_saber');
+  cert?.addEventListener('change',function(){
+    const f=this.files?.[0];
+    if(f && f.type!=='application/pdf' && !/\.pdf$/i.test(f.name)){
+      alert('El certificado debe ser un archivo PDF.');
+      this.value='';
+    }
+  });
+})();
+</script>
+
 @endpush
