@@ -53,7 +53,8 @@
   .btn-primary{background:var(--ucmc-verde);color:#fff}
   .btn-secondary{background:#e5e7eb;color:#111827}
   .btn:hover{filter:brightness(0.96)}
-  .divider{height:1px;background:#e5e7eb;margin:16px 0}
+  .divider{height:1px;background:#e5e7eb;margin:16px 0;}
+  .divider--spacer{height:0;background:transparent; margin:16px 0;}
   .section-title{font-weight:700;color:#111827;margin:12px 0 8px}
   .muted{color:#6b7280;font-size:13px}
   .section{padding:16px;border:1px solid #e5e7eb;border-radius:12px;background:#fff}
@@ -94,7 +95,7 @@
     <h1>Actualización de información personal</h1>
     <p class="lead">
       Verifica y completa tu información. Algunos datos de identificación están en solo lectura para que la actualización se realice con base en el
-      <strong>documento de identificación que adjuntas</strong>. Si requieren corrección, por favor contacta a la oficina correspondiente.
+      <strong>documento de identificación que adjuntas</strong>.
     </p>
 
     <form method="POST" action="#" enctype="multipart/form-data" novalidate>
@@ -172,7 +173,7 @@
         <div class="field-note">Estos datos están bloqueados porque se validarán y actualizarán según el documento de identificación que adjuntes. Si observas alguna inconsistencia, comunícate con Soporte Académico.</div>
       </div>
 
-      <div class="divider"></div>
+      <div class="divider divider--spacer"></div>
 
       <div class="section section-emphasis">
         <div class="section-title">Anexos prioritarios <span class="badge">PRIORITARIO</span></div>
@@ -215,7 +216,7 @@
         <div class="help" style="margin-top:6px; text-align: center;">Estos documentos pueden anexarse más adelante, antes de la fecha de graduación.</div>
       </div>
 
-      <div class="divider"></div>
+      <div class="divider divider--spacer"></div>
 
       <div class="section">
         <div class="section-title">Contacto y vínculos</div>
@@ -260,10 +261,10 @@
             </select>
           </div>
           <div>
-<label class="req" for="ciudad">Ciudad o Municipio</label>
-<select id="ciudad" name="ciudad" required>
-  <option value="">Seleccione…</option>
-</select>
+            <label class="req" for="ciudad">Ciudad o Municipio</label>
+            <select id="ciudad" name="ciudad" required>
+              <option value="">Seleccione…</option>
+            </select>
           </div>
           <div>
             <label class="req" for="direccion">Dirección</label>
@@ -327,34 +328,9 @@
       </div>
 
       @if ($esPostgrado)
-      <div class="divider"></div>
-
+      <div class="divider divider--spacer"></div>
       @php
-        $listaUniversidades = [
-            'Universidad Colegio Mayor de Cundinamarca',
-            'Universidad Nacional de Colombia',
-            'Universidad de los Andes',
-            'Pontificia Universidad Javeriana',
-            'Universidad del Rosario',
-            'Universidad Externado de Colombia',
-            'Universidad de La Sabana',
-            'Universidad de Antioquia',
-            'Universidad del Valle',
-            'Universidad Industrial de Santander',
-            'Universidad EAFIT',
-            'Universidad Pontificia Bolivariana',
-            'Universidad del Norte',
-            'Universidad Distrital Francisco José de Caldas',
-            'Universidad Pedagógica Nacional',
-            'Universidad Tecnológica de Pereira',
-            'Universidad de Caldas',
-            'Universidad de Cartagena',
-            'Universidad Sergio Arboleda',
-            'Universidad de Manizales',
-        ];
-        $uOld    = trim(old('universidad_pregrado', $get('universidad_pregrado')));
-        $enLista = in_array($uOld, $listaUniversidades, true);
-        $usaOtra = ($uOld !== '' && !$enLista);
+        $uOld = trim(old('universidad_pregrado', $get('universidad_pregrado')));
       @endphp
 
       <div class="section">
@@ -369,14 +345,12 @@
             <label for="universidad_pregrado_select">Universidad de egreso (pregrado)</label>
             <input type="hidden" id="universidad_pregrado" name="universidad_pregrado" value="{{ $uOld }}">
             <select id="universidad_pregrado_select" placeholder="Seleccione…" autocomplete="off">
-              <option value="" {{ $uOld === '' ? 'selected' : '' }}>Seleccione…</option>
-              @foreach ($listaUniversidades as $u)
-                <option value="{{ $u }}" {{ $enLista && $uOld === $u ? 'selected' : '' }}>{{ $u }}</option>
-              @endforeach
-              <option value="__OTRA__" {{ $usaOtra ? 'selected' : '' }}>Otra (¿cuál?)</option>
+              <option value="">Seleccione…</option>
+              <option value="__OTRA__">Otra (¿cuál?)</option>
             </select>
-            <div id="wrap_universidad_otro" style="{{ $usaOtra ? '' : 'display:none' }}">
-              <input id="universidad_pregrado_otro" placeholder="Especifique la universidad" value="{{ $usaOtra ? $uOld : '' }}">
+
+            <div id="wrap_universidad_otro" style="display:none">
+              <input id="universidad_pregrado_otro" placeholder="Especifique la universidad">
               <div class="help">Si no aparece en la lista, elige “Otra (¿cuál?)” y escribe el nombre completo.</div>
             </div>
           </div>
@@ -400,6 +374,8 @@
 @push('scripts')
 
 <script src="{{ asset('js/colombia-geo.js') }}"></script>
+<script src="{{ asset('js/ies-oficial.js') }}" defer></script>
+
 
 <script>
 (function(){
@@ -560,23 +536,108 @@ document.addEventListener('DOMContentLoaded', function () {
   const hid=document.getElementById('universidad_pregrado');
   const wrapOtro=document.getElementById('wrap_universidad_otro');
   const inputOtro=document.getElementById('universidad_pregrado_otro');
-  const form=document.querySelector('form');
   const tituloInp=document.getElementById('titulo_pregrado');
   const fechaInp=document.getElementById('fecha_grado_pregrado');
   const tituloLab=document.querySelector('label[for="titulo_pregrado"]');
   const fechaLab=document.querySelector('label[for="fecha_grado_pregrado"]');
-  const TARGET='universidad colegio mayor de cundinamarca';
-  if(!sel) return;
-  if(sel.tomselect){sel.tomselect.destroy();}
-  const ts=new TomSelect(sel,{create:false,allowEmptyOption:true,maxOptions:10000,searchField:['text','value'],sortField:{field:'text',direction:'asc'},placeholder:sel.getAttribute('placeholder')||'Seleccione…',plugins:['dropdown_input']});
-  function toggleOtra(val){const es=val===OTRA;if(wrapOtro) wrapOtro.style.display=es?'':'none';if(inputOtro) inputOtro.required=es}
-  function currentUni(){const v=ts.getValue();return v===OTRA?(inputOtro?.value||'').trim():(v||'')}
-  function enforceRequired(){const isUCMC=currentUni().trim().toLowerCase()===TARGET;if(tituloInp) tituloInp.required=isUCMC;if(fechaInp) fechaInp.required=isUCMC;if(tituloLab) tituloLab.classList.toggle('req',isUCMC);if(fechaLab) fechaLab.classList.toggle('req',isUCMC)}
-  function sync(){const v=ts.getValue();hid.value=(v===OTRA)?(inputOtro?.value||'').trim():(v||'');toggleOtra(v);enforceRequired()}
-  ts.on('change',sync);inputOtro?.addEventListener('input',sync);sync();
-  form?.addEventListener('submit',function(e){if(ts.getValue()===OTRA){const t=(inputOtro?.value||'').trim();if(!t){e.preventDefault();inputOtro?.focus();alert('Por favor escribe el nombre de la universidad.');return;}hid.value=t;}})
+  const TARGET='universidad-colegio mayor de cundinamarca';
+  if (!sel) return;
+
+  // normalizador para comparar
+  const strip = s => (s||'').trim().toLowerCase()
+    .normalize('NFD').replace(/\p{Diacritic}/gu,'');
+
+  // opciones base
+  function setBaseOptions(){
+    sel.innerHTML = '<option value="">Seleccione…</option><option value="'+OTRA+'">Otra (¿cuál?)</option>';
+  }
+
+  function populateIES(){
+    setBaseOptions();
+    const ies = Array.isArray(window.CO_IES) ? window.CO_IES : [];
+    const frag = document.createDocumentFragment();
+    for (const {value,label} of ies){
+      const opt = document.createElement('option');
+      opt.value = value;        // valor oficial (MEN/SNIES)
+      opt.textContent = label;  // visible en Title Case
+      frag.appendChild(opt);
+    }
+    const last = sel.querySelector('option[value="'+OTRA+'"]');
+    sel.insertBefore(frag, last);
+  }
+
+  function toggleOtra(val){
+    const es = val===OTRA;
+    if (wrapOtro) wrapOtro.style.display = es ? '' : 'none';
+    if (inputOtro) inputOtro.required = es;
+  }
+
+  function currentUni(){
+    const v = sel.value;
+    return v===OTRA ? (inputOtro?.value||'').trim() : (v||'');
+  }
+
+  function enforceRequired(){
+    const isUCMC = strip(currentUni()) === strip(TARGET);
+    if (tituloInp) tituloInp.required = isUCMC;
+    if (fechaInp)  fechaInp.required = isUCMC;
+    if (tituloLab) tituloLab.classList.toggle('req', isUCMC);
+    if (fechaLab)  fechaLab.classList.toggle('req', isUCMC);
+  }
+
+  function sync(){
+    const v = sel.value;
+    hid.value = (v===OTRA) ? (inputOtro?.value||'').trim() : (v||'');
+    toggleOtra(v);
+    enforceRequired();
+  }
+
+  function bootTomSelect(){
+    if (sel.tomselect) sel.tomselect.destroy();
+    return new TomSelect(sel,{
+      create:false, allowEmptyOption:true, maxOptions:10000,
+      searchField:['text','value'], sortField:{field:'text',direction:'asc'},
+      placeholder: sel.getAttribute('placeholder')||'Seleccione…',
+      plugins:['dropdown_input']
+    });
+  }
+
+  // Listeners
+  sel.addEventListener('change', sync);
+  inputOtro?.addEventListener('input', sync);
+
+  // Población con fuente oficial
+  window.addEventListener('ies-oficial:ready', ()=>{
+    populateIES();
+    const ts = bootTomSelect();
+
+    // Restaurar valor previo (hidden)
+    const oldRaw = (document.getElementById('universidad_pregrado')?.value || '').trim();
+    const old = strip(oldRaw);
+    if (old) {
+      // intenta match por normalización contra los <option>
+      let match = '';
+      for (const opt of sel.options) {
+        if (opt.value === '' || opt.value === OTRA) continue;
+        if (strip(opt.value) === old) { match = opt.value; break; }
+      }
+      if (match) {
+        ts.setValue(match, true);
+      } else {
+        ts.setValue(OTRA, true);
+        if (inputOtro) inputOtro.value = oldRaw;
+        if (wrapOtro) wrapOtro.style.display = '';
+      }
+    }
+    sync();
+  });
+
+  // base mientras llega la data
+  setBaseOptions();
 })();
 </script>
+
+
 
 <script>
 (function(){
