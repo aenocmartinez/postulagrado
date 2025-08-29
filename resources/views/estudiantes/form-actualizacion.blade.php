@@ -180,9 +180,9 @@
 
       <div class="section section-emphasis">
         <div class="section-title">Anexos prioritarios <span class="badge">PRIORITARIO</span></div>
-        <div class="grid">
+        <div class="grid" style="margin-bottom: 40px; margin-top:20px;">
           <div>
-            <label class="req" for="doc_identificacion">Documento de identificación (PDF/JPG/PNG)</label>
+            <label class="req file-drop__title" for="doc_identificacion" style="text-align: center; font-size:medium;">Documento de identificación (PDF/JPG/PNG)</label>
             <div class="file-drop" id="doc_drop" data-max="3145728">
               <div class="file-drop__click" id="doc_click">
                 <svg class="file-drop__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -203,7 +203,7 @@
                 <button type="button" class="file-drop__remove" id="doc_remove">Quitar</button>
               </div>
             </div>
-            <div class="help">Debe adjuntarse para corroborar identidad. Tamaño máximo recomendado: 3 MB.</div>
+            <div class="help" style="text-align: center;">Debe adjuntarse para corroborar identidad. Tamaño máximo recomendado: 3 MB.</div>
           </div>
         </div>
         <div class="grid grid-2" style="margin-top:12px">
