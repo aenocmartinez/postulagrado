@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateEstudianteDatosRequest;
+use Src\application\programas\estudiante\ActualizacionDatosDTO;
 use Src\domain\repositories\EnlaceActualizacionRepository;
 use Src\domain\repositories\ProgramaRepository;
 use Src\infrastructure\controller\programa\estudiante\FormularioActualizacionDatosController;
+use Src\infrastructure\controller\programa\estudiante\GuardarDatosEstudianteController;
 use Src\shared\di\FabricaDeRepositoriosOracle;
 
 class LaravelActualizacionDatosController extends Controller
@@ -31,18 +33,27 @@ class LaravelActualizacionDatosController extends Controller
             return view('estudiantes.form-actualizacion', $data);
         }
 
-        // Puedes usar vistas específicas de estado, o abortar con código/mensaje
-        // 404 = no encontrado, 410 = expirado, 409 = ya usado, etc.
-        return response()->view('estudiantes.form-actualizacion', [
+        return response()->view('estudiantes.respuesta-actualizacion', [
             'estado'  => $response->getCode(),
             'mensaje' => $response->getMessage(),
         ], $response->getCode());
+
     }
 
     public function gurdarDatosEstudiante(UpdateEstudianteDatosRequest $req)
     {
-        $req = $req->validated();
+        $validados = $req->validated();
+        $datos = ActualizacionDatosDTO::desdeArray($validados);
+        
+        $response = (new GuardarDatosEstudianteController(
+            FabricaDeRepositoriosOracle::getInstance()->getEstudianteRepository()
+        ))->__invoke($datos);
 
-        dd($req);
+        
+        return view('estudiantes.respuesta-actualizacion', [
+            'code'    => $response->getCode(),
+            'message' => $response->getMessage(),
+        ]);
+
     }
 }

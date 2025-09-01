@@ -103,7 +103,7 @@
       @csrf      
       <input type="hidden" name="enlace_id" value="{{ $enlace_id ?? '' }}">
       <input type="hidden" name="proceso_id" value="{{ $proceso_id ?? '' }}">
-      <input type="hidden" name="codigo" value="{{ $codigo ?? '' }}">
+      <input type="text" name="codigo" value="{{ $codigo ?? '' }}">
       <input type="hidden" id="es_postgrado_input" name="es_postgrado" value="{{ $esPostgrado ? 1 : 0 }}">
 
       <div class="section section-muted">
@@ -366,7 +366,7 @@
       @endif
 
       <div class="actions">
-        <a href="https://www.universidadmayor.edu.co" class="btn btn-secondary">Ir al sitio</a>
+        <!-- <a href="https://www.universidadmayor.edu.co" class="btn btn-secondary">Ir al sitio</a> -->
         <button type="submit" class="btn btn-primary">Guardar actualización</button>
       </div>
     </form>

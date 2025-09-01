@@ -3,6 +3,7 @@
 namespace Src\infrastructure\persistencia\oracle;
 
 use Illuminate\Support\Facades\DB;
+use Src\application\programas\estudiante\ActualizacionDatosDTO;
 use Src\domain\repositories\EstudianteRepository;
 
 class OracleEstudianteRepository implements EstudianteRepository 
@@ -111,6 +112,109 @@ class OracleEstudianteRepository implements EstudianteRepository
         ]);
 
         return $row?->ppes_id !== null ? (int)$row->ppes_id : null;
+    }
+
+    public function guardarDatosActualizados(ActualizacionDatosDTO $datos): bool
+    {
+        $sn = static fn (?string $v) => strtoupper((string)$v) === 'SI' ? 'S' : 'N';
+
+        if ($datos->programa_id === null) {
+            throw new \InvalidArgumentException('Falta programa_id en el DTO para organizar el storage.');
+        }
+
+        $baseDir = sprintf(
+            'documentos_proceso/%d/%d/%s/%d',
+            $datos->proceso_id,
+            $datos->programa_id,
+            $datos->codigo,
+            $datos->enlace_id
+        );
+
+        $genNombre = static function (string $prefijo, \Illuminate\Http\UploadedFile $file): string {
+            $ext  = strtolower($file->getClientOriginalExtension() ?: $file->extension());
+            $rand = bin2hex(random_bytes(8));
+            return "{$prefijo}_{$rand}.{$ext}";
+        };
+
+        $pathDoc = $datos->doc_identificacion
+            ? $datos->doc_identificacion->storeAs($baseDir, $genNombre('doc_identificacion', $datos->doc_identificacion), 'public')
+            : null;
+
+        $pathCert = $datos->cert_saber
+            ? $datos->cert_saber->storeAs($baseDir, $genNombre('cert_saber', $datos->cert_saber), 'public')
+            : null;
+
+        $bind = [
+            'ACEN_ID'                        => $datos->enlace_id,
+            'ESTU_CODIGO'                    => $datos->codigo,
+            'PATH_DOCUMENTO_IDENTIDAD'       => $pathDoc,
+            'PATH_CERTIFICADO_SABER_PRO'     => $pathCert,
+            'CODIGO_SABER_PRO'               => $datos->codigo_saber,
+            'GRUPO_INVESTIGACION_PERTENECE'  => $sn($datos->grupo_investigacion),
+            'GRUPO_INVESTIGACION_NOMBRE'     => $datos->nombre_grupo,
+            'CORREO_ELECTRONICO_PERSONAL'    => $datos->correo_personal,
+            'TELEFONO'                       => $datos->telefono,
+            'DEPARTAMENTO'                   => $datos->departamento,
+            'CIUDAD'                         => $datos->ciudad,
+            'DIRECCION'                      => $datos->direccion,
+            'ES_HIJO_FUNCIONARIO'            => $sn($datos->hijo_funcionario),
+            'ES_HIJO_DOCENTE'                => $sn($datos->hijo_docente),
+            'ES_FUNCIONARIO_UNIVERSIDAD'     => $sn($datos->es_funcionario),
+            'ES_DOCENTE_UNIVERSIDAD'         => $sn($datos->es_docente),
+            'TITULO_PREGRADO'                => $datos->titulo_pregrado,
+            'UNIVERSIDAD_PREGRADO'           => $datos->universidad_pregrado,
+            'FECHA_GRADO_PREGRADO'           => $datos->fecha_grado_pregrado ?: null,
+        ];
+
+        $sqlInsert = <<<SQL
+        INSERT INTO ACADEMPOSTULGRADO.ESTUDIANTE_DATOS (
+            ACEN_ID, ESTU_CODIGO,
+            PATH_DOCUMENTO_IDENTIDAD, PATH_CERTIFICADO_SABER_PRO, CODIGO_SABER_PRO,
+            GRUPO_INVESTIGACION_PERTENECE, GRUPO_INVESTIGACION_NOMBRE,
+            CORREO_ELECTRONICO_PERSONAL, TELEFONO,
+            DEPARTAMENTO, CIUDAD, DIRECCION,
+            ES_HIJO_FUNCIONARIO, ES_HIJO_DOCENTE, ES_FUNCIONARIO_UNIVERSIDAD, ES_DOCENTE_UNIVERSIDAD,
+            TITULO_PREGRADO, UNIVERSIDAD_PREGRADO, FECHA_GRADO_PREGRADO
+        ) VALUES (
+            :ACEN_ID, :ESTU_CODIGO,
+            :PATH_DOCUMENTO_IDENTIDAD, :PATH_CERTIFICADO_SABER_PRO, :CODIGO_SABER_PRO,
+            :GRUPO_INVESTIGACION_PERTENECE, :GRUPO_INVESTIGACION_NOMBRE,
+            :CORREO_ELECTRONICO_PERSONAL, :TELEFONO,
+            :DEPARTAMENTO, :CIUDAD, :DIRECCION,
+            :ES_HIJO_FUNCIONARIO, :ES_HIJO_DOCENTE, :ES_FUNCIONARIO_UNIVERSIDAD, :ES_DOCENTE_UNIVERSIDAD,
+            :TITULO_PREGRADO, :UNIVERSIDAD_PREGRADO,
+            CASE WHEN :FECHA_GRADO_PREGRADO IS NULL THEN NULL
+                ELSE TO_DATE(:FECHA_GRADO_PREGRADO, 'YYYY-MM-DD') END
+        )
+        SQL;
+
+        return DB::connection('oracle_academpostulgrado')->transaction(
+            function () use ($sqlInsert, $bind, $datos): bool {
+                $insertOk = DB::connection('oracle_academpostulgrado')
+                    ->affectingStatement($sqlInsert, $bind) > 0;
+
+                DB::connection('oracle_academpostulgrado')->update(
+                    "UPDATE ACADEMPOSTULGRADO.ACTUALIZACION_ENLACE
+                    SET ACEN_USADO = 'S', ACEN_FECHAUSO = SYSDATE
+                    WHERE ACEN_ID = :id",
+                    ['id' => $datos->enlace_id]
+                );
+
+                return $insertOk;
+            }
+        );
+    }
+
+    public function buscarEnlacePorID(int $enlaceID): ?object
+    {
+        $row = DB::connection('oracle_academpostulgrado')->selectOne(
+            "SELECT ACEN_ID, ACEN_USADO, ACEN_FECHAEXPIRA
+             FROM ACADEMPOSTULGRADO.ACTUALIZACION_ENLACE
+             WHERE ACEN_ID = :id",
+            ['id' => $enlaceID]
+        );
+
+        return $row ?: null;
     }
 
 }

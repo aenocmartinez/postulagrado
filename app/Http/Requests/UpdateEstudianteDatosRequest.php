@@ -102,7 +102,7 @@ class UpdateEstudianteDatosRequest extends FormRequest
             $esPost = filter_var($data['es_postgrado'] ?? false, FILTER_VALIDATE_BOOLEAN);
             if ($esPost) {
                 if (blank($data['universidad_pregrado'] ?? '')) {
-                    $v->errors()->add('universidad_pregrado', 'Este campo es obligatorio para procesos de postgrado.');
+                    $v->errors()->add('universidad_pregrado', 'Universidad de egreso (pregrado) es obligatorio para procesos de postgrado.');
                 }
             }
 
