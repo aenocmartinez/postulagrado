@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateEstudianteDatosRequest;
 use Src\domain\repositories\EnlaceActualizacionRepository;
 use Src\domain\repositories\ProgramaRepository;
 use Src\infrastructure\controller\programa\estudiante\FormularioActualizacionDatosController;
@@ -36,5 +37,12 @@ class LaravelActualizacionDatosController extends Controller
             'estado'  => $response->getCode(),
             'mensaje' => $response->getMessage(),
         ], $response->getCode());
+    }
+
+    public function gurdarDatosEstudiante(UpdateEstudianteDatosRequest $req)
+    {
+        $req = $req->validated();
+
+        dd($req);
     }
 }

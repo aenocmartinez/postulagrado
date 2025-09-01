@@ -64,9 +64,9 @@
             <ul class="list-disc pl-4 text-xs">
                 @forelse($enCurso as $actividad)
                     <li class="mb-2 text-xs">
-                        {{ $actividad->getDescripcion() }} <br>
+                        {{ $actividad->descripcion() }} <br>
                         <span class="text-blue-700">
-                        Periodo: {{ \Src\shared\formato\FormatoFecha::formatearFechaLarga($actividad->getFechaInicio()) }} al {{ \Src\shared\formato\FormatoFecha::formatearFechaLarga($actividad->getFechaFin()) }}
+                        Periodo: {{ \Src\shared\formato\FormatoFecha::formatearFechaLarga($actividad->inicioStr()) }} al {{ \Src\shared\formato\FormatoFecha::formatearFechaLarga($actividad->finStr()) }}
                         </span>
                     </li>
                 @empty

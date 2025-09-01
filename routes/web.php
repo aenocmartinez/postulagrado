@@ -23,5 +23,7 @@ Route::get('/actualizar-datos/{token}', [LaravelActualizacionDatosController::cl
      ->name('actualizacion.form.token');
 
 
+Route::post('/postula-grado/actualizacion', [LaravelActualizacionDatosController::class, 'gurdarDatosEstudiante'])
+    ->name('postulacion.actualizacion.store');
 
 require __DIR__.'/auth.php';

@@ -38,12 +38,15 @@ class FormularioActualizacionDatosEstudianteUseCase
         }        
 
         $data = [
+            'enlace_id'     => $enlace->getId(),
             'token'         => $token,
             'proceso_id'    => $enlace->getProcesoID(),
             'codigo'        => $codigo,
             'estudiante'    => $estudiante,
             'esPostgrado'   => true,
         ];
+
+        // dd($data);
 
         return new ResponsePostulaGrado(200, 'OK', $data);        
     }

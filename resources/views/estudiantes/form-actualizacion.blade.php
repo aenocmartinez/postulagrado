@@ -98,8 +98,10 @@
       <strong>documento de identificación que adjuntas</strong>.
     </p>
 
-    <form method="POST" action="#" enctype="multipart/form-data" novalidate>
-      @csrf
+    <form method="POST" action="{{ route('postulacion.actualizacion.store') }}" enctype="multipart/form-data" novalidate>
+
+      @csrf      
+      <input type="hidden" name="enlace_id" value="{{ $enlace_id ?? '' }}">
       <input type="hidden" name="proceso_id" value="{{ $proceso_id ?? '' }}">
       <input type="hidden" name="codigo" value="{{ $codigo ?? '' }}">
       <input type="hidden" id="es_postgrado_input" name="es_postgrado" value="{{ $esPostgrado ? 1 : 0 }}">
@@ -262,7 +264,7 @@
           </div>
           <div>
             <label class="req" for="ciudad">Ciudad o Municipio</label>
-            <select id="ciudad" name="ciudad" required>
+            <select id="ciudad" name="ciudad" required data-old="{{ $ciudadOld }}">
               <option value="">Seleccione…</option>
             </select>
           </div>
@@ -385,73 +387,6 @@
   function toggle(){const si=selGrupo&&selGrupo.value==='SI';if(!wrap||!inputNombre)return;wrap.style.display=si?'':'none';inputNombre.required=!!si}
   selGrupo?.addEventListener('change',toggle);toggle();
 })();
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  (function () {
-    const dep    = document.getElementById('departamento');
-    const dl     = document.getElementById('ciudad_list');
-    const ciudad = document.getElementById('ciudad');
-    if (!dep || !dl) return;
-
-    let DATA = window.CO_DEPARTAMENTOS || {};
-    const coll = new Intl.Collator('es', { sensitivity: 'base' });
-
-    // Normaliza para comparar: sin acentos, sin comas/puntos/espacios y minúsculas
-    const strip = s => (s||'')
-      .normalize('NFD').replace(/\p{Diacritic}/gu,'')
-      .replace(/[,\.\s]/g,'').toLowerCase();
-
-    function resolveKey(k) {
-      if (DATA[k]) return k;
-      const nk = strip(k);
-      // búsqueda exacta por forma normalizada
-      for (const key of Object.keys(DATA)) {
-        if (strip(key) === nk) return key;
-      }
-      // fallback: contiene (por si hay nombres muy largos)
-      for (const key of Object.keys(DATA)) {
-        if (strip(key).includes(nk) || nk.includes(strip(key))) return key;
-      }
-      return k; // si no hay match, devolvemos tal cual
-    }
-
-    function fill() {
-      const key = resolveKey(dep.value || '');
-      const listado = Array.isArray(DATA[key]) ? DATA[key] : [];
-
-      const uniq = [...new Set(listado)].sort((a,b)=>a.localeCompare(b,'es'));
-      dl.innerHTML = '';
-      const frag = document.createDocumentFragment();
-      uniq.forEach(c => {
-        const o = document.createElement('option');
-        o.value = c;
-        frag.appendChild(o);
-      });
-      dl.appendChild(frag);
-
-      if (ciudad) {
-        // Sugerencia: muestra cuántas opciones hay
-        ciudad.placeholder = uniq.length ? `Escribe para ver ${uniq.length} opciones` : 'Escribe la ciudad…';
-        const existe = uniq.some(c => coll.compare(c, ciudad.value) === 0);
-        if (!existe) ciudad.value = '';
-      }
-
-      // Debug útil (puedes comentar si ya todo ok)
-      // console.debug('Dept seleccionado:', dep.value, '-> key usada:', key, 'municipios:', uniq.length);
-    }
-
-    dep.addEventListener('change', fill);
-
-    window.addEventListener('co-departamentos:ready', () => {
-      DATA = window.CO_DEPARTAMENTOS || {};
-      fill();
-    });
-
-    fill();
-  })();
-});
 </script>
 
 <script>
