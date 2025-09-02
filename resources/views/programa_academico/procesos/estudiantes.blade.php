@@ -285,7 +285,7 @@
                 </div>
 
                 <!-- Métricas clave en círculos -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-6 text-center">
                     <div class="flex flex-col items-center">
                     <div class="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center shadow-inner text-xl font-bold text-green-800">
                         <span id="det-creditos">---</span>
@@ -297,7 +297,7 @@
                     <div class="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center shadow-inner text-xl font-bold text-blue-800">
                         <span id="det-formulario">---</span>
                     </div>
-                    <p class="mt-2 text-sm text-gray-600 font-medium">Formulario actualizado</p>
+                    <p class="mt-2 text-sm text-gray-600 font-medium">Formulario actualización de datos</p>
                     </div>
 
                     <div class="flex flex-col items-center">
@@ -307,12 +307,12 @@
                     <p class="mt-2 text-sm text-gray-600 font-medium">Egresado Unicolmayor</p>
                     </div>
 
-                    <div class="flex flex-col items-center">
+                    <!-- <div class="flex flex-col items-center">
                     <div class="w-24 h-24 rounded-full bg-yellow-100 flex items-center justify-center shadow-inner text-xl font-bold text-yellow-800">
                         <span id="det-representante">---</span>
                     </div>
                     <p class="mt-2 text-sm text-gray-600 font-medium">Representante Estudiantil</p>
-                    </div>
+                    </div> -->
                 </div>
 
 
@@ -373,14 +373,14 @@
                         <p class="font-medium text-[13px] text-gray-900" id="det-hijo-docente">—</p>
                     </div>
 
-                    <div>
+                    <!-- <div>
                         <p class="text-[12px] uppercase tracking-wide text-gray-500">Funcionario UCMC</p>
                         <p class="font-medium text-[13px] text-gray-900" id="det-es-funcionario">—</p>
                     </div>
                     <div>
                         <p class="text-[12px] uppercase tracking-wide text-gray-500">Docente UCMC</p>
                         <p class="font-medium text-[13px] text-gray-900" id="det-es-docente">—</p>
-                    </div>
+                    </div> -->
                     </div>
                 </section>
 
@@ -423,29 +423,10 @@
                         </div>
                         <div class="pt-2 sm:pt-0">
                         <p class="text-[12px] uppercase tracking-wide text-gray-500">Certificado asistencia</p>
-                        <a id="det-link-cert-saber" href="#" target="_blank"
+                        <a id="det-cert-saber" href="#" target="_blank"
                             class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 underline">
-                            <i class="fas fa-file-alt"></i> Ver PDF
+                            <i class="fas fa-file-alt"></i> Ver certificado
                         </a>
-                        </div>
-
-                        <!-- Posgrado -->
-                        <div id="bloque-posgrado" class="hidden border-t mt-4 pt-4 sm:col-span-2">
-                            <p class="text-[12px] uppercase tracking-wide text-gray-500 mb-2">Información de pregrado (posgrado)</p>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
-                                <div>
-                                <p class="text-[12px] uppercase tracking-wide text-gray-500">Título de pregrado</p>
-                                <p class="font-medium text-[13px] text-gray-900" id="det-titulo-pregrado">—</p>
-                                </div>
-                                <div>
-                                <p class="text-[12px] uppercase tracking-wide text-gray-500">Universidad de egreso</p>
-                                <p class="font-medium text-[13px] text-gray-900" id="det-universidad-pregrado">—</p>
-                                </div>
-                                <div class="sm:col-span-2">
-                                <p class="text-[12px] uppercase tracking-wide text-gray-500">Fecha de grado (pregrado)</p>
-                                <p class="font-medium text-[13px] text-gray-900" id="det-fecha-grado-pregrado">—</p>
-                                </div>
-                            </div>
                         </div>
                     </div>
                     </section>
@@ -471,6 +452,10 @@
                         <p class="text-[12px] uppercase tracking-wide text-gray-500">Teléfono</p>
                         <p class="font-medium text-[13px] text-gray-900" id="det-telefono">—</p>
                         </div>
+                        <div class="sm:col-span-2">
+                        <p class="text-[12px] uppercase tracking-wide text-gray-500">Direccion</p>
+                        <p class="font-medium text-[13px] text-gray-900" id="det-direccion">—</p>
+                        </div>                                                
                     </div>
                     </section>
 
@@ -490,7 +475,7 @@
                 </div>
 
                 <!-- Información académica / SaberPro-TyT -->
-                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <!-- <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
                     <h4 class="text-base font-semibold mb-4 text-gray-700 flex items-center gap-2">
                     <i class="fas fa-file-alt text-indigo-500"></i> Documentos y SaberPro/TyT
                     </h4>
@@ -503,7 +488,7 @@
                         </p>
                     </div>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Información de pregrado (para posgrado) -->
                 <div id="bloque-pregrado" class="bg-white rounded-lg shadow-sm p-6 border border-gray-200 hidden">
@@ -1103,111 +1088,142 @@
 
   // Versión de verDetalleEstudiante que ya llama a tu endpoint:
   window.verDetalleEstudiante = async function (codigo) {
-    // UI: ocultar listado y mostrar contenedor
-    document.getElementById('tabla-estudiantes-vinculados-proceso')?.classList.add('hidden');
-    document.getElementById('formulario-agregar-estudiante')?.classList.add('hidden');
-    document.getElementById('buscador-estudiantes')?.parentElement.classList.add('hidden');
-    document.getElementById('boton-agregar-nuevo-estudiante')?.classList.add('hidden');
-    document.getElementById('encabezado-contextual')?.classList.add('hidden');
-    document.getElementById('detalle-estudiante')?.classList.remove('hidden');
+  // UI: ocultar listado y mostrar contenedor
+  document.getElementById('tabla-estudiantes-vinculados-proceso')?.classList.add('hidden');
+  document.getElementById('formulario-agregar-estudiante')?.classList.add('hidden');
+  document.getElementById('buscador-estudiantes')?.parentElement.classList.add('hidden');
+  document.getElementById('boton-agregar-nuevo-estudiante')?.classList.add('hidden');
+  document.getElementById('encabezado-contextual')?.classList.add('hidden');
+  document.getElementById('detalle-estudiante')?.classList.remove('hidden');
 
-    // Loading
-    Swal.fire({
-      title: 'Cargando...',
-      text: 'Obteniendo detalle del estudiante',
-      allowOutsideClick: false,
-      didOpen: () => Swal.showLoading()
-    });
+  // Loading
+  Swal.fire({
+    title: 'Cargando...',
+    text: 'Obteniendo detalle del estudiante',
+    allowOutsideClick: false,
+    didOpen: () => Swal.showLoading()
+  });
 
-    try {
-      const url  = `/programa-academico/estudiantes/${PROCESO_ID}/${encodeURIComponent(codigo)}`;
-      const res  = await fetch(url, { headers: { 'Accept':'application/json' } });
-      const json = await res.json();
-      if (json.code !== 200 || !json.data) throw new Error(json.message || 'No fue posible cargar el detalle.');
-
-      const d = json.data || {};
-
-      // === Campos personales (nombres/apellidos) ===
-      setText('det-primer-nombre',  d.primerNombre ?? d.primer_nombre ?? '—');
-      setText('det-segundo-nombre', d.segundoNombre ?? d.segundo_nombre ?? '—');
-      setText('det-primer-apellido', d.primerApellido ?? d.primer_apellido ?? '—');
-      setText('det-segundo-apellido', d.segundoApellido ?? d.segundo_apellido ?? '—');
-
-      // Programa y género
-      setText('det-programa', d.programa ?? '—');
-      setText('det-genero', d.genero ?? '—');
-
-      // Documento
-      setText('det-tipo-documento', d.tipoDocumento ?? d.tipo_documento_nombre ?? '—');
-      setText('det-documento', d.documento ?? d.numeroDocumento ?? '—');
-      setText('det-lugar-expedicion', d.lugarExpedicion ?? d.lugar_expedicion ?? '—');
-
-      // Grupo de investigación
-      const grupoRaw = (d.grupoInvestigacion ?? d.perteneceGrupoInvestigacion ?? d.grupo_investigacion ?? '').toString().toUpperCase();
-      const grupoSI  = (grupoRaw === 'SI' || grupoRaw === 'S' || grupoRaw === 'TRUE' || grupoRaw === '1' || grupoRaw === 'YES');
-      setText('det-grupo-investigacion', grupoSI ? 'Sí' : (grupoRaw ? 'No' : '—'));
-
-      const nombreGrupo = d.nombreGrupo ?? d.nombre_grupo ?? '';
-      const filaNombreGrupo = document.getElementById('fila-nombre-grupo');
-      setText('det-nombre-grupo', nombreGrupo || '—');
-      if (filaNombreGrupo) {
-        if (grupoSI && nombreGrupo) filaNombreGrupo.classList.remove('hidden');
-        else filaNombreGrupo.classList.add('hidden');
-      }
-
-      // Vínculos familiares
-      setText('det-hijo-funcionario', (d.esHijoFuncionario ?? d.hijoFuncionario) ? 'Sí' : 'No');
-      setText('det-hijo-docente', (d.esHijoDocente ?? d.hijoDocente) ? 'Sí' : 'No');
-
-      // Contacto
-      setText('det-correo', d.correo ?? d.correoInstitucional ?? d.email ?? '—');
-      setText('det-correo-personal', d.correoPersonal ?? d.correo_personal ?? '—');
-      setText('det-telefono', d.telefono ?? '—');
-      setHref('det-link-documento', d.documentoURL ?? '#');
-
-      // Vínculos con la Universidad
-      setText('det-es-funcionario-uni', (d.esFuncionarioUniversidad ?? d.es_funcionario ?? false) ? 'Sí' : 'No');
-      setText('det-es-docente-uni', (d.esDocenteUniversidad ?? d.es_docente ?? false) ? 'Sí' : 'No');
-
-      // Documentos/SaberPro-TyT
-      setText('det-codigo-saber', d.codigoSaber ?? d.codigo_saber ?? '—');
-      setHref('det-cert-saber', d.certSaberURL ?? d.cert_saber_url ?? '#');
-
-      // Posgrado
-      const esPost = !!(d.esPostgrado ?? d.es_postgrado);
-      const bloquePre = document.getElementById('bloque-pregrado');
-      if (bloquePre) {
-        if (esPost) {
-          bloquePre.classList.remove('hidden');
-          setText('det-titulo-pregrado', d.tituloPregrado ?? d.titulo_pregrado ?? '—');
-          setText('det-universidad-pregrado', d.universidadPregrado ?? d.universidad_pregrado ?? '—');
-          setText('det-fecha-grado-pregrado', d.fechaGradoPregrado ?? d.fecha_grado_pregrado ?? '—');
-        } else {
-          bloquePre.classList.add('hidden');
-        }
-      }
-
-      // Métricas
-      setText('det-creditos', d.creditos ?? '—');
-      setText('det-formulario', d.formularioActualizado ? 'Sí' : 'No');
-      setText('det-egresado', d.esEgresado ? 'Sí' : 'No');
-      setText('det-representante', d.representante ? 'Sí' : 'No');
-
-      // Paz y Salvo
-      const pz = d.pazSalvo || {};
-      setText('det-financiera', pz.financiera ?? '—');
-      setText('det-admisiones', pz.admisiones ?? '—');
-      setText('det-biblioteca', pz.biblioteca ?? '—');
-      setText('det-recursos', pz.recursos ?? '—');
-      setText('det-idiomas', pz.idiomas ?? '—');
-      calcularPorcentajePazYSalvo(Object.values(pz).filter(Boolean));
-
-    } catch (e) {
-      Swal.fire({ icon:'error', title:'Error', text: e.message || 'No fue posible cargar el detalle.' });
-      volverAListadoEstudiantes?.();
-      return;
-    } finally {
-      Swal.close();
-    }
+  // helper seguro para href absoluto
+  const absFromRoot = (u) => {
+    if (!u) return '#';
+    if (/^(https?:|data:|blob:)/i.test(u)) return u;
+    return new URL(u, window.location.origin + '/').href;
   };
+
+  try {
+    const url  = `/programa-academico/estudiantes/${PROCESO_ID}/${encodeURIComponent(codigo)}`;
+    const res  = await fetch(url, { headers: { 'Accept':'application/json' } });
+    const json = await res.json();
+    if (json.code !== 200 || !json.data) throw new Error(json.message || 'No fue posible cargar el detalle.');
+
+    const d = json.data || {};
+
+    // === Campos personales (nombres/apellidos) ===
+    setText('det-primer-nombre',   d.primerNombre || '—');
+    setText('det-segundo-nombre',  d.segundoNombre || '—');
+    setText('det-primer-apellido', d.primerApellido || '—');
+    setText('det-segundo-apellido',d.segundoApellido || '—');
+
+    // Programa y género (ya vienen formateados desde backend)
+    setText('det-programa', d.programa || '—');
+    setText('det-genero',   d.genero   || '—');
+
+    // Documento
+    setText('det-tipo-documento', d.tipoDocumento || '—');
+    setText('det-documento',      d.documento || '—');
+    setText('det-lugar-expedicion', d.lugarExpedicion || '—');
+
+    // Grupo de investigación (objeto: { pertenece: bool, nombre: string })
+    const grupo = d.grupoInvestigacion || {};
+    const pertenece = typeof grupo.pertenece === 'boolean' ? grupo.pertenece : null;
+    setText('det-grupo-investigacion', pertenece === null ? '—' : (pertenece ? 'Sí' : 'No'));
+
+    const nombreGrupo = (grupo.nombre || '').trim();
+    setText('det-nombre-grupo', nombreGrupo || '—');
+    const filaNombreGrupo = document.getElementById('fila-nombre-grupo');
+    if (filaNombreGrupo) {
+      if (pertenece && nombreGrupo) filaNombreGrupo.classList.remove('hidden');
+      else filaNombreGrupo.classList.add('hidden');
+    }
+
+    // Vínculos familiares
+    setText('det-hijo-funcionario', d.hijoFuncionario ? 'Sí' : 'No');
+    setText('det-hijo-docente',     d.hijoDocente ? 'Sí' : 'No');
+
+    // Contacto (institucional estricto y personal aparte)
+    const correoInst = (d.correoInstitucional || '').trim();
+    setText('det-correo', correoInst || '—');
+
+    const correoPers = (d.correoPersonal || '').trim();
+    setText('det-correo-personal', correoPers || '—');
+
+    setText('det-telefono', d.telefono || '—');
+
+    setText('det-direccion', d.direccion || '—');
+
+    // Documento de identidad (href absoluto)
+    setHref('det-link-documento', absFromRoot(d.documentoURL) || '#');
+
+    // Vínculos con la Universidad
+    setText('det-es-funcionario-uni', d.funcionarioUCMC ? 'Sí' : 'No');
+    setText('det-es-docente-uni',     d.docenteUCMC ? 'Sí' : 'No');
+
+    // Documentos / SaberPro-TyT
+    setText('det-codigo-saber', d.codigoSaberProTYT || '—');
+    setHref('det-cert-saber', absFromRoot(d.certificadoSaberProURL) || '#');
+
+    // Posgrado (si aplica)
+    const bloquePosgrado = document.getElementById('bloque-pregrado'); 
+    if (bloquePosgrado) {
+        console.log("Entra al bloque postgrado")
+        console.log("Boolean(d.esPostgrado): ", Boolean(d.esPostgrado))
+        if (Boolean(d.esPostgrado)) {
+            console.log("tituloPregrado:", d.tituloPregrado);
+            console.log("universidadPregrado:", d.universidadPregrado);
+            console.log("fechaGradoPregrado:", d.fechaGradoPregrado);
+
+            bloquePosgrado.classList.remove('hidden');
+            setText('det-titulo-pregrado',      (d.tituloPregrado || '').trim() || '—');
+            setText('det-universidad-pregrado', (d.universidadPregrado || '').trim() || '—');
+            setText('det-fecha-grado-pregrado', (d.fechaGradoPregrado || '').trim() || '—');
+        } else {
+            bloquePosgrado.classList.add('hidden');
+        }
+    }
+
+    console.log("d.esEgresado: ", d.esEgresado)
+
+    // Métricas
+    setText('det-creditos', d.creditos ?? '—');
+    setText('det-formulario', d.formularioActualizado ? 'Sí' : 'No');
+    setText('det-egresado',   d.esEgresado ? 'Sí' : 'No');
+    setText('det-representante', d.representante ? 'Sí' : 'No');
+
+    // Paz y Salvo
+    const pz = d.pazSalvo || {};
+    setText('det-financiera', pz.financiera ?? '—');
+    setText('det-admisiones', pz.admisiones ?? '—');
+    setText('det-biblioteca', pz.biblioteca ?? '—');
+    setText('det-recursos',   pz.recursos   ?? '—');
+    setText('det-idiomas',    pz.idiomas    ?? '—');
+    calcularPorcentajePazYSalvo(Object.values(pz).filter(Boolean));
+
+  } catch (e) {
+    Swal.fire({ icon:'error', title:'Error', text: e.message || 'No fue posible cargar el detalle.' });
+    volverAListadoEstudiantes?.();
+    return;
+  } finally {
+    Swal.close();
+  }
+};
+
+
+  function absFromRoot(u) {
+    if (!u) return '#';
+    // Si ya es absoluta (http/https/data/blob), déjala igual
+    if (/^(https?:|data:|blob:)/i.test(u)) return u;
+    // Vuelve absoluta respecto al dominio
+    return new URL(u, window.location.origin + '/').href;
+    }
 </script>
