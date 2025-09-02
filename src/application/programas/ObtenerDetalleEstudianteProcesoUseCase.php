@@ -91,7 +91,7 @@ class ObtenerDetalleEstudianteProcesoUseCase
         if ($docUrl !== '' && $docUrl[0] !== '/') {
             $docUrl = '/'.$docUrl;
         }
-        $docUrl = $docUrl !== '' ? $docUrl : '#';
+        $docUrl = $docUrl !== '' ? $docUrl : '';
 
         $payload = [
             'nombre'                   => $nombreCompuesto,

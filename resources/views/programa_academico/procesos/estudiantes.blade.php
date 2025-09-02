@@ -234,42 +234,64 @@
                     </tr>
                 </thead>
                 <tbody class="text-gray-800">
-                    @foreach($seguimiento->estudiantesCandidatos as $est)
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="px-4 py-2">{{ $est['detalle']['pensum_estud'] ?? '-' }}</td>
-                            <td class="px-4 py-2">{{ $est['detalle']['estp_codigomatricula'] ?? '-' }}</td>
-                            <td class="px-4 py-2">{{ $est['detalle']['documento'] ?? '-' }}</td>
-                            <td class="px-4 py-2">{{ $est['detalle']['nombres'] ?? '-' }}</td>
-                            <td class="px-4 py-2">{{ $est['detalle']['categoria'] ?? '-' }}</td>
-                            <td class="px-4 py-2">
-                                <span class="inline-block px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">
-                                    {{ $est['detalle']['situacion'] ?? '-' }}
-                                </span>
-                            </td>
-                            <td class="px-2 py-2 text-center">{{ $est['detalle']['cred_pendientes'] ?? '-' }}</td>
-                            <td class="px-4 py-2 text-center">
-                                <div class="flex justify-center gap-2">
-                                    <!-- Botón Ver -->
-                                    <button 
-                                        data-codigo="{{ $est['estu_codigo'] }}"
-                                        onclick="verDetalleEstudiante(this.dataset.codigo)"
-                                        class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                        title="Ver detalles del estudiante">
-                                        <i class="fas fa-search mr-1"></i> Ver
-                                    </button>
-                                    <!-- Botón Quitar -->
-                                    <button 
-                                        data-ppes-id="{{ $est['ppes_id'] }}"
-                                        onclick="quitarEstudianteDelProceso(this.dataset.ppesId)"
-                                        class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
-                                        title="Quitar del proceso">
-                                        <i class="fas fa-trash-alt mr-1"></i> Quitar
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforeach
+                @foreach($seguimiento->estudiantesCandidatos as $est)
+                    @php
+                    $enviado   = (bool) ($est['enlace_enviado'] ?? false);
+                    $respondio = (bool) ($est['formulario_actualizado'] ?? false);
+                    @endphp
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="px-4 py-2">{{ $est['detalle']['pensum_estud'] ?? '-' }}</td>
+                        <td class="px-4 py-2">{{ $est['detalle']['estp_codigomatricula'] ?? '-' }}</td>
+                        <td class="px-4 py-2">{{ $est['detalle']['documento'] ?? '-' }}</td>
+                        <td class="px-4 py-2">{{ $est['detalle']['nombres'] ?? '-' }}</td>
+                        <td class="px-4 py-2">{{ $est['detalle']['categoria'] ?? '-' }}</td>
+
+                        {{-- Situación + indicadores (misma columna) --}}
+                        <td class="px-4 py-2">
+                        <div class="flex flex-col items-start gap-1">
+                            <span class="inline-block px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">
+                            {{ $est['detalle']['situacion'] ?? '-' }}
+                            </span>
+                            <div class="flex items-center gap-4 text-[11px] text-gray-500">
+                            <span class="inline-flex items-center gap-1" title="Enlace enviado">
+                                <span class="h-2.5 w-2.5 rounded-full {{ $enviado ? 'bg-blue-500' : 'bg-gray-300' }}"></span>
+                                <span>Enlace</span>
+                                <span class="sr-only">Enlace enviado: {{ $enviado ? 'Sí' : 'No' }}</span>
+                            </span>
+                            <span class="inline-flex items-center gap-1" title="Formulario respondido">
+                                <span class="h-2.5 w-2.5 rounded-full {{ $respondio ? 'bg-green-500' : 'bg-gray-300' }}"></span>
+                                <span>Resp.</span>
+                                <span class="sr-only">Formulario respondido: {{ $respondio ? 'Sí' : 'No' }}</span>
+                            </span>
+                            </div>
+                        </div>
+                        </td>
+
+                        <td class="px-2 py-2 text-center">{{ $est['detalle']['cred_pendientes'] ?? '-' }}</td>
+
+                        {{-- Acciones (sin nueva columna extra) --}}
+                        <td class="px-4 py-2 text-center">
+                        <div class="flex justify-center gap-2">
+                            <button 
+                            data-codigo="{{ $est['estu_codigo'] }}"
+                            onclick="verDetalleEstudiante(this.dataset.codigo)"
+                            class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            title="Ver detalles del estudiante">
+                            <i class="fas fa-search mr-1"></i> Ver
+                            </button>
+                            <button 
+                            data-ppes-id="{{ $est['ppes_id'] }}"
+                            onclick="quitarEstudianteDelProceso(this.dataset.ppesId)"
+                            class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
+                            title="Quitar del proceso">
+                            <i class="fas fa-trash-alt mr-1"></i> Quitar
+                            </button>
+                        </div>
+                        </td>
+                    </tr>
+                @endforeach
                 </tbody>
+
             </table>
 
 
@@ -473,22 +495,6 @@
                     <div><p class="text-gray-500">Docente UCMC</p><p class="font-medium" id="det-es-docente-uni">—</p></div>
                     </div>
                 </div>
-
-                <!-- Información académica / SaberPro-TyT -->
-                <!-- <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-                    <h4 class="text-base font-semibold mb-4 text-gray-700 flex items-center gap-2">
-                    <i class="fas fa-file-alt text-indigo-500"></i> Documentos y SaberPro/TyT
-                    </h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                    <div><p class="text-gray-500">Código SaberPro/TyT</p><p class="font-medium" id="det-codigo-saber">—</p></div>
-                    <div>
-                        <p class="text-gray-500">Certificado de asistencia</p>
-                        <p class="font-medium">
-                        <a id="det-cert-saber" href="#" target="_blank" class="text-blue-600 underline hover:text-blue-800">Ver certificado</a>
-                        </p>
-                    </div>
-                    </div>
-                </div> -->
 
                 <!-- Información de pregrado (para posgrado) -->
                 <div id="bloque-pregrado" class="bg-white rounded-lg shadow-sm p-6 border border-gray-200 hidden">
@@ -1104,12 +1110,35 @@
     didOpen: () => Swal.showLoading()
   });
 
-  // helper seguro para href absoluto
-  const absFromRoot = (u) => {
-    if (!u) return '#';
-    if (/^(https?:|data:|blob:)/i.test(u)) return u;
-    return new URL(u, window.location.origin + '/').href;
-  };
+    // helper seguro para href absoluto
+    const absFromRoot = (u) => {
+        if (!u) return '';
+        if (/^(https?:|data:|blob:)/i.test(u)) return u;
+        return new URL(u, window.location.origin + '/').href;
+    };
+
+    // Link opcional: solo asigna href si hay URL, si no lo quita.
+    function setOptionalAnchor(id, url, okLabel = 'Ver archivo', emptyLabel = 'Sin archivo', icon = 'fa-file-alt') {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const u = (url || '').trim();
+
+        if (u) {
+            el.href = absFromRoot(u);
+            el.target = '_blank';
+            el.rel = 'noopener';
+            el.classList.remove('text-gray-400','cursor-default','no-underline');
+            el.classList.add('text-blue-600','hover:text-blue-800','underline');
+            el.innerHTML = `<i class="fas ${icon}"></i> ${okLabel}`;
+        } else {
+            el.removeAttribute('href');
+            el.removeAttribute('target');
+            el.removeAttribute('rel');
+            el.classList.remove('text-blue-600','hover:text-blue-800','underline');
+            el.classList.add('text-gray-400','cursor-default','no-underline');
+            el.textContent = emptyLabel;
+        }
+    }
 
   try {
     const url  = `/programa-academico/estudiantes/${PROCESO_ID}/${encodeURIComponent(codigo)}`;
@@ -1162,8 +1191,8 @@
 
     setText('det-direccion', d.direccion || '—');
 
-    // Documento de identidad (href absoluto)
-    setHref('det-link-documento', absFromRoot(d.documentoURL) || '#');
+    // Documento de identidad (href absoluto)    
+    setOptionalAnchor('det-link-documento', d.documentoURL, 'Ver documento', '—', 'fa-id-card');
 
     // Vínculos con la Universidad
     setText('det-es-funcionario-uni', d.funcionarioUCMC ? 'Sí' : 'No');
@@ -1171,7 +1200,7 @@
 
     // Documentos / SaberPro-TyT
     setText('det-codigo-saber', d.codigoSaberProTYT || '—');
-    setHref('det-cert-saber', absFromRoot(d.certificadoSaberProURL) || '#');
+    setOptionalAnchor('det-cert-saber', d.certificadoSaberProURL, 'Ver certificado', 'Sin certificado');
 
     // Posgrado (si aplica)
     const bloquePosgrado = document.getElementById('bloque-pregrado'); 
@@ -1219,11 +1248,5 @@
 };
 
 
-  function absFromRoot(u) {
-    if (!u) return '#';
-    // Si ya es absoluta (http/https/data/blob), déjala igual
-    if (/^(https?:|data:|blob:)/i.test(u)) return u;
-    // Vuelve absoluta respecto al dominio
-    return new URL(u, window.location.origin + '/').href;
-    }
+
 </script>
