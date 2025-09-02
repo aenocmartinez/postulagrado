@@ -101,9 +101,10 @@
     <form method="POST" action="{{ route('postulacion.actualizacion.store') }}" enctype="multipart/form-data" novalidate>
 
       @csrf      
+      <input type="hidden" name="programa_id" value="{{ $programa_id ?? '' }}">
       <input type="hidden" name="enlace_id" value="{{ $enlace_id ?? '' }}">
       <input type="hidden" name="proceso_id" value="{{ $proceso_id ?? '' }}">
-      <input type="text" name="codigo" value="{{ $codigo ?? '' }}">
+      <input type="hidden" name="codigo" value="{{ $codigo ?? '' }}">
       <input type="hidden" id="es_postgrado_input" name="es_postgrado" value="{{ $esPostgrado ? 1 : 0 }}">
 
       <div class="section section-muted">

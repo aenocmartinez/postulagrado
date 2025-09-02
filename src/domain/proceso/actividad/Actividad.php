@@ -28,7 +28,7 @@ final class Actividad
             throw new LogicException('El ID de la actividad ya fue asignado.');
         }
         $this->id = $id;
-    }
+    }   
 
     public function id(): ActividadId 
     { 

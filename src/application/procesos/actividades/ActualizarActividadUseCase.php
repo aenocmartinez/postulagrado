@@ -2,6 +2,8 @@
 
 namespace Src\application\usecase\actividades;
 
+use Src\domain\proceso\actividad\valueObject\DescripcionActividad;
+use Src\domain\proceso\actividad\valueObject\RangoFechasActividad;
 use Src\domain\repositories\ActividadRepository;
 use Src\domain\repositories\ProcesoRepository;
 use Src\shared\response\ResponsePostulaGrado;
@@ -32,11 +34,15 @@ class ActualizarActividadUseCase
             return new ResponsePostulaGrado(404, "Actividad no encontrada");
         }
 
-        $actividad->setDescripcion($datos['descripcion']);
-        $actividad->setFechaInicio($datos['fecha_inicio']);
-        $actividad->setFechaFin($datos['fecha_fin']);
+        $actividad->renombrar(new DescripcionActividad(trim((string)$datos['descripcion'])));
+        $actividad->reprogramar(
+            new RangoFechasActividad(
+                (string)$datos['fecha_inicio'],
+                (string)$datos['fecha_fin']
+            )
+        );        
 
-        $exito = $proceso->actualizarActividad($actividad);
+        $exito = $this->actividadRepo->actualizarActividad($actividad);        
         if (!$exito) 
         {
             return new ResponsePostulaGrado(500, "Se ha producido un error en el sistema. Por favor, inténtelo de nuevo más tarde.");

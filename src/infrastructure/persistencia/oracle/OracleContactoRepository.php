@@ -209,6 +209,50 @@ class OracleContactoRepository extends Model implements ContactoRepository {
         
         return false;
     }
-    
+
+    /**
+     * Buscar un contacto por su programaID (incluye nombre del programa).
+     */
+    public function buscarPorProgramaID(int $programaID): Contacto
+    {
+        try {
+            $registro = DB::connection('oracle_academpostulgrado')
+                ->table('ACADEMPOSTULGRADO.PROGRAMA_CONTACTOS AS PC')
+                ->leftJoin('ACADEMICO.PROGRAMA AS PROG', 'PROG.PROG_ID', '=', 'PC.PROG_ID')
+                ->select(
+                    'PC.PRCO_ID          AS prco_id',
+                    'PC.PRCO_NOMBRE      AS prco_nombre',
+                    'PC.PRCO_TELEFONO    AS prco_telefono',
+                    'PC.PRCO_CORREO      AS prco_correo',
+                    'PC.PRCO_OBSERVACION AS prco_observacion',
+                    'PC.PROG_ID          AS prog_id',
+                    'PROG.PROG_NOMBRE    AS prog_nombre'
+                )
+                ->where('PC.PROG_ID', $programaID)
+                ->first();
+
+            if (!$registro) {
+                return new Contacto();
+            }
+
+            $c = new Contacto();
+            $c->setId((int)($registro->prco_id ?? 0));
+            $c->setNombre((string)($registro->prco_nombre ?? ''));
+            $c->setTelefono((string)($registro->prco_telefono ?? ''));
+            $c->setEmail((string)($registro->prco_correo ?? ''));
+            $c->setObservacion($registro->prco_observacion ?? null);
+
+            $progId = (int)($registro->prog_id ?? 0);
+            $c->setProgramaID($progId);
+            $c->setProgramaNombre((string)($registro->prog_nombre ?? ''));
+
+            return $c;
+        } catch (\Throwable $e) {
+            Log::error("Error al buscar contacto por programaID {$programaID}: ".$e->getMessage(), [
+                'exception' => $e,
+            ]);
+            return new Contacto();
+        }
+    }
     
 }

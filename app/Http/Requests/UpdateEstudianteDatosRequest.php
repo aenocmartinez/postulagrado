@@ -44,6 +44,7 @@ class UpdateEstudianteDatosRequest extends FormRequest
                 // Rule::exists('oracle_academpostulgrado.ACTUALIZACION_ENLACE', 'ACEN_ID')->where('ACEN_USADO','N'),
                 Rule::exists('oracle_academpostulgrado.ACTUALIZACION_ENLACE', 'ACEN_ID'),
             ],
+            'programa_id' => ['required','integer'],
             'proceso_id' => ['required','integer'],
             'codigo'     => ['required','string','max:50'],
 
@@ -133,6 +134,9 @@ class UpdateEstudianteDatosRequest extends FormRequest
 
             'proceso_id.required' => 'Falta el identificador del proceso.',
             'proceso_id.integer'  => 'El identificador del proceso no es válido.',
+
+            'programa_id.required' => 'Falta el identificador del programa.',
+            'programa_id.integer'  => 'El identificador del programa no es válido.',            
 
             'codigo.required' => 'Falta el código del estudiante.',
 

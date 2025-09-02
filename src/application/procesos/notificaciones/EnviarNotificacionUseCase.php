@@ -1,6 +1,6 @@
 <?php
 
-namespace Src\application\UseCase\Notificaciones;
+namespace Src\application\procesos\notificaciones;
 
 use Illuminate\Support\Facades\Log;
 use Src\Shared\Notifications\NotificacionDTO;

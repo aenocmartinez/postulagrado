@@ -21,6 +21,7 @@ class OracleEnlaceActualizacionRepository extends Model implements EnlaceActuali
                 ->table($this->table)
                 ->insert([
                     'PROC_ID'          => $enlace->getProcesoID(),
+                    'PROG_ID'          => $enlace->getProgramaID(),
                     'ESTU_CODIGO'      => $enlace->getCodigoEstudiante(),
                     'ACEN_TOKEN'       => $enlace->getToken(),
                     'ACEN_USADO'       => $enlace->getUsado(), // 'S' | 'N'
@@ -126,6 +127,7 @@ class OracleEnlaceActualizacionRepository extends Model implements EnlaceActuali
         $e = new EnlaceActualizacion();
         $e->setId((int) $g('ACEN_ID'))
           ->setProcesoID((int) $g('PROC_ID'))
+          ->setProgramaID((int) $g('PROG_ID'))
           ->setCodigoEstudiante((string) ($g('ESTU_CODIGO') ?? ''))
           ->setToken((string) ($g('ACEN_TOKEN') ?? ''))
           ->setUsado((string) ($g('ACEN_USADO') ?? 'N'))

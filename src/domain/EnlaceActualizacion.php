@@ -6,6 +6,7 @@ class EnlaceActualizacion
 {
     private int $id;
     private int $procesoID;
+    private int $programaID;
     private string $codigoEstudiante;
     private string $token;
     private string $usado;
@@ -20,6 +21,10 @@ class EnlaceActualizacion
     public function getProcesoID(): int
     {
         return $this->procesoID;
+    }
+
+    public function getProgramaID(): int {
+        return $this->programaID;
     }
 
     public function getCodigoEstudiante(): string
@@ -58,6 +63,12 @@ class EnlaceActualizacion
         $this->procesoID = $procesoID;
         return $this;
     }
+
+    public function setProgramaID(int $programaID): self
+    {
+        $this->programaID = $programaID;
+        return $this;
+    }    
 
     public function setCodigoEstudiante(string $codigoEstudiante): self
     {

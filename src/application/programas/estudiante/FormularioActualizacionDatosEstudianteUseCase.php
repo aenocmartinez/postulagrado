@@ -38,6 +38,7 @@ class FormularioActualizacionDatosEstudianteUseCase
         }        
 
         $data = [
+            'programa_id'   => $enlace->getProgramaID(),
             'enlace_id'     => $enlace->getId(),
             'token'         => $token,
             'proceso_id'    => $enlace->getProcesoID(),
@@ -45,8 +46,6 @@ class FormularioActualizacionDatosEstudianteUseCase
             'estudiante'    => $estudiante,
             'esPostgrado'   => true,
         ];
-
-        // dd($data);
 
         return new ResponsePostulaGrado(200, 'OK', $data);        
     }

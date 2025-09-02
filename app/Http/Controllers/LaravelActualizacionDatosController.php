@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateEstudianteDatosRequest;
 use Src\application\programas\estudiante\ActualizacionDatosDTO;
+use Src\domain\programa\contacto\Contacto;
+use Src\domain\repositories\ContactoRepository;
 use Src\domain\repositories\EnlaceActualizacionRepository;
+use Src\domain\repositories\EstudianteRepository;
+use Src\domain\repositories\NotificacionRepository;
 use Src\domain\repositories\ProgramaRepository;
 use Src\infrastructure\controller\programa\estudiante\FormularioActualizacionDatosController;
 use Src\infrastructure\controller\programa\estudiante\GuardarDatosEstudianteController;
@@ -14,11 +18,17 @@ class LaravelActualizacionDatosController extends Controller
 {
     private ProgramaRepository $programaRepo;
     private EnlaceActualizacionRepository $enlaceRepo;
+    private ContactoRepository $contactoRepo;
+    private EstudianteRepository $estudianteRepo;
+    private NotificacionRepository $notificacionRepo;
 
     public function __construct()
     {
         $this->programaRepo = FabricaDeRepositoriosOracle::getInstance()->getProgramaRepository();
         $this->enlaceRepo = FabricaDeRepositoriosOracle::getInstance()->getEnlaceActualizacionRepository();
+        $this->contactoRepo = FabricaDeRepositoriosOracle::getInstance()->getContactoRepository();
+        $this->estudianteRepo = FabricaDeRepositoriosOracle::getInstance()->getEstudianteRepository();
+        $this->notificacionRepo = FabricaDeRepositoriosOracle::getInstance()->getNotificacionRepository();
     }
    
     public function mostrarFormularioActualizacion(string $token)
@@ -46,9 +56,10 @@ class LaravelActualizacionDatosController extends Controller
         $datos = ActualizacionDatosDTO::desdeArray($validados);
         
         $response = (new GuardarDatosEstudianteController(
-            FabricaDeRepositoriosOracle::getInstance()->getEstudianteRepository()
+            $this->estudianteRepo,
+            $this->contactoRepo,
+            $this->notificacionRepo
         ))->__invoke($datos);
-
         
         return view('estudiantes.respuesta-actualizacion', [
             'code'    => $response->getCode(),

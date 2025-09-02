@@ -10,4 +10,5 @@ interface ContactoRepository {
     public function crear(Contacto $contacto): bool;
     public function actualizar(Contacto $contacto): bool;
     public function eliminar(int $programaContactoID): bool;
+    public function buscarPorProgramaID(int $programaID): Contacto;
 }

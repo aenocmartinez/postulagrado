@@ -62,7 +62,7 @@ class EnviarEnlaceActualizacionUseCase
             }
 
             try {                
-                $token = $this->emitirToken($procesoID, $codigo);
+                $token = $this->emitirToken($procesoID, $codigo, $programa->getId());
                 $urlFormulario = $this->construirUrlFormulario($token);
 
                 $mensajeHtml = MensajesPersonalizados::generarHtmlEnlaceActualizacion($urlFormulario, $nombre);
@@ -99,7 +99,7 @@ class EnviarEnlaceActualizacionUseCase
     /**
      * Reutiliza un token vigente y no usado; si no existe, crea uno nuevo.
      */
-    private function emitirToken(int $procesoID, string $codigoEstudiante): string
+    private function emitirToken(int $procesoID, string $codigoEstudiante, int $programaID): string
     {
         $vigente = $this->enlaceRepo->buscarPorCodigoEstudianteYProceso($codigoEstudiante, $procesoID);
 
@@ -121,6 +121,7 @@ class EnviarEnlaceActualizacionUseCase
 
         $enlace = (new EnlaceActualizacion())
             ->setProcesoID($procesoID)
+            ->setProgramaID($programaID)
             ->setCodigoEstudiante($codigoEstudiante)
             ->setToken($token)
             ->setUsado('N')
