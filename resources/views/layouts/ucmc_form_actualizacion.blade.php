@@ -25,7 +25,7 @@
     {{-- Encabezado institucional --}}
     <header class="header">
       <div class="brand">
-        <img class="logo" src="{{ asset('images/Logo-Universidad.png') }}" alt="Universidad Colegio Mayor de Cundinamarca">
+        <img class="logo" src="{{ asset('images/Logo-Universidad-2.png') }}" alt="Universidad Colegio Mayor de Cundinamarca">
         <div class="brand-title">
           Universidad Colegio Mayor de Cundinamarca<br>
           <span style="font-weight:500;color:var(--ucmc-gris);font-size:13px;">Proceso de postulación a grado</span>

@@ -70,7 +70,6 @@
   .ts-dropdown{position:absolute;top:100%;left:0;right:0;z-index:1000;background:#fff;border:1px solid #d1d5db;border-radius:8px;max-height:260px;overflow:auto;margin-top:4px;box-shadow:0 8px 20px rgba(0,0,0,.08);display:none}
   .ts-wrapper.dropdown-active .ts-dropdown{display:block}
   .ts-dropdown .dropdown-input{padding:8px 10px;border-bottom:1px solid #e5e7eb}
-  .ts-dropdown .dropdown-input input{width:100%;border:0;outline:0;font-size:14px;padding:6px 0}
   .ts-dropdown .option{padding:8px 10px}
   .ts-dropdown .option.active{background:#eff6ff}
   .ts-dropdown .no-results{padding:8px 10px;color:#6b7280}
@@ -87,6 +86,46 @@
   .file-drop__meta{font-size:13px;color:#374151}
   .file-drop__remove{margin-left:auto;border:0;background:#f3f4f6;padding:6px 10px;border-radius:8px;cursor:pointer}
   .file-drop__remove:hover{background:#e5e7eb}
+
+  /* === NUEVO: Marcar para revisión === */
+  .flag-btn{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:12px;font-weight:700;border:1px solid #f59e0b;
+    background:#fffbeb;color:#92400e;border-radius:9999px;
+    padding:2px 8px;cursor:pointer
+  }
+  .flag-btn[aria-pressed="true"]{
+    background:#fef3c7;border-color:#d97706;color:#7c2d12
+  }
+  .field-wrap.needs-review input,
+  .field-wrap.needs-review select{
+    border-color:#f59e0b;background:#fffbeb
+  }
+  .mini-note{margin-top:6px}
+  .mini-note input{
+    width:100%;padding:8px 10px;border:1px dashed #f59e0b;border-radius:8px;
+    font-size:13px;background:#fff8e1
+  }
+  .review-summary{
+    border:1px solid #f59e0b;background:#fffbeb;border-radius:12px;padding:12px;margin:12px 0
+  }
+  .review-summary h3{margin:0 0 8px 0;font-size:14px;color:#7c2d12}
+  .review-summary ul{margin:0;padding-left:18px}
+  .review-summary li{font-size:13px;color:#7c2d12}
+  .label-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+
+  /* Aviso explicativo y tip */
+  .info-banner{
+    border:1px solid #93c5fd;background:#eff6ff;border-radius:12px;
+    padding:12px;margin:12px 0;color:#1e40af
+  }
+  .info-banner strong{color:#1d4ed8}
+  .inline-hint{
+    display:inline-flex;align-items:center;gap:8px;
+    background:#fff7ed;border:1px solid #fdba74;color:#9a3412;
+    border-radius:9999px;padding:4px 10px;font-size:12px;margin-left:8px
+  }
+  .inline-hint button{all:unset;cursor:pointer;margin-left:6px}
 </style>
 @endpush
 
@@ -94,9 +133,25 @@
   <main class="card">
     <h1>Actualización de información personal</h1>
     <p class="lead">
-      Verifica y completa tu información. Algunos datos de identificación están en solo lectura para que la actualización se realice con base en el
-      <strong>documento de identificación que adjuntas</strong>.
+      Verifica y completa tu información. <strong>IMPORTANTE:</strong> Algunos datos de identificación están en solo lectura 
+      para que la actualización se realice con base en el documento de identificación que adjuntas, dado que así serán expedidos los documentos de grado.
     </p>
+
+    <!-- NUEVO: Aviso explicativo para estudiantes -->
+    <div class="info-banner" id="explicacion_revision">
+      <strong>¿Ves un dato de identificación incorrecto?</strong>
+      Marca <em>“Solicitar revisión”</em> en ese campo. Podrás dejar un comentario corto para el revisor.
+      Estos datos no se editan aquí: el equipo los validará con el documento que adjuntes.
+    </div>
+
+    <!-- Resumen de campos marcados -->
+    <div id="review_summary" class="review-summary" style="display:none">
+      <h3>
+        Campos marcados para revisión
+        <span id="review_count" class="badge" aria-live="polite" aria-atomic="true">0</span>
+      </h3>
+      <ul id="review_list"></ul>
+    </div>
 
     <form method="POST" action="{{ route('postulacion.actualizacion.store') }}" enctype="multipart/form-data" novalidate>
 
@@ -109,30 +164,85 @@
 
       <div class="section section-muted">
         <div class="section-title">Identificación</div>
+
+        <!-- Tip breve dentro de la sección -->
+        <div class="muted" style="margin:-4px 0 8px">
+          Usa “Solicitar revisión” solo si el valor no coincide con tu documento de identidad.
+          <!-- <span class="inline-hint" id="hint_btn" style="display:none">
+            Tip: luego de marcar, puedes escribir un comentario breve.
+            <button aria-label="Cerrar aviso" id="hint_close">✕</button>
+          </span> -->
+        </div>
+
         <div class="grid grid-2">
-          <div>
-            <label for="primer_nombre">Primer Nombre</label>
+          <div class="field-wrap" data-field="primer_nombre">
+            <div class="label-row">
+              <label for="primer_nombre">Primer Nombre</label>
+              <button type="button" class="flag-btn js-flag" aria-pressed="false" title="Marca este dato si necesitas que lo corrijan con base en tu documento">
+                Solicitar revisión
+              </button>
+            </div>
             <input id="primer_nombre" name="primer_nombre" value="{{ old('primer_nombre', $get('primer_nombre')) }}" readonly>
+            <div class="mini-note js-note" style="display:none">
+              <input type="text" name="revisar[primer_nombre][nota]" placeholder="¿Qué debo revisar aquí? (opcional)">
+            </div>
+            <input type="hidden" name="revisar[primer_nombre][mark]" value="0" class="js-hidden-mark">
           </div>
-          <div>
-            <label for="segundo_nombre">Segundo Nombre</label>
+
+          <div class="field-wrap" data-field="segundo_nombre">
+            <div class="label-row">
+              <label for="segundo_nombre">Segundo Nombre</label>
+              <button type="button" class="flag-btn js-flag" aria-pressed="false" title="Marca este dato si necesitas que lo corrijan con base en tu documento">
+                Solicitar revisión
+              </button>
+            </div>
             <input id="segundo_nombre" name="segundo_nombre" value="{{ old('segundo_nombre', $get('segundo_nombre')) }}" readonly>
+            <div class="mini-note js-note" style="display:none">
+              <input type="text" name="revisar[segundo_nombre][nota]" placeholder="¿Qué debo revisar aquí? (opcional)">
+            </div>
+            <input type="hidden" name="revisar[segundo_nombre][mark]" value="0" class="js-hidden-mark">
           </div>
         </div>
+
         <div class="grid grid-2" style="margin-top:12px">
-          <div>
-            <label for="primer_apellido">Primer Apellido</label>
+          <div class="field-wrap" data-field="primer_apellido">
+            <div class="label-row">
+              <label for="primer_apellido">Primer Apellido</label>
+              <button type="button" class="flag-btn js-flag" aria-pressed="false" title="Marca este dato si necesitas que lo corrijan con base en tu documento">
+                Solicitar revisión
+              </button>
+            </div>
             <input id="primer_apellido" name="primer_apellido" value="{{ old('primer_apellido', $get('primer_apellido')) }}" readonly>
+            <div class="mini-note js-note" style="display:none">
+              <input type="text" name="revisar[primer_apellido][nota]" placeholder="¿Qué debo revisar aquí? (opcional)">
+            </div>
+            <input type="hidden" name="revisar[primer_apellido][mark]" value="0" class="js-hidden-mark">
           </div>
-          <div>
-            <label for="segundo_apellido">Segundo Apellido</label>
+
+          <div class="field-wrap" data-field="segundo_apellido">
+            <div class="label-row">
+              <label for="segundo_apellido">Segundo Apellido</label>
+              <button type="button" class="flag-btn js-flag" aria-pressed="false" title="Marca este dato si necesitas que lo corrijan con base en tu documento">
+                Solicitar revisión
+              </button>
+            </div>
             <input id="segundo_apellido" name="segundo_apellido" value="{{ old('segundo_apellido', $get('segundo_apellido')) }}" readonly>
+            <div class="mini-note js-note" style="display:none">
+              <input type="text" name="revisar[segundo_apellido][nota]" placeholder="¿Qué debo revisar aquí? (opcional)">
+            </div>
+            <input type="hidden" name="revisar[segundo_apellido][mark]" value="0" class="js-hidden-mark">
           </div>
         </div>
+
         @php $tipoDoc = old('tipo_documento', $get('tipo_documento_id')); @endphp
         <div class="grid grid-3" style="margin-top:12px">
-          <div>
-              <label for="tipo_documento">Tipo de documento</label>
+          <div class="field-wrap" data-field="tipo_documento">
+              <div class="label-row">
+                <label for="tipo_documento">Tipo de documento</label>
+                <button type="button" class="flag-btn js-flag" aria-pressed="false" title="Marca este dato si necesitas que lo corrijan con base en tu documento">
+                  Solicitar revisión
+                </button>
+              </div>
               <select id="tipo_documento" name="tipo_documento" disabled>
                   <option value="">Seleccione…</option>
                   <option value="1"   {{ $tipoDoc == '1' ? 'selected' : '' }}>Cédula de ciudadanía colombiana</option>
@@ -146,20 +256,50 @@
                   <option value="376" {{ $tipoDoc == '376' ? 'selected' : '' }}>PPT - Permiso por Protección Temporal</option>
               </select>
               <input type="hidden" name="tipo_documento" value="{{ $tipoDoc }}">
+              <div class="mini-note js-note" style="display:none">
+                <input type="text" name="revisar[tipo_documento][nota]" placeholder="¿Qué debo revisar aquí? (opcional)">
+              </div>
+              <input type="hidden" name="revisar[tipo_documento][mark]" value="0" class="js-hidden-mark">
           </div>
-          <div>
-            <label for="numero_documento">Número de documento</label>
+
+          <div class="field-wrap" data-field="numero_documento">
+            <div class="label-row">
+              <label for="numero_documento">Número de documento</label>
+              <button type="button" class="flag-btn js-flag" aria-pressed="false" title="Marca este dato si necesitas que lo corrijan con base en tu documento">
+                Solicitar revisión
+              </button>
+            </div>
             <input id="numero_documento" name="numero_documento" value="{{ old('numero_documento', $get('documento')) }}" readonly>
+            <div class="mini-note js-note" style="display:none">
+              <input type="text" name="revisar[numero_documento][nota]" placeholder="¿Qué debo revisar aquí? (opcional)">
+            </div>
+            <input type="hidden" name="revisar[numero_documento][mark]" value="0" class="js-hidden-mark">
           </div>
-          <div>
-            <label for="lugar_expedicion">Lugar de expedición</label>
+
+          <div class="field-wrap" data-field="lugar_expedicion">
+            <div class="label-row">
+              <label for="lugar_expedicion">Lugar de expedición</label>
+              <button type="button" class="flag-btn js-flag" aria-pressed="false" title="Marca este dato si necesitas que lo corrijan con base en tu documento">
+                Solicitar revisión
+              </button>
+            </div>
             <input id="lugar_expedicion" name="lugar_expedicion" value="{{ old('lugar_expedicion', $get('lugar_expedicion')) }}" readonly>
+            <div class="mini-note js-note" style="display:none">
+              <input type="text" name="revisar[lugar_expedicion][nota]" placeholder="¿Qué debo revisar aquí? (opcional)">
+            </div>
+            <input type="hidden" name="revisar[lugar_expedicion][mark]" value="0" class="js-hidden-mark">
           </div>
         </div>
+
         @php $generoSel = old('genero', $get('genero')); @endphp
         <div class="grid grid-2" style="margin-top:12px">
-          <div>
-            <label for="genero">Género</label>
+          <div class="field-wrap" data-field="genero">
+            <div class="label-row">
+              <label for="genero">Género</label>
+              <button type="button" class="flag-btn js-flag" aria-pressed="false" title="Marca este dato si necesitas que lo corrijan con base en tu documento">
+                Solicitar revisión
+              </button>
+            </div>
             <select id="genero" name="genero" disabled>
               <option value="">Seleccione…</option>
               <option value="F" {{ $generoSel === 'F' ? 'selected' : '' }}>Femenino</option>
@@ -167,12 +307,27 @@
               <option value="X" {{ $generoSel === 'X' ? 'selected' : '' }}>No binario / Otro</option>
             </select>
             <input type="hidden" name="genero" value="{{ $generoSel }}">
+            <div class="mini-note js-note" style="display:none">
+              <input type="text" name="revisar[genero][nota]" placeholder="¿Qué debo revisar aquí? (opcional)">
+            </div>
+            <input type="hidden" name="revisar[genero][mark]" value="0" class="js-hidden-mark">
           </div>
-          <div>
-            <label for="correo_institucional">Correo electrónico institucional</label>
+
+          <div class="field-wrap" data-field="correo_institucional">
+            <div class="label-row">
+              <label for="correo_institucional">Correo electrónico institucional</label>
+              <button type="button" class="flag-btn js-flag" aria-pressed="false" title="Marca este dato si necesitas que lo corrijan con base en tu documento">
+                Solicitar revisión
+              </button>
+            </div>
             <input id="correo_institucional" name="correo_institucional" value="{{ old('correo_institucional', $get('email_institucional')) }}" readonly>
+            <div class="mini-note js-note" style="display:none">
+              <input type="text" name="revisar[correo_institucional][nota]" placeholder="¿Qué debo revisar aquí? (opcional)">
+            </div>
+            <input type="hidden" name="revisar[correo_institucional][mark]" value="0" class="js-hidden-mark">
           </div>
         </div>
+
         <div class="field-note">Estos datos están bloqueados porque se validarán y actualizarán según el documento de identificación que adjuntes. Si observas alguna inconsistencia, comunícate con Soporte Académico.</div>
       </div>
 
@@ -367,7 +522,6 @@
       @endif
 
       <div class="actions">
-        <!-- <a href="https://www.universidadmayor.edu.co" class="btn btn-secondary">Ir al sitio</a> -->
         <button type="submit" class="btn btn-primary">Guardar actualización</button>
       </div>
     </form>
@@ -378,7 +532,6 @@
 
 <script src="{{ asset('js/colombia-geo.js') }}"></script>
 <script src="{{ asset('js/ies-oficial.js') }}" defer></script>
-
 
 <script>
 (function(){
@@ -399,7 +552,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let DATA = window.CO_DEPARTAMENTOS || {};
 
-    // normalización para comparar nombres (ignora acentos, comas, puntos y espacios)
     const strip = s => (s||'')
       .normalize('NFD').replace(/\p{Diacritic}/gu,'')
       .replace(/[,\.\s]/g,'').toLowerCase();
@@ -412,7 +564,6 @@ document.addEventListener('DOMContentLoaded', function () {
       return k;
     }
 
-    // Title Case en ES (respeta preposiciones comunes; capitaliza cada segmento con guión)
     const LOWER = new Set(['de','del','la','las','los','y','e','o','u','al']);
     function toTitle(s){
       return s.toLowerCase().split(/\s+/).map((w,i)=>{
@@ -424,12 +575,11 @@ document.addEventListener('DOMContentLoaded', function () {
     function fill() {
       const deptoSel = dep.value || '';
 
-      // Regla 1: “San Andrés y Providencia” → sin ciudades
       if (strip(deptoSel) === strip('San Andrés y Providencia')) {
         sel.innerHTML = '<option value="">No aplica</option>';
         sel.value = '';
         sel.disabled = true;
-        sel.required = false; // evita bloquear el envío del form
+        sel.required = false;
         return;
       } else {
         sel.disabled = false;
@@ -444,13 +594,12 @@ document.addEventListener('DOMContentLoaded', function () {
       const frag = document.createDocumentFragment();
       uniq.forEach(c => {
         const opt = document.createElement('option');
-        opt.value = c;                 // valor oficial (puede estar en mayúsculas)
-        opt.textContent = toTitle(c);  // texto visible en Title Case
+        opt.value = c;
+        opt.textContent = toTitle(c);
         frag.appendChild(opt);
       });
       sel.appendChild(frag);
 
-      // Si tienes un valor previo (viejo), intenta seleccionarlo
       if (sel.dataset.old && uniq.includes(sel.dataset.old)) {
         sel.value = sel.dataset.old;
       }
@@ -479,11 +628,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const TARGET='universidad-colegio mayor de cundinamarca';
   if (!sel) return;
 
-  // normalizador para comparar
   const strip = s => (s||'').trim().toLowerCase()
     .normalize('NFD').replace(/\p{Diacritic}/gu,'');
 
-  // opciones base
   function setBaseOptions(){
     sel.innerHTML = '<option value="">Seleccione…</option><option value="'+OTRA+'">Otra (¿cuál?)</option>';
   }
@@ -494,8 +641,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const frag = document.createDocumentFragment();
     for (const {value,label} of ies){
       const opt = document.createElement('option');
-      opt.value = value;        // valor oficial (MEN/SNIES)
-      opt.textContent = label;  // visible en Title Case
+      opt.value = value;
+      opt.textContent = label;
       frag.appendChild(opt);
     }
     const last = sel.querySelector('option[value="'+OTRA+'"]');
@@ -538,20 +685,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Listeners
   sel.addEventListener('change', sync);
   inputOtro?.addEventListener('input', sync);
 
-  // Población con fuente oficial
   window.addEventListener('ies-oficial:ready', ()=>{
     populateIES();
     const ts = bootTomSelect();
 
-    // Restaurar valor previo (hidden)
     const oldRaw = (document.getElementById('universidad_pregrado')?.value || '').trim();
     const old = strip(oldRaw);
     if (old) {
-      // intenta match por normalización contra los <option>
       let match = '';
       for (const opt of sel.options) {
         if (opt.value === '' || opt.value === OTRA) continue;
@@ -568,12 +711,9 @@ document.addEventListener('DOMContentLoaded', function () {
     sync();
   });
 
-  // base mientras llega la data
   setBaseOptions();
 })();
 </script>
-
-
 
 <script>
 (function(){
@@ -637,6 +777,94 @@ document.addEventListener('DOMContentLoaded', function () {
 })();
 </script>
 
+<!-- NUEVO: Lógica marcar para revisión + contador + hint -->
+<script>
+(function(){
+  const summary = document.getElementById('review_summary');
+  const list = document.getElementById('review_list');
+  const countEl = document.getElementById('review_count');
+
+  function labelText(fieldWrap){
+    const lab = fieldWrap.querySelector('label');
+    return (lab?.textContent || '').trim();
+  }
+
+  function updateCount(){
+    const n = document.querySelectorAll('.field-wrap.needs-review').length;
+    if (countEl) countEl.textContent = String(n);
+  }
+
+  function renderSummary(){
+    const items = Array.from(document.querySelectorAll('.field-wrap.needs-review'));
+    if (!items.length){
+      summary.style.display = 'none';
+      list.innerHTML = '';
+      updateCount();
+      document.dispatchEvent(new CustomEvent('ucmc:review:render'));
+      return;
+    }
+    summary.style.display = '';
+    list.innerHTML = '';
+    const frag = document.createDocumentFragment();
+    items.forEach(w=>{
+      const li = document.createElement('li');
+      li.textContent = labelText(w);
+      frag.appendChild(li);
+    });
+    list.appendChild(frag);
+    updateCount();
+    document.dispatchEvent(new CustomEvent('ucmc:review:render'));
+  }
+
+  function setMarked(fieldWrap, on){
+    const btn = fieldWrap.querySelector('.js-flag');
+    const hidden = fieldWrap.querySelector('.js-hidden-mark');
+    const noteWrap = fieldWrap.querySelector('.js-note');
+
+    fieldWrap.classList.toggle('needs-review', !!on);
+    if (btn) btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    if (hidden) hidden.value = on ? '1' : '0';
+    if (noteWrap) noteWrap.style.display = on ? '' : 'none';
+
+    renderSummary();
+  }
+
+  // Listeners de cada botón
+  document.querySelectorAll('.field-wrap .js-flag').forEach(btn=>{
+    // Mejora accesibilidad: describe el botón con el nombre del campo
+    const wrap = btn.closest('.field-wrap');
+    const lab = wrap?.querySelector('label')?.textContent?.trim() || 'Campo';
+    btn.setAttribute('aria-label', `Solicitar revisión del campo ${lab}`);
+
+    btn.addEventListener('click', function(){
+      const wrap = this.closest('.field-wrap');
+      const pressed = this.getAttribute('aria-pressed') === 'true';
+      setMarked(wrap, !pressed);
+    });
+  });
+
+  // Restaurar estado si hidden=1 (old inputs)
+  document.querySelectorAll('.field-wrap').forEach(w=>{
+    const hidden = w.querySelector('.js-hidden-mark');
+    if (hidden && hidden.value === '1') setMarked(w, true);
+  });
+
+  renderSummary();
+
+  // Hint: se muestra solo la primera vez por sesión
+  const HINT_KEY = 'ucmc_review_hint_dismissed';
+  const hint = document.getElementById('hint_btn');
+  const close = document.getElementById('hint_close');
+  if (hint && !sessionStorage.getItem(HINT_KEY)) {
+    hint.style.display = 'inline-flex';
+    close?.addEventListener('click', () => {
+      hint.style.display = 'none';
+      sessionStorage.setItem(HINT_KEY, '1');
+    });
+  }
+
+})();
+</script>
 
 <script>
 document.querySelector('form')?.addEventListener('submit',function(){
