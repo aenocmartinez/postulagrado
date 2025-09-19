@@ -8,27 +8,27 @@
 
 
     <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200">
-        
+
         <!-- Buscador y botón de nuevo proceso -->
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-lg font-semibold text-gray-800">Procesos de Grado</h2>
-            
+
             <div class="flex space-x-2">
                 <!-- Formulario de búsqueda -->
                 <form method="GET" action="{{ route('procesos.index') }}" class="flex">
-                    <input type="text" name="search" 
-                        placeholder="Buscar proceso..." 
-                        value="{{ request('search') }}"
+                    <input type="text" name="search" placeholder="Buscar proceso..." value="{{ request('search') }}"
                         class="border border-gray-300 px-3 py-2 rounded-l-md text-sm w-64 focus:ring focus:ring-gray-400 outline-none">
 
-                    <button type="submit" class="bg-gray-700 px-4 py-2 rounded-r-md hover:bg-gray-800 transition flex items-center justify-center" aria-label="Buscar">
+                    <button type="submit"
+                        class="bg-gray-700 px-4 py-2 rounded-r-md hover:bg-gray-800 transition flex items-center justify-center"
+                        aria-label="Buscar">
                         <i class="fas fa-magnifying-glass text-gray-300 text-sm opacity-75"></i>
                     </button>
                 </form>
 
                 <!-- Botón Nuevo Proceso -->
-                <a href="{{ route('procesos.create') }}" 
-                class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition">
+                <a href="{{ route('procesos.create') }}"
+                    class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition">
                     + Nuevo proceso
                 </a>
             </div>
@@ -51,38 +51,40 @@
                         <tr class="border-b border-gray-300 bg-white hover:bg-gray-100 transition">
                             <td class="px-4 py-2 text-gray-900">{{ $proceso->nombre }}</td>
                             <td class="px-4 py-2 text-gray-900">{{ $proceso->nivelEducativoNombre }}</td>
-                            <td class="px-4 py-2 font-semibold {{ $proceso->estado == 'ABIERTO' ? 'text-orange-500' : 'text-gray-900' }}">
+                            <td
+                                class="px-4 py-2 font-semibold {{ $proceso->estado == 'ABIERTO' ? 'text-orange-500' : 'text-gray-900' }}">
                                 {{ ucfirst($proceso->estado) }}
                             </td>
                             <td class="px-4 py-2 text-center">
                                 <div class="flex justify-center gap-4 text-gray-600">
                                     <!-- Botón Editar -->
-                                    <a href="{{ route('procesos.edit', $proceso->id) }}" 
-                                       class="hover:text-blue-600 transition">
+                                    <a href="{{ route('procesos.edit', $proceso->id) }}"
+                                        class="hover:text-blue-600 transition">
                                         Editar
                                     </a>
 
                                     <!-- Botón Eliminar -->
-                                    <form action="{{ route('procesos.destroy', $proceso->id) }}" method="POST" class="inline">
+                                    <form action="{{ route('procesos.destroy', $proceso->id) }}" method="POST"
+                                        class="inline">
                                         @csrf
                                         @method('DELETE')
                                         <!-- Botón Eliminar con confirmación -->
-                                        <button type="button" class="eliminar-btn hover:text-red-600 transition" 
-                                                data-url="{{ route('procesos.destroy', $proceso->id) }}">
+                                        <button type="button" class="eliminar-btn hover:text-red-600 transition"
+                                            data-url="{{ route('procesos.destroy', $proceso->id) }}">
                                             Eliminar
                                         </button>
 
                                     </form>
 
                                     <!-- Botón Calendario de Actividades -->
-                                    <a href="{{ route('procesos.actividades', $proceso->id) }}" 
-                                       class="hover:text-orange-400 transition">
+                                    <a href="{{ route('procesos.actividades', $proceso->id) }}"
+                                        class="hover:text-orange-400 transition">
                                         Actividades
                                     </a>
 
                                     <!-- Botón Gestionar Documentos -->
-                                    <a href="{{ route('procesos.documentos.index', $proceso->id) }}" 
-                                    class="hover:text-indigo-600 transition">
+                                    <a href="{{ route('procesos.documentos.index', $proceso->id) }}"
+                                        class="hover:text-indigo-600 transition">
                                         Archivos
                                     </a>
 
@@ -102,46 +104,46 @@
 
         <!-- Paginador -->
         <div class="mt-4">
-            
+
         </div>
     </div>
 @endsection
 
 @section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".eliminar-btn").forEach((button) => {
-            button.addEventListener("click", function () {
-                let url = this.dataset.url;
-                confirmarEliminacion(url);
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll(".eliminar-btn").forEach((button) => {
+                button.addEventListener("click", function() {
+                    let url = this.dataset.url;
+                    confirmarEliminacion(url);
+                });
             });
         });
-    });
 
-    function confirmarEliminacion(url) {
-        Swal.fire({
-            title: "¿Estás seguro?",
-            text: "Esta acción no se puede deshacer.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#6b7280",
-            confirmButtonText: "Sí, eliminar",
-            cancelButtonText: "Cancelar"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                let form = document.createElement("form");
-                form.action = url;
-                form.method = "POST";
-                form.innerHTML = `
+        function confirmarEliminacion(url) {
+            Swal.fire({
+                title: "¿Estás seguro?",
+                text: "Esta acción no se puede deshacer.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#6b7280",
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let form = document.createElement("form");
+                    form.action = url;
+                    form.method = "POST";
+                    form.innerHTML = `
                     @csrf
                     @method('DELETE')
                 `;
-                document.body.appendChild(form);
-                form.submit();
-            }
-        });
-    }
-</script>
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+    </script>
 @endsection
